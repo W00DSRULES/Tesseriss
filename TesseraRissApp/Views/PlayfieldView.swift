@@ -17,7 +17,8 @@ struct PlayfieldView: View {
                 ForEach(0..<Board.height, id: \.self) { y in
                     ForEach(0..<Board.width, id: \.self) { x in
                         let flashing = engine.flashingRows.contains(y)
-                        CellView(kind: cellKind(x: x, y: y), isFlashing: flashing)
+                        let content = cellContent(x: x, y: y)
+                        CellView(kind: content.0, style: content.1, isFlashing: flashing)
                             .frame(width: cell, height: cell)
                             .offset(x: CGFloat(x) * cell, y: CGFloat(y) * cell)
                     }
@@ -32,14 +33,19 @@ struct PlayfieldView: View {
         }
     }
 
-    private func cellKind(x: Int, y: Int) -> PieceKind? {
+    private func cellContent(x: Int, y: Int) -> (PieceKind?, CellStyle) {
         if let piece = engine.current {
             for c in piece.cells where c.x == x && c.y == y {
-                return piece.kind
+                return (piece.kind, .solid)
             }
         }
-        if y < 0 || y >= Board.height { return nil }
-        return engine.board.grid[y][x]
+        if let ghost = engine.ghostPiece {
+            for c in ghost.cells where c.x == x && c.y == y {
+                return (ghost.kind, .ghost)
+            }
+        }
+        if y < 0 || y >= Board.height { return (nil, .solid) }
+        return (engine.board.grid[y][x], .solid)
     }
 }
 

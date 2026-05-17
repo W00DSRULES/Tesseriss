@@ -36,6 +36,16 @@ final class GameEngine: ObservableObject {
 
     var highscore: Int { highscoreStore.highscore }
 
+    var ghostPiece: Tetromino? {
+        guard phase == .playing, let piece = current else { return nil }
+        var ghost = piece
+        while !board.collides(ghost.moved(dx: 0, dy: 1)) {
+            ghost = ghost.moved(dx: 0, dy: 1)
+        }
+        guard ghost.origin.y != piece.origin.y else { return nil }
+        return ghost
+    }
+
     // MARK: - Lifecycle
 
     func startNewGame() {

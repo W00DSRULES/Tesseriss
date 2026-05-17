@@ -87,7 +87,7 @@ struct GameView: View {
     }
 
     private var pausedOverlay: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 16) {
             Text(s.paused)
                 .font(.system(.title, design: .rounded).weight(.semibold))
                 .foregroundStyle(Color("PaletteInk"))
@@ -100,12 +100,31 @@ struct GameView: View {
                 .foregroundStyle(Color("PaletteBackground"))
                 .padding(.vertical, 14)
                 .padding(.horizontal, 36)
+                .frame(maxWidth: .infinity)
                 .background(Color("PaletteInk"))
                 .clipShape(RoundedRectangle(cornerRadius: 14))
             }
+            Button(action: { engine.returnToMenu() }) {
+                HStack(spacing: 10) {
+                    Image(systemName: "house.fill")
+                    Text(s.menu)
+                }
+                .font(.system(.body, design: .rounded).weight(.medium))
+                .foregroundStyle(Color("PaletteInk"))
+                .padding(.vertical, 12)
+                .padding(.horizontal, 28)
+                .frame(maxWidth: .infinity)
+                .background(Color("PaletteBackground"))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color("PaletteGrid"), lineWidth: 1)
+                )
+            }
         }
         .padding(.vertical, 24)
-        .padding(.horizontal, 36)
+        .padding(.horizontal, 28)
+        .frame(maxWidth: 280)
         .background(Color("PaletteCard"))
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
