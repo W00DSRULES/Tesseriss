@@ -6,24 +6,27 @@ struct GameView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        VStack(spacing: 12) {
-            header
-            HStack(alignment: .top, spacing: 16) {
-                PlayfieldView()
-                    .aspectRatio(CGFloat(Board.width) / CGFloat(Board.height), contentMode: .fit)
-                    .scaleEffect(celebrationScale)
-                    .animation(reduceMotion ? nil : .easeInOut(duration: 0.18), value: engine.celebrationActive)
-                sidebar
+        ZStack {
+            VStack(spacing: 12) {
+                header
+                HStack(alignment: .top, spacing: 16) {
+                    PlayfieldView()
+                        .aspectRatio(CGFloat(Board.width) / CGFloat(Board.height), contentMode: .fit)
+                        .scaleEffect(celebrationScale)
+                        .animation(reduceMotion ? nil : .easeInOut(duration: 0.18), value: engine.celebrationActive)
+                    sidebar
+                }
+                .padding(.horizontal, 12)
+                Spacer(minLength: 0)
+                ControlsView()
+                    .padding(.bottom, 12)
             }
-            .padding(.horizontal, 12)
-            Spacer(minLength: 0)
-            ControlsView()
-                .padding(.bottom, 12)
+            .padding(.top, 8)
             if engine.phase == .paused {
+                Color.black.opacity(0.15).ignoresSafeArea()
                 pausedOverlay
             }
         }
-        .padding(.top, 8)
     }
 
     private var celebrationScale: CGFloat {

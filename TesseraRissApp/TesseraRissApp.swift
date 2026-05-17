@@ -4,13 +4,15 @@ import SwiftUI
 struct TesseraRissApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var engine = GameEngine()
-    @StateObject private var settings = SettingsStore()
+    @StateObject private var settings = SettingsStore.shared
+    @StateObject private var highscore = HighscoreStore.shared
 
     var body: some Scene {
         WindowGroup {
             RootView()
                 .environmentObject(engine)
                 .environmentObject(settings)
+                .environmentObject(highscore)
                 .preferredColorScheme(.light)
         }
         .onChange(of: scenePhase) { _, phase in

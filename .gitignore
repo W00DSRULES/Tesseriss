@@ -18,3 +18,5 @@ Packages/
 ## Logs / tmp
 *.log
 .idea/
+scheduled_tasks.lock
+.claude/
