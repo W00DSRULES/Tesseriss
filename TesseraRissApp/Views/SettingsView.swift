@@ -4,41 +4,52 @@ struct SettingsView: View {
     @EnvironmentObject var engine: GameEngine
     @EnvironmentObject var settings: SettingsStore
 
+    private var s: Strings { settings.strings }
+
     var body: some View {
         VStack(spacing: 24) {
             HStack {
                 Button(action: { engine.closeSettings() }) {
-                    Text("BACK")
+                    Text(s.back)
                         .font(.system(.caption, design: .rounded).weight(.semibold))
                         .foregroundStyle(Color("PaletteInk").opacity(0.7))
                         .padding(.vertical, 6)
                         .padding(.horizontal, 12)
-                        .background(Color("PaletteGrid").opacity(0.45))
+                        .background(Color("PaletteCard"))
                         .clipShape(Capsule())
                 }
                 Spacer()
             }
             .padding(.horizontal, 16)
 
-            Text("SETTINGS")
+            Text(s.settings)
                 .font(.system(.title, design: .rounded).weight(.semibold))
                 .foregroundStyle(Color("PaletteInk"))
 
             VStack(spacing: 16) {
-                Toggle("Music", isOn: $settings.musicEnabled)
+                Toggle(s.musicLabel, isOn: $settings.musicEnabled)
                     .toggleStyle(.switch)
-                Toggle("Haptics", isOn: $settings.hapticsEnabled)
+                Toggle(s.hapticsLabel, isOn: $settings.hapticsEnabled)
                     .toggleStyle(.switch)
                 HStack {
-                    Text("Theme")
+                    Text(s.themeLabel)
                     Spacer()
-                    Picker("Theme", selection: $settings.appearance) {
-                        ForEach(AppearanceMode.allCases) { mode in
-                            Text(mode.label).tag(mode)
-                        }
+                    Picker(s.themeLabel, selection: $settings.appearance) {
+                        Text(s.dayLabel).tag(AppearanceMode.day)
+                        Text(s.nightLabel).tag(AppearanceMode.night)
                     }
                     .pickerStyle(.segmented)
-                    .frame(maxWidth: 180)
+                    .frame(maxWidth: 200)
+                }
+                HStack {
+                    Text(s.languageLabel)
+                    Spacer()
+                    Picker(s.languageLabel, selection: $settings.language) {
+                        Text(s.turkishLabel).tag(Language.tr)
+                        Text(s.englishLabel).tag(Language.en)
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(maxWidth: 200)
                 }
             }
             .font(.system(.title3, design: .rounded))
@@ -48,9 +59,9 @@ struct SettingsView: View {
             Spacer()
 
             VStack(spacing: 6) {
-                Text("Tessera — Latin, a four-sided tile.")
-                Text("Riss — German, a tear.")
-                Text("Tear the tiles, four rows at a time.")
+                Text(s.aboutLine1)
+                Text(s.aboutLine2)
+                Text(s.aboutLine3)
             }
             .font(.system(.footnote, design: .rounded))
             .foregroundStyle(Color("PaletteInk").opacity(0.6))

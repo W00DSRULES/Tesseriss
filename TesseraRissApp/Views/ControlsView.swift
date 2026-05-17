@@ -43,7 +43,7 @@ struct ControlsView: View {
                 .font(.system(size: 28, weight: .semibold))
                 .foregroundStyle(Color("PaletteInk"))
                 .frame(maxWidth: .infinity, minHeight: 64)
-                .background(Color("PaletteGrid").opacity(0.35))
+                .background(Color("PaletteCard"))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
         }
     }
@@ -103,7 +103,7 @@ private struct HoldButton: View {
             .font(.system(.title2, design: .rounded).weight(.semibold))
             .foregroundStyle(Color("PaletteInk"))
             .frame(maxWidth: .infinity, minHeight: 80)
-            .background(Color("PaletteGrid").opacity(isHeld ? 0.55 : 0.35))
+            .background(Color("PaletteCard").opacity(isHeld ? 0.7 : 1.0))
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .contentShape(Rectangle())
             .gesture(

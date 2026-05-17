@@ -21,6 +21,7 @@
 		77CF760C4BB81AFA4CB8E734 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48C93750E5D4BF58E5BAABAD /* SettingsStore.swift */; };
 		8A22CFB8C7E1AD3CAFB5286F /* Board.swift in Sources */ = {isa = PBXBuildFile; fileRef = A43CF52E6975BDDBBA453FF6 /* Board.swift */; };
 		916F9E3334E03B92430FAC6F /* Tetromino.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31635F701FDD95821842C25A /* Tetromino.swift */; };
+		95E120D98BDE594E90BD4F6B /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04D29AF16C62BEF87D1F2F9 /* Strings.swift */; };
 		96DBF185D315D3FC6BF02062 /* line_clear.wav in Resources */ = {isa = PBXBuildFile; fileRef = F566574B0C52EB4FFA02007B /* line_clear.wav */; };
 		AFB80400F8FBCB63142C5D72 /* HapticController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA6A11AC1DD68838F5660838 /* HapticController.swift */; };
 		B7456B373E2E00DDA2153472 /* GameEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A445A2933A62CB03FB38C3 /* GameEngine.swift */; };
@@ -51,6 +52,7 @@
 		ACE0246310A99557245CAA3E /* ControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlsView.swift; sourceTree = "<group>"; };
 		ADA88191385244C103FFD11B /* TesseraRiss.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TesseraRiss.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AEB01D4CCDA2D9C23B3216FD /* GameOverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverView.swift; sourceTree = "<group>"; };
+		C04D29AF16C62BEF87D1F2F9 /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
 		C7A445A2933A62CB03FB38C3 /* GameEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameEngine.swift; sourceTree = "<group>"; };
 		D408E71809E27AE889CE9BDB /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		DA6A11AC1DD68838F5660838 /* HapticController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticController.swift; sourceTree = "<group>"; };
@@ -112,6 +114,7 @@
 				DA6A11AC1DD68838F5660838 /* HapticController.swift */,
 				67C3B6E21A1EE4847A6500A3 /* HighscoreStore.swift */,
 				48C93750E5D4BF58E5BAABAD /* SettingsStore.swift */,
+				C04D29AF16C62BEF87D1F2F9 /* Strings.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -233,6 +236,7 @@
 				100DA6A4B55E6419A3F8ED5C /* Scoring.swift in Sources */,
 				77CF760C4BB81AFA4CB8E734 /* SettingsStore.swift in Sources */,
 				DE21A6FA95C29E26DB7748D2 /* SettingsView.swift in Sources */,
+				95E120D98BDE594E90BD4F6B /* Strings.swift in Sources */,
 				5E880052C29903F6D8A332C6 /* TesseraRissApp.swift in Sources */,
 				916F9E3334E03B92430FAC6F /* Tetromino.swift in Sources */,
 			);

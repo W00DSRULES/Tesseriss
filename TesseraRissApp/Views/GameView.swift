@@ -5,6 +5,8 @@ struct GameView: View {
     @EnvironmentObject var settings: SettingsStore
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
+    private var s: Strings { settings.strings }
+
     var body: some View {
         ZStack {
             VStack(spacing: 12) {
@@ -23,7 +25,7 @@ struct GameView: View {
             }
             .padding(.top, 8)
             if engine.phase == .paused {
-                Color.black.opacity(0.15).ignoresSafeArea()
+                Color.black.opacity(0.25).ignoresSafeArea()
                 pausedOverlay
             }
         }
@@ -37,12 +39,12 @@ struct GameView: View {
     private var header: some View {
         HStack {
             Button(action: { engine.returnToMenu() }) {
-                Text("MENU")
+                Text(s.menu)
                     .font(.system(.caption, design: .rounded).weight(.semibold))
-                    .foregroundStyle(Color("PaletteInk").opacity(0.7))
+                    .foregroundStyle(Color("PaletteInk").opacity(0.8))
                     .padding(.vertical, 6)
                     .padding(.horizontal, 12)
-                    .background(Color("PaletteGrid").opacity(0.45))
+                    .background(Color("PaletteCard"))
                     .clipShape(Capsule())
             }
             Spacer()
@@ -51,9 +53,9 @@ struct GameView: View {
             }) {
                 Image(systemName: "pause.fill")
                     .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(Color("PaletteInk").opacity(engine.phase == .paused ? 0.3 : 0.7))
+                    .foregroundStyle(Color("PaletteInk").opacity(engine.phase == .paused ? 0.3 : 0.8))
                     .frame(width: 32, height: 32)
-                    .background(Color("PaletteGrid").opacity(engine.phase == .paused ? 0.2 : 0.45))
+                    .background(Color("PaletteCard"))
                     .clipShape(Capsule())
             }
             .disabled(engine.phase == .paused)
@@ -63,11 +65,11 @@ struct GameView: View {
 
     private var sidebar: some View {
         VStack(alignment: .leading, spacing: 16) {
-            NextPieceView(kind: engine.nextKind)
+            NextPieceView(kind: engine.nextKind, label: s.next)
             VStack(alignment: .leading, spacing: 8) {
-                statRow(label: "SCORE", value: "\(engine.score)")
-                statRow(label: "LEVEL", value: "\(engine.level)")
-                statRow(label: "LINES", value: "\(engine.lines)")
+                statRow(label: s.score, value: "\(engine.score)")
+                statRow(label: s.level, value: "\(engine.level)")
+                statRow(label: s.lines, value: "\(engine.lines)")
             }
         }
         .frame(maxWidth: 100, alignment: .leading)
@@ -86,13 +88,13 @@ struct GameView: View {
 
     private var pausedOverlay: some View {
         VStack(spacing: 20) {
-            Text("PAUSED")
+            Text(s.paused)
                 .font(.system(.title, design: .rounded).weight(.semibold))
                 .foregroundStyle(Color("PaletteInk"))
             Button(action: { engine.togglePause() }) {
                 HStack(spacing: 10) {
                     Image(systemName: "play.fill")
-                    Text("RESUME")
+                    Text(s.resume)
                 }
                 .font(.system(.title3, design: .rounded).weight(.semibold))
                 .foregroundStyle(Color("PaletteBackground"))
@@ -104,7 +106,7 @@ struct GameView: View {
         }
         .padding(.vertical, 24)
         .padding(.horizontal, 36)
-        .background(Color("PaletteBackground"))
+        .background(Color("PaletteCard"))
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
             RoundedRectangle(cornerRadius: 16)

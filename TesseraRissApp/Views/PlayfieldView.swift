@@ -45,10 +45,11 @@ struct PlayfieldView: View {
 
 struct NextPieceView: View {
     let kind: PieceKind?
+    let label: String
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("NEXT")
+            Text(label)
                 .font(.system(.caption, design: .rounded).weight(.semibold))
                 .foregroundStyle(Color("PaletteInk").opacity(0.7))
             ZStack {

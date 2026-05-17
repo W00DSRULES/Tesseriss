@@ -9,12 +9,18 @@ enum AppearanceMode: String, CaseIterable, Identifiable {
     var label: String { self == .day ? "Day" : "Night" }
 }
 
+enum Language: String, CaseIterable, Identifiable {
+    case tr, en
+    var id: String { rawValue }
+}
+
 final class SettingsStore: ObservableObject {
     static let shared = SettingsStore()
 
     private let musicKey = "tesserariss.settings.music"
     private let hapticsKey = "tesserariss.settings.haptics"
     private let appearanceKey = "tesserariss.settings.appearance"
+    private let languageKey = "tesserariss.settings.language"
 
     @Published var musicEnabled: Bool {
         didSet { defaults.set(musicEnabled, forKey: musicKey) }
@@ -28,6 +34,12 @@ final class SettingsStore: ObservableObject {
         didSet { defaults.set(appearance.rawValue, forKey: appearanceKey) }
     }
 
+    @Published var language: Language {
+        didSet { defaults.set(language.rawValue, forKey: languageKey) }
+    }
+
+    var strings: Strings { Strings.current(for: language) }
+
     private let defaults: UserDefaults
 
     init(defaults: UserDefaults = .standard) {
@@ -35,9 +47,12 @@ final class SettingsStore: ObservableObject {
         if defaults.object(forKey: musicKey) == nil { defaults.set(true, forKey: musicKey) }
         if defaults.object(forKey: hapticsKey) == nil { defaults.set(true, forKey: hapticsKey) }
         if defaults.object(forKey: appearanceKey) == nil { defaults.set(AppearanceMode.day.rawValue, forKey: appearanceKey) }
+        if defaults.object(forKey: languageKey) == nil { defaults.set(Language.tr.rawValue, forKey: languageKey) }
         self.musicEnabled = defaults.bool(forKey: musicKey)
         self.hapticsEnabled = defaults.bool(forKey: hapticsKey)
-        let raw = defaults.string(forKey: appearanceKey) ?? AppearanceMode.day.rawValue
-        self.appearance = AppearanceMode(rawValue: raw) ?? .day
+        let araw = defaults.string(forKey: appearanceKey) ?? AppearanceMode.day.rawValue
+        self.appearance = AppearanceMode(rawValue: araw) ?? .day
+        let lraw = defaults.string(forKey: languageKey) ?? Language.tr.rawValue
+        self.language = Language(rawValue: lraw) ?? .tr
     }
 }
