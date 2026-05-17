@@ -13,7 +13,7 @@ struct SettingsView: View {
                         .foregroundStyle(Color("PaletteInk").opacity(0.7))
                         .padding(.vertical, 6)
                         .padding(.horizontal, 12)
-                        .background(Color("PaletteGrid"))
+                        .background(Color("PaletteGrid").opacity(0.45))
                         .clipShape(Capsule())
                 }
                 Spacer()
@@ -29,6 +29,17 @@ struct SettingsView: View {
                     .toggleStyle(.switch)
                 Toggle("Haptics", isOn: $settings.hapticsEnabled)
                     .toggleStyle(.switch)
+                HStack {
+                    Text("Theme")
+                    Spacer()
+                    Picker("Theme", selection: $settings.appearance) {
+                        ForEach(AppearanceMode.allCases) { mode in
+                            Text(mode.label).tag(mode)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(maxWidth: 180)
+                }
             }
             .font(.system(.title3, design: .rounded))
             .foregroundStyle(Color("PaletteInk"))

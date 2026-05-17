@@ -15,7 +15,7 @@ struct ControlsView: View {
         VStack(spacing: 14) {
             HStack {
                 Spacer()
-                bigButton("ROTATE") { engine.rotateCW() }
+                iconButton(systemName: "arrow.clockwise") { engine.rotateCW() }
                     .frame(maxWidth: 200)
                 Spacer()
             }
@@ -26,7 +26,7 @@ struct ControlsView: View {
             }
             HStack {
                 Spacer()
-                bigButton("DROP") { engine.hardDrop() }
+                iconButton(systemName: "chevron.down.2") { engine.hardDrop() }
                     .frame(maxWidth: 200)
                 Spacer()
             }
@@ -34,16 +34,16 @@ struct ControlsView: View {
         .padding(.horizontal, 16)
     }
 
-    private func bigButton(_ title: String, action: @escaping () -> Void) -> some View {
+    private func iconButton(systemName: String, action: @escaping () -> Void) -> some View {
         Button(action: {
             engine.haptics.light(enabled: settings.hapticsEnabled)
             action()
         }) {
-            Text(title)
-                .font(.system(.title3, design: .rounded).weight(.semibold))
+            Image(systemName: systemName)
+                .font(.system(size: 28, weight: .semibold))
                 .foregroundStyle(Color("PaletteInk"))
                 .frame(maxWidth: .infinity, minHeight: 64)
-                .background(Color("PaletteGrid"))
+                .background(Color("PaletteGrid").opacity(0.35))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
         }
     }
@@ -103,7 +103,7 @@ private struct HoldButton: View {
             .font(.system(.title2, design: .rounded).weight(.semibold))
             .foregroundStyle(Color("PaletteInk"))
             .frame(maxWidth: .infinity, minHeight: 80)
-            .background(Color("PaletteGrid"))
+            .background(Color("PaletteGrid").opacity(isHeld ? 0.55 : 0.35))
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .contentShape(Rectangle())
             .gesture(

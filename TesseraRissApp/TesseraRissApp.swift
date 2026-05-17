@@ -6,14 +6,16 @@ struct TesseraRissApp: App {
     @StateObject private var engine = GameEngine()
     @StateObject private var settings = SettingsStore.shared
     @StateObject private var highscore = HighscoreStore.shared
+    @AppStorage("tesserariss.settings.appearance") private var appearanceRaw: String = AppearanceMode.day.rawValue
 
     var body: some Scene {
+        let appearance = AppearanceMode(rawValue: appearanceRaw) ?? .day
         WindowGroup {
             RootView()
                 .environmentObject(engine)
                 .environmentObject(settings)
                 .environmentObject(highscore)
-                .preferredColorScheme(.light)
+                .preferredColorScheme(appearance.colorScheme)
         }
         .onChange(of: scenePhase) { _, phase in
             if phase != .active {

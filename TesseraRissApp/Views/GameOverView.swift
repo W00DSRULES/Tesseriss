@@ -23,7 +23,7 @@ struct GameOverView: View {
                         .foregroundStyle(Color("PieceL"))
                         .padding(.horizontal, 12)
                         .padding(.vertical, 4)
-                        .background(Color("PaletteGrid"))
+                        .background(Color("PaletteGrid").opacity(0.35))
                         .clipShape(Capsule())
                 }
             }
@@ -42,7 +42,7 @@ struct GameOverView: View {
                         .font(.system(.body, design: .rounded).weight(.medium))
                         .foregroundStyle(Color("PaletteInk"))
                         .frame(maxWidth: .infinity, minHeight: 56)
-                        .background(Color("PaletteGrid"))
+                        .background(Color("PaletteGrid").opacity(0.35))
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
             }

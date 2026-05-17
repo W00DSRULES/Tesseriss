@@ -37,7 +37,7 @@ struct MenuView: View {
                         .font(.system(.title3, design: .rounded).weight(.medium))
                         .foregroundStyle(Color("PaletteInk"))
                         .frame(maxWidth: .infinity, minHeight: 56)
-                        .background(Color("PaletteGrid"))
+                        .background(Color("PaletteGrid").opacity(0.35))
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
             }

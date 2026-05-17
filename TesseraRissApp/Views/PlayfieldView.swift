@@ -11,7 +11,7 @@ struct PlayfieldView: View {
             let height = cell * CGFloat(Board.height)
             ZStack(alignment: .topLeading) {
                 Rectangle()
-                    .fill(Color("PaletteGrid").opacity(0.4))
+                    .fill(Color("PaletteBackground"))
                     .frame(width: width, height: height)
 
                 ForEach(0..<Board.height, id: \.self) { y in
@@ -26,7 +26,7 @@ struct PlayfieldView: View {
             .frame(width: width, height: height)
             .overlay(
                 Rectangle()
-                    .stroke(Color("PaletteInk").opacity(0.4), lineWidth: 2)
+                    .stroke(Color("PaletteInk").opacity(0.55), lineWidth: 2)
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -52,7 +52,8 @@ struct NextPieceView: View {
                 .font(.system(.caption, design: .rounded).weight(.semibold))
                 .foregroundStyle(Color("PaletteInk").opacity(0.7))
             ZStack {
-                Rectangle().fill(Color("PaletteGrid").opacity(0.4))
+                Rectangle().fill(Color("PaletteBackground"))
+                Rectangle().strokeBorder(Color("PaletteGrid"), lineWidth: 0.5)
                 if let kind {
                     let cells = Tetromino.cells(kind: kind, rotation: 0)
                     let minX = cells.map(\.x).min() ?? 0
@@ -81,7 +82,7 @@ struct NextPieceView: View {
                 }
             }
             .frame(width: 80, height: 60)
-            .overlay(Rectangle().stroke(Color("PaletteInk").opacity(0.3), lineWidth: 1))
+            .overlay(Rectangle().stroke(Color("PaletteInk").opacity(0.45), lineWidth: 1))
         }
     }
 }
