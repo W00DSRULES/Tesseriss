@@ -36,8 +36,6 @@ targets:
         UILaunchScreen:
           UIColorName: PaletteBackground
         UIRequiresFullScreen: true
-        UIDeviceFamily:
-          - 1
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
         UIStatusBarStyle: UIStatusBarStyleDefault
