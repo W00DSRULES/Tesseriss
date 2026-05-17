@@ -28,6 +28,7 @@ struct Strings {
     let languageLabel: String
     let turkishLabel: String
     let englishLabel: String
+    let ghostLabel: String
     let aboutLine1: String
     let aboutLine2: String
     let aboutLine3: String
@@ -60,6 +61,7 @@ struct Strings {
         languageLabel: "🌐 Dil",
         turkishLabel: "Türkçe",
         englishLabel: "English",
+        ghostLabel: "👻 Gölge",
         aboutLine1: "Tessera — Latince, dört kenarlı bir karo.",
         aboutLine2: "Riss — Almanca, bir yırtık.",
         aboutLine3: "Karoları yırt, dört satır birden."
@@ -93,6 +95,7 @@ struct Strings {
         languageLabel: "🌐 Language",
         turkishLabel: "Türkçe",
         englishLabel: "English",
+        ghostLabel: "👻 Shadow",
         aboutLine1: "Tessera — Latin, a four-sided tile.",
         aboutLine2: "Riss — German, a tear.",
         aboutLine3: "Tear the tiles, four rows at a time."

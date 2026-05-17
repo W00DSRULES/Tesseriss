@@ -31,6 +31,8 @@ struct SettingsView: View {
                     .toggleStyle(.switch)
                 Toggle(s.hapticsLabel, isOn: $settings.hapticsEnabled)
                     .toggleStyle(.switch)
+                Toggle(s.ghostLabel, isOn: $settings.ghostEnabled)
+                    .toggleStyle(.switch)
                 HStack {
                     Text(s.themeLabel)
                     Spacer()

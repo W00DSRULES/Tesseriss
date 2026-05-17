@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PlayfieldView: View {
     @EnvironmentObject var engine: GameEngine
+    @EnvironmentObject var settings: SettingsStore
 
     var body: some View {
         GeometryReader { geo in
@@ -39,7 +40,7 @@ struct PlayfieldView: View {
                 return (piece.kind, .solid)
             }
         }
-        if let ghost = engine.ghostPiece {
+        if settings.ghostEnabled, let ghost = engine.ghostPiece {
             for c in ghost.cells where c.x == x && c.y == y {
                 return (ghost.kind, .ghost)
             }

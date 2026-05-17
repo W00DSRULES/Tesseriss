@@ -54,3 +54,33 @@ targets:
         GENERATE_INFOPLIST_FILE: NO
         SWIFT_OPTIMIZATION_LEVEL: "-Onone"
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+        ENABLE_TESTABILITY: YES
+
+  TesseraRissTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: TesseraRissTests
+    dependencies:
+      - target: TesseraRiss
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: de.maindtec.TesseraRissTests
+        GENERATE_INFOPLIST_FILE: YES
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGNING_REQUIRED: NO
+        CODE_SIGNING_ALLOWED: NO
+        SWIFT_VERSION: "5.0"
+
+schemes:
+  TesseraRiss:
+    build:
+      targets:
+        TesseraRiss: all
+        TesseraRissTests: [test]
+    test:
+      targets:
+        - TesseraRissTests
+      gatherCoverageData: false

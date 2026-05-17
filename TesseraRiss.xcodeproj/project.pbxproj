@@ -9,16 +9,20 @@
 /* Begin PBXBuildFile section */
 		0081BEC126FE49A2DC77BD26 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A970B4B2ACEC4F395197E0 /* MenuView.swift */; };
 		04A84CC7D43C56F99B5C74A6 /* GameOverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEB01D4CCDA2D9C23B3216FD /* GameOverView.swift */; };
+		0F367134923726E972109C70 /* RandomizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D0396B5B829C3E2616BF6ED /* RandomizerTests.swift */; };
 		100DA6A4B55E6419A3F8ED5C /* Scoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D3BE0DEDF5E1EC5E8E80995 /* Scoring.swift */; };
 		1295FFAC9A46E21E20FFCB51 /* PlayfieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE260876E8E93DD9DF438FA /* PlayfieldView.swift */; };
 		17BE28D17EAFE4FEE3166B59 /* ControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE0246310A99557245CAA3E /* ControlsView.swift */; };
+		221B8CC4A3C59C3700D39C00 /* BoardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA49E94ADFD29F5DC31D28AE /* BoardTests.swift */; };
 		245B0C2AC63D28B2E3DBCB57 /* tetris.wav in Resources */ = {isa = PBXBuildFile; fileRef = 4EC8F26374E2A932D352B8F6 /* tetris.wav */; };
 		2B3CCCF35A0DB88065EF361B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 558FAE98FB46368FB7EEA511 /* Assets.xcassets */; };
 		2D0B38BBCB920A7E54D07DF0 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370BD6529416BF2058E6E7FE /* GameState.swift */; };
 		37C16861D9D4E7A33F368A38 /* CellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C602A1AE8E5A13D7CC20F0 /* CellView.swift */; };
 		5E880052C29903F6D8A332C6 /* TesseraRissApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B2F2C600A38285F2FB050F /* TesseraRissApp.swift */; };
 		5EC856CCD631E8B9A690B7C9 /* korobeiniki.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3E1EE348A50DF86A88DA399F /* korobeiniki.wav */; };
+		7044766BDE27FFA4AB5DCD70 /* TetrominoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8912D50AF7626261A6EFC201 /* TetrominoTests.swift */; };
 		77CF760C4BB81AFA4CB8E734 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48C93750E5D4BF58E5BAABAD /* SettingsStore.swift */; };
+		85B1FE7AB558A4FF16F9878B /* ScoringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24FFD934373ACAD7C7BBFC52 /* ScoringTests.swift */; };
 		8A22CFB8C7E1AD3CAFB5286F /* Board.swift in Sources */ = {isa = PBXBuildFile; fileRef = A43CF52E6975BDDBBA453FF6 /* Board.swift */; };
 		916F9E3334E03B92430FAC6F /* Tetromino.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31635F701FDD95821842C25A /* Tetromino.swift */; };
 		95E120D98BDE594E90BD4F6B /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04D29AF16C62BEF87D1F2F9 /* Strings.swift */; };
@@ -32,12 +36,24 @@
 		ECD05C7549F757BAE6E5E09E /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36B868C6BE85BD7315B25C96 /* GameView.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		A8FDB5C50D12F093E0340FA7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 59CFD7B02B9D96E7796DF5A1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DF332BCF7316560AF0775840;
+			remoteInfo = TesseraRiss;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		08C602A1AE8E5A13D7CC20F0 /* CellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellView.swift; sourceTree = "<group>"; };
+		24FFD934373ACAD7C7BBFC52 /* ScoringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoringTests.swift; sourceTree = "<group>"; };
 		31635F701FDD95821842C25A /* Tetromino.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tetromino.swift; sourceTree = "<group>"; };
 		36B868C6BE85BD7315B25C96 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		370BD6529416BF2058E6E7FE /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
 		399A8C6B88DC2D786ED4E572 /* Randomizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Randomizer.swift; sourceTree = "<group>"; };
+		3D0396B5B829C3E2616BF6ED /* RandomizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomizerTests.swift; sourceTree = "<group>"; };
 		3E1EE348A50DF86A88DA399F /* korobeiniki.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = korobeiniki.wav; sourceTree = "<group>"; };
 		48C93750E5D4BF58E5BAABAD /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		4EC8F26374E2A932D352B8F6 /* tetris.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = tetris.wav; sourceTree = "<group>"; };
@@ -46,7 +62,9 @@
 		67C3B6E21A1EE4847A6500A3 /* HighscoreStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighscoreStore.swift; sourceTree = "<group>"; };
 		7DE260876E8E93DD9DF438FA /* PlayfieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayfieldView.swift; sourceTree = "<group>"; };
 		85A970B4B2ACEC4F395197E0 /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
+		8912D50AF7626261A6EFC201 /* TetrominoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TetrominoTests.swift; sourceTree = "<group>"; };
 		8D3BE0DEDF5E1EC5E8E80995 /* Scoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scoring.swift; sourceTree = "<group>"; };
+		A28F07A00F4CC2D39B75CF5E /* TesseraRissTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = TesseraRissTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A43CF52E6975BDDBBA453FF6 /* Board.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Board.swift; sourceTree = "<group>"; };
 		A82E84022440E16E2BB93FC6 /* AudioController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioController.swift; sourceTree = "<group>"; };
 		ACE0246310A99557245CAA3E /* ControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlsView.swift; sourceTree = "<group>"; };
@@ -56,6 +74,7 @@
 		C7A445A2933A62CB03FB38C3 /* GameEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameEngine.swift; sourceTree = "<group>"; };
 		D408E71809E27AE889CE9BDB /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		DA6A11AC1DD68838F5660838 /* HapticController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticController.swift; sourceTree = "<group>"; };
+		EA49E94ADFD29F5DC31D28AE /* BoardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardTests.swift; sourceTree = "<group>"; };
 		F566574B0C52EB4FFA02007B /* line_clear.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = line_clear.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -75,6 +94,7 @@
 			isa = PBXGroup;
 			children = (
 				ADA88191385244C103FFD11B /* TesseraRiss.app */,
+				A28F07A00F4CC2D39B75CF5E /* TesseraRissTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -83,6 +103,7 @@
 			isa = PBXGroup;
 			children = (
 				F9B7B2E666F6E7695AA11BE7 /* TesseraRissApp */,
+				A54659031C0276E08595D3DB /* TesseraRissTests */,
 				0D57CBBC84CE656B03412E54 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -96,6 +117,17 @@
 				8D3BE0DEDF5E1EC5E8E80995 /* Scoring.swift */,
 			);
 			path = Engine;
+			sourceTree = "<group>";
+		};
+		A54659031C0276E08595D3DB /* TesseraRissTests */ = {
+			isa = PBXGroup;
+			children = (
+				EA49E94ADFD29F5DC31D28AE /* BoardTests.swift */,
+				3D0396B5B829C3E2616BF6ED /* RandomizerTests.swift */,
+				24FFD934373ACAD7C7BBFC52 /* ScoringTests.swift */,
+				8912D50AF7626261A6EFC201 /* TetrominoTests.swift */,
+			);
+			path = TesseraRissTests;
 			sourceTree = "<group>";
 		};
 		C849F17E650BEF7B4E65082E /* Models */ = {
@@ -149,6 +181,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		C523486FB599E689DF91EBAF /* TesseraRissTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 37D7B7BB0BEEFEB957B16C5C /* Build configuration list for PBXNativeTarget "TesseraRissTests" */;
+			buildPhases = (
+				7790733E02A07F72674D76D9 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E77870363F0155DA3480D68C /* PBXTargetDependency */,
+			);
+			name = TesseraRissTests;
+			packageProductDependencies = (
+			);
+			productName = TesseraRissTests;
+			productReference = A28F07A00F4CC2D39B75CF5E /* TesseraRissTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		DF332BCF7316560AF0775840 /* TesseraRiss */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 05B63E9A077909C34DE3C75C /* Build configuration list for PBXNativeTarget "TesseraRiss" */;
@@ -197,6 +247,7 @@
 			projectRoot = "";
 			targets = (
 				DF332BCF7316560AF0775840 /* TesseraRiss */,
+				C523486FB599E689DF91EBAF /* TesseraRissTests */,
 			);
 		};
 /* End PBXProject section */
@@ -216,6 +267,17 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		7790733E02A07F72674D76D9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				221B8CC4A3C59C3700D39C00 /* BoardTests.swift in Sources */,
+				0F367134923726E972109C70 /* RandomizerTests.swift in Sources */,
+				85B1FE7AB558A4FF16F9878B /* ScoringTests.swift in Sources */,
+				7044766BDE27FFA4AB5DCD70 /* TetrominoTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		926D8A487F23566C9496BD9A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -244,7 +306,37 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		E77870363F0155DA3480D68C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DF332BCF7316560AF0775840 /* TesseraRiss */;
+			targetProxy = A8FDB5C50D12F093E0340FA7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		007F538B65BFD1234FFD04EF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = de.maindtec.TesseraRissTests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TesseraRiss.app/TesseraRiss";
+			};
+			name = Release;
+		};
 		7F7EF6F432DCD9F2EB6E09A0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -254,6 +346,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = "";
+				ENABLE_TESTABILITY = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = TesseraRissApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -344,6 +437,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = "";
+				ENABLE_TESTABILITY = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = TesseraRissApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -357,6 +451,28 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		D80B8F64C0E14FB4BBCA1BF1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = de.maindtec.TesseraRissTests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TesseraRiss.app/TesseraRiss";
 			};
 			name = Debug;
 		};
@@ -426,6 +542,15 @@
 			buildConfigurations = (
 				BC32135F7A41A8AAFEE381A7 /* Debug */,
 				7F7EF6F432DCD9F2EB6E09A0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		37D7B7BB0BEEFEB957B16C5C /* Build configuration list for PBXNativeTarget "TesseraRissTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D80B8F64C0E14FB4BBCA1BF1 /* Debug */,
+				007F538B65BFD1234FFD04EF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
