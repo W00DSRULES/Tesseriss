@@ -1,0 +1,441 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0081BEC126FE49A2DC77BD26 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85A970B4B2ACEC4F395197E0 /* MenuView.swift */; };
+		04A84CC7D43C56F99B5C74A6 /* GameOverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEB01D4CCDA2D9C23B3216FD /* GameOverView.swift */; };
+		100DA6A4B55E6419A3F8ED5C /* Scoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D3BE0DEDF5E1EC5E8E80995 /* Scoring.swift */; };
+		1295FFAC9A46E21E20FFCB51 /* PlayfieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE260876E8E93DD9DF438FA /* PlayfieldView.swift */; };
+		17BE28D17EAFE4FEE3166B59 /* ControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE0246310A99557245CAA3E /* ControlsView.swift */; };
+		245B0C2AC63D28B2E3DBCB57 /* tetris.wav in Resources */ = {isa = PBXBuildFile; fileRef = 4EC8F26374E2A932D352B8F6 /* tetris.wav */; };
+		2B3CCCF35A0DB88065EF361B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 558FAE98FB46368FB7EEA511 /* Assets.xcassets */; };
+		2D0B38BBCB920A7E54D07DF0 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370BD6529416BF2058E6E7FE /* GameState.swift */; };
+		37C16861D9D4E7A33F368A38 /* CellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C602A1AE8E5A13D7CC20F0 /* CellView.swift */; };
+		5E880052C29903F6D8A332C6 /* TesseraRissApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B2F2C600A38285F2FB050F /* TesseraRissApp.swift */; };
+		5EC856CCD631E8B9A690B7C9 /* korobeiniki.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3E1EE348A50DF86A88DA399F /* korobeiniki.wav */; };
+		77CF760C4BB81AFA4CB8E734 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48C93750E5D4BF58E5BAABAD /* SettingsStore.swift */; };
+		8A22CFB8C7E1AD3CAFB5286F /* Board.swift in Sources */ = {isa = PBXBuildFile; fileRef = A43CF52E6975BDDBBA453FF6 /* Board.swift */; };
+		916F9E3334E03B92430FAC6F /* Tetromino.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31635F701FDD95821842C25A /* Tetromino.swift */; };
+		96DBF185D315D3FC6BF02062 /* line_clear.wav in Resources */ = {isa = PBXBuildFile; fileRef = F566574B0C52EB4FFA02007B /* line_clear.wav */; };
+		AFB80400F8FBCB63142C5D72 /* HapticController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA6A11AC1DD68838F5660838 /* HapticController.swift */; };
+		B7456B373E2E00DDA2153472 /* GameEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A445A2933A62CB03FB38C3 /* GameEngine.swift */; };
+		C9E4238B958BA92024754798 /* Randomizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 399A8C6B88DC2D786ED4E572 /* Randomizer.swift */; };
+		D298A76288253BC7682EC1FA /* HighscoreStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67C3B6E21A1EE4847A6500A3 /* HighscoreStore.swift */; };
+		DE21A6FA95C29E26DB7748D2 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D408E71809E27AE889CE9BDB /* SettingsView.swift */; };
+		EB7548834AD2AA5FC220C133 /* AudioController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A82E84022440E16E2BB93FC6 /* AudioController.swift */; };
+		ECD05C7549F757BAE6E5E09E /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36B868C6BE85BD7315B25C96 /* GameView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		08C602A1AE8E5A13D7CC20F0 /* CellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellView.swift; sourceTree = "<group>"; };
+		31635F701FDD95821842C25A /* Tetromino.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tetromino.swift; sourceTree = "<group>"; };
+		36B868C6BE85BD7315B25C96 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		370BD6529416BF2058E6E7FE /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
+		399A8C6B88DC2D786ED4E572 /* Randomizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Randomizer.swift; sourceTree = "<group>"; };
+		3E1EE348A50DF86A88DA399F /* korobeiniki.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = korobeiniki.wav; sourceTree = "<group>"; };
+		48C93750E5D4BF58E5BAABAD /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		4EC8F26374E2A932D352B8F6 /* tetris.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = tetris.wav; sourceTree = "<group>"; };
+		558FAE98FB46368FB7EEA511 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		58B2F2C600A38285F2FB050F /* TesseraRissApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TesseraRissApp.swift; sourceTree = "<group>"; };
+		67C3B6E21A1EE4847A6500A3 /* HighscoreStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighscoreStore.swift; sourceTree = "<group>"; };
+		7DE260876E8E93DD9DF438FA /* PlayfieldView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayfieldView.swift; sourceTree = "<group>"; };
+		85A970B4B2ACEC4F395197E0 /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
+		8D3BE0DEDF5E1EC5E8E80995 /* Scoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scoring.swift; sourceTree = "<group>"; };
+		A43CF52E6975BDDBBA453FF6 /* Board.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Board.swift; sourceTree = "<group>"; };
+		A82E84022440E16E2BB93FC6 /* AudioController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioController.swift; sourceTree = "<group>"; };
+		ACE0246310A99557245CAA3E /* ControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlsView.swift; sourceTree = "<group>"; };
+		ADA88191385244C103FFD11B /* TesseraRiss.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = TesseraRiss.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AEB01D4CCDA2D9C23B3216FD /* GameOverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverView.swift; sourceTree = "<group>"; };
+		C7A445A2933A62CB03FB38C3 /* GameEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameEngine.swift; sourceTree = "<group>"; };
+		D408E71809E27AE889CE9BDB /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		DA6A11AC1DD68838F5660838 /* HapticController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticController.swift; sourceTree = "<group>"; };
+		F566574B0C52EB4FFA02007B /* line_clear.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = line_clear.wav; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		07305B11A4D2178847589125 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				558FAE98FB46368FB7EEA511 /* Assets.xcassets */,
+				3E1EE348A50DF86A88DA399F /* korobeiniki.wav */,
+				F566574B0C52EB4FFA02007B /* line_clear.wav */,
+				4EC8F26374E2A932D352B8F6 /* tetris.wav */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		0D57CBBC84CE656B03412E54 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				ADA88191385244C103FFD11B /* TesseraRiss.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		362273D09B5A49A5E60CAB88 = {
+			isa = PBXGroup;
+			children = (
+				F9B7B2E666F6E7695AA11BE7 /* TesseraRissApp */,
+				0D57CBBC84CE656B03412E54 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		58A6D50CE31E485F295CF226 /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				C7A445A2933A62CB03FB38C3 /* GameEngine.swift */,
+				370BD6529416BF2058E6E7FE /* GameState.swift */,
+				399A8C6B88DC2D786ED4E572 /* Randomizer.swift */,
+				8D3BE0DEDF5E1EC5E8E80995 /* Scoring.swift */,
+			);
+			path = Engine;
+			sourceTree = "<group>";
+		};
+		C849F17E650BEF7B4E65082E /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A43CF52E6975BDDBBA453FF6 /* Board.swift */,
+				31635F701FDD95821842C25A /* Tetromino.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		EE8061B8B108BF3F133D12BB /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A82E84022440E16E2BB93FC6 /* AudioController.swift */,
+				DA6A11AC1DD68838F5660838 /* HapticController.swift */,
+				67C3B6E21A1EE4847A6500A3 /* HighscoreStore.swift */,
+				48C93750E5D4BF58E5BAABAD /* SettingsStore.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		EEE938BCC3900013411811B2 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				08C602A1AE8E5A13D7CC20F0 /* CellView.swift */,
+				ACE0246310A99557245CAA3E /* ControlsView.swift */,
+				AEB01D4CCDA2D9C23B3216FD /* GameOverView.swift */,
+				36B868C6BE85BD7315B25C96 /* GameView.swift */,
+				85A970B4B2ACEC4F395197E0 /* MenuView.swift */,
+				7DE260876E8E93DD9DF438FA /* PlayfieldView.swift */,
+				D408E71809E27AE889CE9BDB /* SettingsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		F9B7B2E666F6E7695AA11BE7 /* TesseraRissApp */ = {
+			isa = PBXGroup;
+			children = (
+				58A6D50CE31E485F295CF226 /* Engine */,
+				C849F17E650BEF7B4E65082E /* Models */,
+				07305B11A4D2178847589125 /* Resources */,
+				EE8061B8B108BF3F133D12BB /* Services */,
+				EEE938BCC3900013411811B2 /* Views */,
+				58B2F2C600A38285F2FB050F /* TesseraRissApp.swift */,
+			);
+			path = TesseraRissApp;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		DF332BCF7316560AF0775840 /* TesseraRiss */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 05B63E9A077909C34DE3C75C /* Build configuration list for PBXNativeTarget "TesseraRiss" */;
+			buildPhases = (
+				926D8A487F23566C9496BD9A /* Sources */,
+				7FC7C97349D1139D1878D447 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TesseraRiss;
+			packageProductDependencies = (
+			);
+			productName = TesseraRiss;
+			productReference = ADA88191385244C103FFD11B /* TesseraRiss.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		59CFD7B02B9D96E7796DF5A1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					DF332BCF7316560AF0775840 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = FE58C61C8BC91A631ABD8208 /* Build configuration list for PBXProject "TesseraRiss" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 362273D09B5A49A5E60CAB88;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 0D57CBBC84CE656B03412E54 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				DF332BCF7316560AF0775840 /* TesseraRiss */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7FC7C97349D1139D1878D447 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2B3CCCF35A0DB88065EF361B /* Assets.xcassets in Resources */,
+				5EC856CCD631E8B9A690B7C9 /* korobeiniki.wav in Resources */,
+				96DBF185D315D3FC6BF02062 /* line_clear.wav in Resources */,
+				245B0C2AC63D28B2E3DBCB57 /* tetris.wav in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		926D8A487F23566C9496BD9A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EB7548834AD2AA5FC220C133 /* AudioController.swift in Sources */,
+				8A22CFB8C7E1AD3CAFB5286F /* Board.swift in Sources */,
+				37C16861D9D4E7A33F368A38 /* CellView.swift in Sources */,
+				17BE28D17EAFE4FEE3166B59 /* ControlsView.swift in Sources */,
+				B7456B373E2E00DDA2153472 /* GameEngine.swift in Sources */,
+				04A84CC7D43C56F99B5C74A6 /* GameOverView.swift in Sources */,
+				2D0B38BBCB920A7E54D07DF0 /* GameState.swift in Sources */,
+				ECD05C7549F757BAE6E5E09E /* GameView.swift in Sources */,
+				AFB80400F8FBCB63142C5D72 /* HapticController.swift in Sources */,
+				D298A76288253BC7682EC1FA /* HighscoreStore.swift in Sources */,
+				0081BEC126FE49A2DC77BD26 /* MenuView.swift in Sources */,
+				1295FFAC9A46E21E20FFCB51 /* PlayfieldView.swift in Sources */,
+				C9E4238B958BA92024754798 /* Randomizer.swift in Sources */,
+				100DA6A4B55E6419A3F8ED5C /* Scoring.swift in Sources */,
+				77CF760C4BB81AFA4CB8E734 /* SettingsStore.swift in Sources */,
+				DE21A6FA95C29E26DB7748D2 /* SettingsView.swift in Sources */,
+				5E880052C29903F6D8A332C6 /* TesseraRissApp.swift in Sources */,
+				916F9E3334E03B92430FAC6F /* Tetromino.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		7F7EF6F432DCD9F2EB6E09A0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = TesseraRissApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = de.maindtec.TesseraRiss;
+				PRODUCT_NAME = TesseraRiss;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		90A17875398C250C1886809F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		BC32135F7A41A8AAFEE381A7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = TesseraRissApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = de.maindtec.TesseraRiss;
+				PRODUCT_NAME = TesseraRiss;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		FF1579D365103F92DA1C5D57 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		05B63E9A077909C34DE3C75C /* Build configuration list for PBXNativeTarget "TesseraRiss" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC32135F7A41A8AAFEE381A7 /* Debug */,
+				7F7EF6F432DCD9F2EB6E09A0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		FE58C61C8BC91A631ABD8208 /* Build configuration list for PBXProject "TesseraRiss" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				90A17875398C250C1886809F /* Debug */,
+				FF1579D365103F92DA1C5D57 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 59CFD7B02B9D96E7796DF5A1 /* Project object */;
+}

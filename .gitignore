@@ -1,0 +1,20 @@
+## macOS
+.DS_Store
+
+## Xcode build / user data
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+
+## Swift Package Manager
+.swiftpm/
+Packages/
+
+## Logs / tmp
+*.log
+.idea/
