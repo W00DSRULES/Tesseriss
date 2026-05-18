@@ -69,10 +69,20 @@ LICENSE                           // MIT
 
 The repo ships an archive + upload pipeline that does not bake any team-specific values into git.
 
-1. `cp .env.local.example .env.local` and fill in your `TEAM_ID`, App Store Connect API key (`ASC_API_KEY_ID`, `ASC_API_ISSUER_ID`, `ASC_API_KEY_PATH`), and optionally `BUNDLE_ID` / `MARKETING_VERSION` / `BUILD_NUMBER`.
-2. Create the matching App ID + App Store Connect app record (bundle id must match).
-3. `./scripts/archive.sh` produces `build/Tesseriss.xcarchive` and `build/export/Tesseriss.ipa`.
-4. `./scripts/upload-testflight.sh` validates and uploads via `xcrun altool`.
+**One-time setup (web):**
+
+1. Enroll in the [Apple Developer Program](https://developer.apple.com/programs/enroll/) (skip if already enrolled).
+2. Create an App Store Connect API key at [Users and Access -> Integrations -> App Store Connect API](https://appstoreconnect.apple.com/access/integrations/api). Role `Developer` or `App Manager`. Download the `.p8` once (Apple never shows it again). Note the Key ID and Issuer ID.
+
+**Per-clone setup (CLI):**
+
+1. `cp .env.local.example .env.local` and fill in `TEAM_ID`, `BUNDLE_ID`, `ASC_API_KEY_ID`, `ASC_API_ISSUER_ID`, `ASC_API_KEY_PATH`, and optionally `MARKETING_VERSION` / `BUILD_NUMBER`.
+2. Save the `.p8` to the path you put in `ASC_API_KEY_PATH` (e.g. `./private_keys/AuthKey_XXXXXXXXXX.p8`).
+3. `./scripts/bootstrap-app.sh` — registers the Bundle ID, creates the App Store Connect app record, then archives and uploads to TestFlight. Idempotent: re-runs only do the missing steps.
+
+Or run the steps individually:
+- `./scripts/archive.sh` -> `build/Tesseriss.xcarchive` + `build/export/Tesseriss.ipa`.
+- `./scripts/upload-testflight.sh` -> validates and uploads via `xcrun altool`.
 
 The Release configuration in `project.yml` signs with `Apple Distribution` via automatic signing; the archive script injects `DEVELOPMENT_TEAM` and the build number at xcodebuild invocation time. Debug builds keep the original simulator-only no-signing path.
 
