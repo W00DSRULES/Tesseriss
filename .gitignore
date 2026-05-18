@@ -20,3 +20,10 @@ Packages/
 .idea/
 scheduled_tasks.lock
 .claude/
+
+## TestFlight / signing
+.env.local
+*.xcarchive
+*.ipa
+private_keys/
+**/AuthKey_*.p8

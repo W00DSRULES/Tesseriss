@@ -65,6 +65,17 @@ HANDOFF.md                        // current state + what needs manual action
 LICENSE                           // MIT
 ```
 
+## TestFlight / App Store
+
+The repo ships an archive + upload pipeline that does not bake any team-specific values into git.
+
+1. `cp .env.local.example .env.local` and fill in your `TEAM_ID`, App Store Connect API key (`ASC_API_KEY_ID`, `ASC_API_ISSUER_ID`, `ASC_API_KEY_PATH`), and optionally `BUNDLE_ID` / `MARKETING_VERSION` / `BUILD_NUMBER`.
+2. Create the matching App ID + App Store Connect app record (bundle id must match).
+3. `./scripts/archive.sh` produces `build/Tesseriss.xcarchive` and `build/export/Tesseriss.ipa`.
+4. `./scripts/upload-testflight.sh` validates and uploads via `xcrun altool`.
+
+The Release configuration in `project.yml` signs with `Apple Distribution` via automatic signing; the archive script injects `DEVELOPMENT_TEAM` and the build number at xcodebuild invocation time. Debug builds keep the original simulator-only no-signing path.
+
 ## License
 
 [MIT](LICENSE).
