@@ -18,6 +18,7 @@
 		2B3CCCF35A0DB88065EF361B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 558FAE98FB46368FB7EEA511 /* Assets.xcassets */; };
 		2D0B38BBCB920A7E54D07DF0 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370BD6529416BF2058E6E7FE /* GameState.swift */; };
 		37C16861D9D4E7A33F368A38 /* CellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C602A1AE8E5A13D7CC20F0 /* CellView.swift */; };
+		4DCF1C2FA0D49DA8D05B32D8 /* MusicPlaylist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5402056A8DDDD872C60821A9 /* MusicPlaylist.swift */; };
 		5E880052C29903F6D8A332C6 /* TesseraRissApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B2F2C600A38285F2FB050F /* TesseraRissApp.swift */; };
 		7044766BDE27FFA4AB5DCD70 /* TetrominoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8912D50AF7626261A6EFC201 /* TetrominoTests.swift */; };
 		77CF760C4BB81AFA4CB8E734 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48C93750E5D4BF58E5BAABAD /* SettingsStore.swift */; };
@@ -55,6 +56,7 @@
 		3D0396B5B829C3E2616BF6ED /* RandomizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomizerTests.swift; sourceTree = "<group>"; };
 		48C93750E5D4BF58E5BAABAD /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		4EC8F26374E2A932D352B8F6 /* tetris.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = tetris.wav; sourceTree = "<group>"; };
+		5402056A8DDDD872C60821A9 /* MusicPlaylist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicPlaylist.swift; sourceTree = "<group>"; };
 		558FAE98FB46368FB7EEA511 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		58B2F2C600A38285F2FB050F /* TesseraRissApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TesseraRissApp.swift; sourceTree = "<group>"; };
 		67C3B6E21A1EE4847A6500A3 /* HighscoreStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighscoreStore.swift; sourceTree = "<group>"; };
@@ -142,6 +144,7 @@
 				A82E84022440E16E2BB93FC6 /* AudioController.swift */,
 				DA6A11AC1DD68838F5660838 /* HapticController.swift */,
 				67C3B6E21A1EE4847A6500A3 /* HighscoreStore.swift */,
+				5402056A8DDDD872C60821A9 /* MusicPlaylist.swift */,
 				48C93750E5D4BF58E5BAABAD /* SettingsStore.swift */,
 				C04D29AF16C62BEF87D1F2F9 /* Strings.swift */,
 			);
@@ -289,6 +292,7 @@
 				AFB80400F8FBCB63142C5D72 /* HapticController.swift in Sources */,
 				D298A76288253BC7682EC1FA /* HighscoreStore.swift in Sources */,
 				0081BEC126FE49A2DC77BD26 /* MenuView.swift in Sources */,
+				4DCF1C2FA0D49DA8D05B32D8 /* MusicPlaylist.swift in Sources */,
 				1295FFAC9A46E21E20FFCB51 /* PlayfieldView.swift in Sources */,
 				C9E4238B958BA92024754798 /* Randomizer.swift in Sources */,
 				100DA6A4B55E6419A3F8ED5C /* Scoring.swift in Sources */,

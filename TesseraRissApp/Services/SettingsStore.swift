@@ -22,6 +22,7 @@ final class SettingsStore: ObservableObject {
     private let appearanceKey = "tesserariss.settings.appearance"
     private let languageKey = "tesserariss.settings.language"
     private let ghostKey = "tesserariss.settings.ghost"
+    private let playlistKey = "tesserariss.settings.playlist"
 
     @Published var musicEnabled: Bool {
         didSet { defaults.set(musicEnabled, forKey: musicKey) }
@@ -43,6 +44,12 @@ final class SettingsStore: ObservableObject {
         didSet { defaults.set(ghostEnabled, forKey: ghostKey) }
     }
 
+    @Published var playlistID: String {
+        didSet { defaults.set(playlistID, forKey: playlistKey) }
+    }
+
+    var activePlaylist: MusicPlaylist { MusicPlaylist.playlist(forID: playlistID) }
+
     var strings: Strings { Strings.current(for: language) }
 
     private let defaults: UserDefaults
@@ -54,6 +61,7 @@ final class SettingsStore: ObservableObject {
         if defaults.object(forKey: appearanceKey) == nil { defaults.set(AppearanceMode.day.rawValue, forKey: appearanceKey) }
         if defaults.object(forKey: languageKey) == nil { defaults.set(Language.tr.rawValue, forKey: languageKey) }
         if defaults.object(forKey: ghostKey) == nil { defaults.set(true, forKey: ghostKey) }
+        if defaults.object(forKey: playlistKey) == nil { defaults.set(MusicPlaylist.impressionists.id, forKey: playlistKey) }
         self.musicEnabled = defaults.bool(forKey: musicKey)
         self.hapticsEnabled = defaults.bool(forKey: hapticsKey)
         let araw = defaults.string(forKey: appearanceKey) ?? AppearanceMode.day.rawValue
@@ -61,5 +69,6 @@ final class SettingsStore: ObservableObject {
         let lraw = defaults.string(forKey: languageKey) ?? Language.tr.rawValue
         self.language = Language(rawValue: lraw) ?? .tr
         self.ghostEnabled = defaults.bool(forKey: ghostKey)
+        self.playlistID = defaults.string(forKey: playlistKey) ?? MusicPlaylist.impressionists.id
     }
 }

@@ -92,11 +92,11 @@ Or just `open TesseraRiss.xcodeproj` and ⌘R.
 
 ---
 
-## 🎼 Music playlist
+## 🎼 Music — Playlist 1: Impressionists
 
-The app cycles a curated ~31-minute classical playlist (Satie, Debussy, Ravel — all out of copyright as compositions). Drop these files into `TesseraRissApp/Resources/` with the exact filenames listed in the **Filename** column, then re-run `xcodegen generate`.
+Playlists are now a first-class concept (`MusicPlaylist` in `Services/`). The active playlist id is persisted as `tesserariss.settings.playlist`; defaults to `impressionists`. `AudioController` reloads tracks if the id changes, so swapping playlists is a single setter.
 
-Volume is fixed at 0.5; audio session is `.ambient` + `.mixWithOthers`, so your podcast / Spotify won't get ducked.
+**Playlist 1** is ~31 min, Satie / Debussy / Ravel — all compositions out of copyright. Drop these files into `TesseraRissApp/Resources/` with the exact filenames in the **Filename** column, then re-run `xcodegen generate`. Volume is fixed at 0.5; audio session is `.ambient` + `.mixWithOthers`.
 
 | # | Composer · Piece | Approx. duration | Filename | Source | License |
 |---|---|---|---|---|---|
@@ -118,6 +118,35 @@ for f in *.ogg; do ffmpeg -i "$f" -c:a aac -b:a 192k "${f%.ogg}.m4a"; done
 Or macOS-native (no ffmpeg needed) — decode .ogg via Audacity first, then `afconvert input.wav output.m4a -d aac -f m4af -b 192000`.
 
 **Attribution**: at minimum credit the named performers on a Credits / About screen for any CC-BY track. Public-domain tracks don't require attribution but it's polite.
+
+### Adding a Playlist 2
+
+1. Append a `static let yourID = MusicPlaylist(...)` to `MusicPlaylist+Catalog` and add it to `MusicPlaylist.all`.
+2. Add the audio files to `TesseraRissApp/Resources/` (or tag them as On-Demand Resources — see below).
+3. Either set `settings.playlistID` programmatically, or add a picker to `SettingsView` (`Picker(...)` bound to `$settings.playlistID`).
+
+### Cost / storage of more music
+
+App-side bundle math at AAC 128 kbps:
+
+| Music duration | Approx bundle add |
+|---|---|
+| 30 min | ~30 MB |
+| 60 min | ~60 MB |
+| 90 min | ~90 MB |
+
+App Store thresholds to keep in mind:
+- **< 200 MB** total install — required for "Allow downloads over cellular" without a friction prompt; above that, users only download on Wi-Fi.
+- **< 30 MB** is the sweet spot for impulse installs from the App Store list.
+- **4 GB hard cap** on a single iOS app (you're nowhere near this).
+
+Where to store track bytes — three reasonable options for this app:
+
+1. **Bundle them in the app** (simplest). Each playlist adds ~30 MB. Fine for one or two playlists; gets noticed past ~100 MB total install.
+2. **On-Demand Resources (ODR)** — Apple's official answer. Tag each playlist's files in Xcode with a string tag, then `NSBundleResourceRequest(tags:)` downloads them from Apple's CDN the first time a player picks that playlist. Apple hosts; no bandwidth bill. Caps: 2 GB initial install footprint + 20 GB total. Adds a one-time "downloading…" UX you'll need to handle.
+3. **Your own CDN** (CloudKit asset, Cloudflare R2, S3). Cheapest at scale (~$0.015/GB/month + bandwidth) and lets you swap playlists without a binary update. Adds privacy-policy and reliability concerns; the app needs network code.
+
+For TesseraRiss, the bundle (option 1) is the right answer until you're past ~3 playlists or ~90 MB. After that, ODR is the cleanest next step — same App Store distribution, no server work.
 
 ## 📋 Known gaps
 

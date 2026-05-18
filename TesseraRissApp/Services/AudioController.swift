@@ -3,20 +3,10 @@ import AVFoundation
 final class AudioController: NSObject {
     static let shared = AudioController()
 
-    static let musicTracks: [String] = [
-        "01_satie_gymnopedie_1",
-        "02_satie_gymnopedie_3",
-        "03_satie_gnossienne_1",
-        "04_satie_gnossienne_3",
-        "05_debussy_clair_de_lune",
-        "06_debussy_reverie",
-        "07_debussy_arabesque_1",
-        "08_ravel_pavane",
-    ]
-
     private static let musicExtensions = ["m4a", "mp3", "wav", "caf", "aiff", "flac"]
     private static let sfxExtensions = ["wav", "caf", "aiff", "m4a"]
 
+    private var loadedPlaylistID: String?
     private var musicPlaylist: [URL] = []
     private var musicPlayer: AVAudioPlayer?
     private var currentTrackIndex: Int = 0
@@ -31,7 +21,7 @@ final class AudioController: NSObject {
         self.settings = settings
         super.init()
         configureSession()
-        loadPlaylist()
+        loadPlaylist(settings.activePlaylist)
         loadSFX()
     }
 
@@ -46,14 +36,25 @@ final class AudioController: NSObject {
         }
     }
 
-    private func loadPlaylist() {
-        musicPlaylist = Self.musicTracks.compactMap { name in
+    private func loadPlaylist(_ playlist: MusicPlaylist) {
+        musicPlaylist = playlist.tracks.compactMap { name in
             for ext in Self.musicExtensions {
                 if let url = Bundle.main.url(forResource: name, withExtension: ext) {
                     return url
                 }
             }
             return nil
+        }
+        loadedPlaylistID = playlist.id
+        currentTrackIndex = 0
+    }
+
+    private func reloadIfPlaylistChanged() {
+        let current = settings.activePlaylist
+        if loadedPlaylistID != current.id {
+            stopMusic()
+            musicPlayer = nil
+            loadPlaylist(current)
         }
     }
 
@@ -88,6 +89,7 @@ final class AudioController: NSObject {
     }
 
     func startMusicIfEnabled() {
+        reloadIfPlaylistChanged()
         guard settings.musicEnabled, !musicPlaylist.isEmpty else { return }
         if musicPlayer == nil {
             currentTrackIndex = 0
