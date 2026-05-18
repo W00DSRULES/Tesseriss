@@ -64,7 +64,7 @@ struct Strings {
         ghostLabel: "👻 Gölge",
         aboutLine1: "Tessera — Latince, dört kenarlı bir karo.",
         aboutLine2: "Riss — Almanca, bir yırtık.",
-        aboutLine3: "Karoları yırt, dört satır birden."
+        aboutLine3: "Karoları yırt, dört satır birden.\nMüzik: Satie, Debussy, Ravel — kamu malı kayıtlar."
     )
 
     static let en = Strings(
@@ -98,7 +98,7 @@ struct Strings {
         ghostLabel: "👻 Shadow",
         aboutLine1: "Tessera — Latin, a four-sided tile.",
         aboutLine2: "Riss — German, a tear.",
-        aboutLine3: "Tear the tiles, four rows at a time."
+        aboutLine3: "Tear the tiles, four rows at a time.\nMusic: Satie, Debussy, Ravel — public-domain recordings."
     )
 
     static func current(for lang: Language) -> Strings {

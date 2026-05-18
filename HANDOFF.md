@@ -44,7 +44,8 @@ Tests
 
 ## 🛠️ Manual action needed
 
-1. **Real audio (CC0)** — bundled `korobeiniki.wav`, `line_clear.wav`, `tetris.wav` are silent placeholders. Replace with CC0 recordings (Pixabay "korobeiniki" search; Pixabay/Freesound for SFX). Keep filenames or update `AudioController.preload()`. PLAN.md prefers `.m4a` for music + `.caf` for SFX — re-encode and update extensions there if you want.
+1. **Music playlist** — `AudioController` now expects 8 bundled tracks (see §🎼 Music playlist below). None are bundled — the Music toggle is a no-op until you drop them in. Format: any of `.m4a`, `.mp3`, `.wav`, `.caf`, `.aiff`, `.flac`.
+2. **SFX placeholders** — `line_clear.wav` and `tetris.wav` ship as silent WAVs. Replace with CC0 recordings (Pixabay / Freesound).
 2. **Apple Developer signing** — `project.yml` disables code signing for simulator (`CODE_SIGN_IDENTITY = "-"`, empty `DEVELOPMENT_TEAM`). Set your Team ID and re-enable automatic signing for device / TestFlight / App Store.
 3. **App icon** — `Assets.xcassets/AppIcon.appiconset/AppIcon.png` is a 1024×1024 lavender T-piece placeholder. Replace before submitting.
 4. **Real-device haptics check** — simulator haptics are no-ops. Verify `.light` / `.medium` / `.success` / `.error` feel right on a physical iPhone.
@@ -90,6 +91,33 @@ xcrun simctl launch booted de.maindtec.TesseraRiss
 Or just `open TesseraRiss.xcodeproj` and ⌘R.
 
 ---
+
+## 🎼 Music playlist
+
+The app cycles a curated ~31-minute classical playlist (Satie, Debussy, Ravel — all out of copyright as compositions). Drop these files into `TesseraRissApp/Resources/` with the exact filenames listed in the **Filename** column, then re-run `xcodegen generate`.
+
+Volume is fixed at 0.5; audio session is `.ambient` + `.mixWithOthers`, so your podcast / Spotify won't get ducked.
+
+| # | Composer · Piece | Approx. duration | Filename | Source | License |
+|---|---|---|---|---|---|
+| 1 | Satie — Gymnopédie No. 1 (Robin Alciatore) | 3:04 | `01_satie_gymnopedie_1` | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Erik_Satie_-_gymnopedies_-_la_1_ere._lent_et_douloureux.ogg) | Public domain (released by performer) |
+| 2 | Satie — Gymnopédie No. 3 | ~2:30 | `02_satie_gymnopedie_3` | [Wikimedia Commons: Gymnopédie No. 3](https://commons.wikimedia.org/wiki/Category:Gymnop%C3%A9dies_(Satie)) | Pick a PD entry from the category page |
+| 3 | Satie — Gnossienne No. 1 | 3:38 | `03_satie_gnossienne_1` | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Satie_-_Gnossienne_1.ogg) | Public Domain Mark + CC BY-SA 3.0 |
+| 4 | Satie — Gnossienne No. 3 | ~3:00 | `04_satie_gnossienne_3` | [Wikimedia Commons: Gnossienne 3 (Satie)](https://commons.wikimedia.org/wiki/File:Gnossienne_3_(Satie).ogg) | Public Domain Mark |
+| 5 | Debussy — Clair de Lune (Laurens Goedhart) | 5:04 | `05_debussy_clair_de_lune` | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Clair_de_lune_(Claude_Debussy)_Suite_bergamasque.ogg) | **CC BY 3.0 — credit Laurens Goedhart** |
+| 6 | Debussy — Rêverie | ~4:30 | `06_debussy_reverie` | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Reverie.ogg) | Public Domain Mark |
+| 7 | Debussy — Première Arabesque (Patrizia Prati) | ~4:30 | `07_debussy_arabesque_1` | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Claude_Debussy_-_Premi%C3%A8re_Arabesque_-_Patrizia_Prati.ogg) | Verify on file page before shipping |
+| 8 | Ravel — Pavane pour une infante défunte (Thérèse Dussaut) | ~6:00 | `08_ravel_pavane` | [Wikimedia file](https://en.wikipedia.org/wiki/File:Maurice_Ravel_-_Th%C3%A9r%C3%A8se_Dussaut_-_Pavane_pour_une_infante_d%C3%A9funte.ogg) | Verify on file page before shipping |
+
+**Conversion**: AVAudioPlayer doesn't decode `.ogg`, so convert each download to `.m4a` (AAC) or `.wav`. With ffmpeg:
+
+```bash
+for f in *.ogg; do ffmpeg -i "$f" -c:a aac -b:a 192k "${f%.ogg}.m4a"; done
+```
+
+Or macOS-native (no ffmpeg needed) — decode .ogg via Audacity first, then `afconvert input.wav output.m4a -d aac -f m4af -b 192000`.
+
+**Attribution**: at minimum credit the named performers on a Credits / About screen for any CC-BY track. Public-domain tracks don't require attribution but it's polite.
 
 ## 📋 Known gaps
 

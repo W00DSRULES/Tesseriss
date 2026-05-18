@@ -19,7 +19,6 @@
 		2D0B38BBCB920A7E54D07DF0 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370BD6529416BF2058E6E7FE /* GameState.swift */; };
 		37C16861D9D4E7A33F368A38 /* CellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C602A1AE8E5A13D7CC20F0 /* CellView.swift */; };
 		5E880052C29903F6D8A332C6 /* TesseraRissApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B2F2C600A38285F2FB050F /* TesseraRissApp.swift */; };
-		5EC856CCD631E8B9A690B7C9 /* korobeiniki.wav in Resources */ = {isa = PBXBuildFile; fileRef = 3E1EE348A50DF86A88DA399F /* korobeiniki.wav */; };
 		7044766BDE27FFA4AB5DCD70 /* TetrominoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8912D50AF7626261A6EFC201 /* TetrominoTests.swift */; };
 		77CF760C4BB81AFA4CB8E734 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48C93750E5D4BF58E5BAABAD /* SettingsStore.swift */; };
 		85B1FE7AB558A4FF16F9878B /* ScoringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24FFD934373ACAD7C7BBFC52 /* ScoringTests.swift */; };
@@ -54,7 +53,6 @@
 		370BD6529416BF2058E6E7FE /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
 		399A8C6B88DC2D786ED4E572 /* Randomizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Randomizer.swift; sourceTree = "<group>"; };
 		3D0396B5B829C3E2616BF6ED /* RandomizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomizerTests.swift; sourceTree = "<group>"; };
-		3E1EE348A50DF86A88DA399F /* korobeiniki.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = korobeiniki.wav; sourceTree = "<group>"; };
 		48C93750E5D4BF58E5BAABAD /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		4EC8F26374E2A932D352B8F6 /* tetris.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = tetris.wav; sourceTree = "<group>"; };
 		558FAE98FB46368FB7EEA511 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -83,7 +81,6 @@
 			isa = PBXGroup;
 			children = (
 				558FAE98FB46368FB7EEA511 /* Assets.xcassets */,
-				3E1EE348A50DF86A88DA399F /* korobeiniki.wav */,
 				F566574B0C52EB4FFA02007B /* line_clear.wav */,
 				4EC8F26374E2A932D352B8F6 /* tetris.wav */,
 			);
@@ -258,7 +255,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2B3CCCF35A0DB88065EF361B /* Assets.xcassets in Resources */,
-				5EC856CCD631E8B9A690B7C9 /* korobeiniki.wav in Resources */,
 				96DBF185D315D3FC6BF02062 /* line_clear.wav in Resources */,
 				245B0C2AC63D28B2E3DBCB57 /* tetris.wav in Resources */,
 			);
