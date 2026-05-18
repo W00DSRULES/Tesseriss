@@ -18,6 +18,7 @@ final class SettingsStore: ObservableObject {
     static let shared = SettingsStore()
 
     private let musicKey = "tesserariss.settings.music"
+    private let musicVolumeKey = "tesserariss.settings.musicVolume"
     private let hapticsKey = "tesserariss.settings.haptics"
     private let appearanceKey = "tesserariss.settings.appearance"
     private let languageKey = "tesserariss.settings.language"
@@ -26,6 +27,10 @@ final class SettingsStore: ObservableObject {
 
     @Published var musicEnabled: Bool {
         didSet { defaults.set(musicEnabled, forKey: musicKey) }
+    }
+
+    @Published var musicVolume: Float {
+        didSet { defaults.set(musicVolume, forKey: musicVolumeKey) }
     }
 
     @Published var hapticsEnabled: Bool {
@@ -57,12 +62,14 @@ final class SettingsStore: ObservableObject {
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         if defaults.object(forKey: musicKey) == nil { defaults.set(true, forKey: musicKey) }
+        if defaults.object(forKey: musicVolumeKey) == nil { defaults.set(Float(0.5), forKey: musicVolumeKey) }
         if defaults.object(forKey: hapticsKey) == nil { defaults.set(true, forKey: hapticsKey) }
         if defaults.object(forKey: appearanceKey) == nil { defaults.set(AppearanceMode.day.rawValue, forKey: appearanceKey) }
         if defaults.object(forKey: languageKey) == nil { defaults.set(Language.tr.rawValue, forKey: languageKey) }
         if defaults.object(forKey: ghostKey) == nil { defaults.set(true, forKey: ghostKey) }
         if defaults.object(forKey: playlistKey) == nil { defaults.set(MusicPlaylist.impressionists.id, forKey: playlistKey) }
         self.musicEnabled = defaults.bool(forKey: musicKey)
+        self.musicVolume = defaults.object(forKey: musicVolumeKey) as? Float ?? 0.5
         self.hapticsEnabled = defaults.bool(forKey: hapticsKey)
         let araw = defaults.string(forKey: appearanceKey) ?? AppearanceMode.day.rawValue
         self.appearance = AppearanceMode(rawValue: araw) ?? .day

@@ -83,9 +83,13 @@ final class AudioController: NSObject {
         guard let player = try? AVAudioPlayer(contentsOf: url) else { return nil }
         player.delegate = self
         player.numberOfLoops = 0
-        player.volume = 0.5
+        player.volume = settings.musicVolume
         player.prepareToPlay()
         return player
+    }
+
+    func applyVolume() {
+        musicPlayer?.volume = settings.musicVolume
     }
 
     func startMusicIfEnabled() {

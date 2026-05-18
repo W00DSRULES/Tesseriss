@@ -29,6 +29,8 @@ struct Strings {
     let turkishLabel: String
     let englishLabel: String
     let ghostLabel: String
+    let volumeLabel: String
+    let playlistLabel: String
     let aboutLine1: String
     let aboutLine2: String
     let aboutLine3: String
@@ -62,6 +64,8 @@ struct Strings {
         turkishLabel: "Türkçe",
         englishLabel: "English",
         ghostLabel: "👻 Gölge",
+        volumeLabel: "🔊 Ses",
+        playlistLabel: "🎼 Çalma listesi",
         aboutLine1: "Tessera — Latince, dört kenarlı bir karo.",
         aboutLine2: "Riss — Almanca, bir yırtık.",
         aboutLine3: "Karoları yırt, dört satır birden.\nMüzik: Satie, Debussy, Ravel — kamu malı kayıtlar."
@@ -96,6 +100,8 @@ struct Strings {
         turkishLabel: "Türkçe",
         englishLabel: "English",
         ghostLabel: "👻 Shadow",
+        volumeLabel: "🔊 Volume",
+        playlistLabel: "🎼 Playlist",
         aboutLine1: "Tessera — Latin, a four-sided tile.",
         aboutLine2: "Riss — German, a tear.",
         aboutLine3: "Tear the tiles, four rows at a time.\nMusic: Satie, Debussy, Ravel — public-domain recordings."

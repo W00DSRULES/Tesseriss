@@ -29,6 +29,27 @@ struct SettingsView: View {
             VStack(spacing: 16) {
                 Toggle(s.musicLabel, isOn: $settings.musicEnabled)
                     .toggleStyle(.switch)
+                HStack(spacing: 12) {
+                    Text(s.volumeLabel)
+                    Slider(value: $settings.musicVolume, in: 0...1)
+                        .tint(Color("PaletteInk"))
+                        .onChange(of: settings.musicVolume) { _, _ in
+                            engine.audio.applyVolume()
+                        }
+                }
+                .disabled(!settings.musicEnabled)
+                .opacity(settings.musicEnabled ? 1.0 : 0.4)
+                HStack {
+                    Text(s.playlistLabel)
+                    Spacer()
+                    Picker(s.playlistLabel, selection: $settings.playlistID) {
+                        ForEach(MusicPlaylist.all) { playlist in
+                            Text(playlist.displayName(settings.language)).tag(playlist.id)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .tint(Color("PaletteInk"))
+                }
                 Toggle(s.hapticsLabel, isOn: $settings.hapticsEnabled)
                     .toggleStyle(.switch)
                 Toggle(s.ghostLabel, isOn: $settings.ghostEnabled)
