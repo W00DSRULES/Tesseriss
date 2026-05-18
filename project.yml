@@ -46,15 +46,23 @@ targets:
         PRODUCT_NAME: Tesseriss
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        DEVELOPMENT_TEAM: ""
         CODE_SIGN_STYLE: Automatic
-        CODE_SIGN_IDENTITY: "-"
-        CODE_SIGNING_REQUIRED: NO
-        CODE_SIGNING_ALLOWED: NO
         GENERATE_INFOPLIST_FILE: NO
-        SWIFT_OPTIMIZATION_LEVEL: "-Onone"
-        SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
         ENABLE_TESTABILITY: YES
+      configs:
+        Debug:
+          DEVELOPMENT_TEAM: ""
+          CODE_SIGN_IDENTITY: "-"
+          CODE_SIGNING_REQUIRED: NO
+          CODE_SIGNING_ALLOWED: NO
+          SWIFT_OPTIMIZATION_LEVEL: "-Onone"
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+        Release:
+          DEVELOPMENT_TEAM: ""
+          CODE_SIGN_IDENTITY: "Apple Distribution"
+          CODE_SIGNING_REQUIRED: YES
+          CODE_SIGNING_ALLOWED: YES
+          SWIFT_OPTIMIZATION_LEVEL: "-O"
 
   TesserissTests:
     type: bundle.unit-test
