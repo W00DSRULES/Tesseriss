@@ -4,10 +4,10 @@ enum Scoring {
     static func points(linesCleared n: Int, level: Int) -> Int {
         let multiplier = level + 1
         switch n {
-        case 1: return 40 * multiplier
-        case 2: return 100 * multiplier
-        case 3: return 300 * multiplier
-        case 4: return 1200 * multiplier
+        case 1: return 100 * multiplier
+        case 2: return 300 * multiplier
+        case 3: return 1000 * multiplier
+        case 4: return 4000 * multiplier
         default: return 0
         }
     }

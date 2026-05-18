@@ -2,18 +2,18 @@ import XCTest
 @testable import TesseraRiss
 
 final class ScoringTests: XCTestCase {
-    func test_points_at_level_zero_matches_nes_table() {
-        XCTAssertEqual(Scoring.points(linesCleared: 1, level: 0), 40)
-        XCTAssertEqual(Scoring.points(linesCleared: 2, level: 0), 100)
-        XCTAssertEqual(Scoring.points(linesCleared: 3, level: 0), 300)
-        XCTAssertEqual(Scoring.points(linesCleared: 4, level: 0), 1200)
+    func test_points_at_level_zero() {
+        XCTAssertEqual(Scoring.points(linesCleared: 1, level: 0), 100)
+        XCTAssertEqual(Scoring.points(linesCleared: 2, level: 0), 300)
+        XCTAssertEqual(Scoring.points(linesCleared: 3, level: 0), 1000)
+        XCTAssertEqual(Scoring.points(linesCleared: 4, level: 0), 4000)
     }
 
     func test_points_double_at_level_one() {
-        XCTAssertEqual(Scoring.points(linesCleared: 1, level: 1), 80)
-        XCTAssertEqual(Scoring.points(linesCleared: 2, level: 1), 200)
-        XCTAssertEqual(Scoring.points(linesCleared: 3, level: 1), 600)
-        XCTAssertEqual(Scoring.points(linesCleared: 4, level: 1), 2400)
+        XCTAssertEqual(Scoring.points(linesCleared: 1, level: 1), 200)
+        XCTAssertEqual(Scoring.points(linesCleared: 2, level: 1), 600)
+        XCTAssertEqual(Scoring.points(linesCleared: 3, level: 1), 2000)
+        XCTAssertEqual(Scoring.points(linesCleared: 4, level: 1), 8000)
     }
 
     func test_zero_lines_award_zero_points() {

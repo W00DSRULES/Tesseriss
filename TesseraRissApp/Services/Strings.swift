@@ -36,11 +36,11 @@ struct Strings {
     let aboutLine3: String
 
     static let tr = Strings(
-        tagline: "Karoları yırt",
-        scoringRow1: "1 sıra · 40",
-        scoringRow2: "2 sıra · 100",
-        scoringRow3: "3 sıra · 300",
-        scoringRow4: "4 sıra · 1200 ★",
+        tagline: "Düşür, doldur, kır.",
+        scoringRow1: "1 sıra · 100",
+        scoringRow2: "2 sıra · 300",
+        scoringRow3: "3 sıra · 1000",
+        scoringRow4: "4 sıra · 4000 ★",
         highscore: "REKOR",
         start: "BAŞLA",
         settings: "AYARLAR",
@@ -66,17 +66,17 @@ struct Strings {
         ghostLabel: "👻 Gölge",
         volumeLabel: "🔊 Ses",
         playlistLabel: "🎼 Çalma listesi",
-        aboutLine1: "Tessera — Latince, dört kenarlı bir karo.",
-        aboutLine2: "Riss — Almanca, bir yırtık.",
-        aboutLine3: "Karoları yırt, dört satır birden.\nMüzik: Satie, Debussy, Ravel — kamu malı kayıtlar."
+        aboutLine1: "Tessera — Latince, mozaik taşı.",
+        aboutLine2: "Riss — Almanca, bir çatlak.",
+        aboutLine3: "Düşür, doldur, kır — dört sıra birden.\nMüzik: Satie, Debussy, Ravel — kamu malı kayıtlar."
     )
 
     static let en = Strings(
-        tagline: "tear the tiles",
-        scoringRow1: "1 row · 40",
-        scoringRow2: "2 rows · 100",
-        scoringRow3: "3 rows · 300",
-        scoringRow4: "4 rows · 1200 ★",
+        tagline: "drop. fill. break.",
+        scoringRow1: "1 row · 100",
+        scoringRow2: "2 rows · 300",
+        scoringRow3: "3 rows · 1000",
+        scoringRow4: "4 rows · 4000 ★",
         highscore: "HIGHSCORE",
         start: "START",
         settings: "SETTINGS",
@@ -102,9 +102,9 @@ struct Strings {
         ghostLabel: "👻 Shadow",
         volumeLabel: "🔊 Volume",
         playlistLabel: "🎼 Playlist",
-        aboutLine1: "Tessera — Latin, a four-sided tile.",
-        aboutLine2: "Riss — German, a tear.",
-        aboutLine3: "Tear the tiles, four rows at a time.\nMusic: Satie, Debussy, Ravel — public-domain recordings."
+        aboutLine1: "Tessera — Latin, a tile from a mosaic.",
+        aboutLine2: "Riss — German, a crack.",
+        aboutLine3: "Drop. Fill. Break — four rows at once.\nMusic: Satie, Debussy, Ravel — public-domain recordings."
     )
 
     static func current(for lang: Language) -> Strings {

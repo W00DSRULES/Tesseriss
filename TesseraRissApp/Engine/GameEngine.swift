@@ -172,7 +172,6 @@ final class GameEngine: ObservableObject {
             lockPiece()
         } else {
             current = next
-            score += 1
         }
     }
 
