@@ -1,8 +1,10 @@
-# Plan: TesseraRiss — minimalist falling-blocks iOS game
+# Plan: Tesseriss — minimalist falling-blocks iOS game
+
+> **Status note (kept as historical spec).** This is the original session-0 plan. Some decisions have since evolved — see `HANDOFF.md` for the rolling status. Notable departures already in `main`: name changed `TesseraRiss → Tesseriss` (Greek + German etymology, see below); randomizer is straight 7-bag, not the soft-weighted history scheme described below; scoring set to 100 / 300 / 1000 / 4000 × (level + 1) with no soft-drop points; music is an Impressionist playlist (Satie/Debussy/Ravel) instead of *Korobeiniki*; ghost piece is implemented; iCloud sync / Daily challenge / Stats / starting-level picker not yet built.
 
 ## Context
 
-A free, no-ads, no-IAP, OG-feel falling-blocks puzzle for iOS — comforting visuals, big-button touch controls, haptics, royalty-free *Korobeiniki* music, NES scoring + level progression. Name: **TesseraRiss** — Latin *tessera* ("four-sided tile") + German *Riss* ("tear / rip / fissure") = "tear the tiles," the player's goal. Developer is new to iOS but has Claude Max for pair-coding plus developer friends for review, so the v1 scope extends beyond core gameplay to include starting-level select, a stats page, a daily-challenge mode, iCloud highscore sync, Reduce Motion support, and a real test suite (unit + statistical + UI smoke). Realistic ship window: **5 weeks**.
+A free, no-ads, no-IAP, OG-feel falling-blocks puzzle for iOS — comforting visuals, big-button touch controls, haptics, royalty-free music, NES scoring + level progression. Name: **Tesseriss** — Greek *tesseris* ("four") + German *Riss* ("tear / rip / fissure") = "tear the rows," the player's goal. Developer is new to iOS but has Claude Max for pair-coding plus developer friends for review, so the v1 scope extends beyond core gameplay to include starting-level select, a stats page, a daily-challenge mode, iCloud highscore sync, Reduce Motion support, and a real test suite (unit + statistical + UI smoke). Realistic ship window: **5 weeks**.
 
 ## State flow
 
@@ -28,7 +30,7 @@ Everything previously deferred to "open questions" is now committed to a default
 
 | Area | Decision |
 |---|---|
-| App name | **TesseraRiss** (verify App Store availability week 1; fallbacks: Tessera, Stackfall) |
+| App name | **Tesseriss** (verify App Store availability week 1; fallbacks: Tessera, Stackfall) |
 | Min iOS | iOS 17+ (Observable macro + broad device coverage) |
 | Devices | iPhone only, portrait-locked (iPad/landscape later) |
 | Rotation | **Single CW button** — three taps = CCW. Matches the minimalist control aesthetic; accept the cost on common J/L pieces |
@@ -44,7 +46,7 @@ Everything previously deferred to "open questions" is now committed to a default
 | Audio formats | `.m4a` for music (AAC, smaller/faster than mp3), `.caf` for SFX |
 | Music source | Pixabay CC0 search "korobeiniki" — pick a clean 30–60s seamless loop in week 1. Fall back to FreeMusicArchive |
 | SFX source | Pixabay / Freesound CC0; warm chiptune chime for tetris.caf, not arcade buzz |
-| Highscore | Single integer in `UserDefaults`, key `"tesserariss.highscore"`; mirrored to iCloud KVS when sync toggle ON |
+| Highscore | Single integer in `UserDefaults`, key `"tesseriss.highscore"`; mirrored to iCloud KVS when sync toggle ON |
 | Highscore display | Single best score on menu (no leaderboards) |
 | Extended v1 features | Starting-level picker, Stats page, Daily challenge (seeded), iCloud sync toggle, Reduce Motion support |
 | Testing | XCTest unit + statistical tests for `Board` / `Scoring` / `Randomizer` / `Tetromino` / `SeededPRNG`; XCUITest smoke tests; GitHub Actions CI on push |
@@ -120,7 +122,7 @@ Services/
   HapticController.swift    // thin wrappers, respects haptics-off setting
 
 Views/
-  TesseraRissApp.swift      // @main
+  TesserissApp.swift      // @main
   MenuView.swift            // start, highscore, start-level picker, daily mode, stats, settings entry
   GameView.swift            // playfield + next-piece preview + score/level/lines + pause btn
   ControlsView.swift        // 5 big buttons (see Controls)
@@ -149,7 +151,7 @@ A "Stats" screen linked from the menu shows local lifetime totals:
 - Longest tetris streak (consecutive 4-line clears without a 1–3 line break between)
 - Total play time (HH:MM)
 
-Persisted via `UserDefaults` under keyspace `"tesserariss.stats.*"`. Long-press the screen title for a reset confirmation. No remote sync (kept local for simplicity).
+Persisted via `UserDefaults` under keyspace `"tesseriss.stats.*"`. Long-press the screen title for a reset confirmation. No remote sync (kept local for simplicity).
 
 ### Daily challenge
 A "Daily" entry on the menu. Seeded RNG (seed = ISO date `YYYY-MM-DD` in the device's local timezone), starting level 5, no level-up (level frozen). One attempt per day; the day's best is recorded locally with its date. Comforting routine, a small ritual to come back to.
@@ -157,7 +159,7 @@ A "Daily" entry on the menu. Seeded RNG (seed = ISO date `YYYY-MM-DD` in the dev
 Implementation note: the soft anti-drought randomizer is parameterized over a `RandomNumberGenerator`. For Daily mode, inject a seeded SipHash-based PRNG (Swift's `RandomNumberGenerator` protocol — ~30 lines). The weights are unchanged; only the underlying random source differs. Every player gets the same piece sequence on the same calendar date.
 
 ### iCloud highscore sync
-Settings toggle: "Sync highscore to iCloud" (default ON). Implemented with **`NSUbiquitousKeyValueStore`** (the lightweight key-value iCloud store — not full CloudKit, no schema management). Single key `"tesserariss.highscore"`. Falls back gracefully to local-only if the user isn't signed in. Daily challenge scores stay local.
+Settings toggle: "Sync highscore to iCloud" (default ON). Implemented with **`NSUbiquitousKeyValueStore`** (the lightweight key-value iCloud store — not full CloudKit, no schema management). Single key `"tesseriss.highscore"`. Falls back gracefully to local-only if the user isn't signed in. Daily challenge scores stay local.
 
 ### Reduce Motion support
 `@Environment(\.accessibilityReduceMotion)` — when enabled at the OS level, the Tetris celebration **skips** the screen-pulse scale animation and the row flash becomes a single bright hold instead of a two-cycle flash. Chime + haptic unchanged. Single-line change in `GameView`.
@@ -166,7 +168,7 @@ Settings toggle: "Sync highscore to iCloud" (default ON). Implemented with **`NS
 
 ## Testing strategy
 
-A dedicated `TesseraRissTests` target (XCTest) sits next to the app target. Three layers, increasing in cost.
+A dedicated `TesserissTests` target (XCTest) sits next to the app target. Three layers, increasing in cost.
 
 ### Unit tests (~25 tests, pure-Swift, fast)
 
@@ -211,7 +213,7 @@ For the randomizer specifically:
 
 ### CI
 
-GitHub Actions on every push: `xcodebuild test -only-testing:TesseraRissTests` runs the unit + statistical layers. UI smoke tests run manually before each release tag (simulator UI tests are flaky and not worth blocking commits on).
+GitHub Actions on every push: `xcodebuild test -only-testing:TesserissTests` runs the unit + statistical layers. UI smoke tests run manually before each release tag (simulator UI tests are flaky and not worth blocking commits on).
 
 ---
 
@@ -307,7 +309,7 @@ Keeps the Tetris moment feeling earned.
 
 ## Pause & background behavior
 
-- `scenePhase` observer on `TesseraRissApp` — any transition away from `.active` (background, incoming call, control center, etc.) auto-pauses.
+- `scenePhase` observer on `TesserissApp` — any transition away from `.active` (background, incoming call, control center, etc.) auto-pauses.
 - Returning to `.active` does **not** auto-resume; player must tap to resume (avoids surprise piece drops on app re-open).
 - Pause halts the `Timer` publisher, mutes music + SFX, freezes the score display.
 
@@ -346,9 +348,9 @@ Palette is locked in for week 1 build; revisit in week 4 only if it actively rea
 
 The Tetris Company has historically enforced against clones whose *name or look reads too close*.
 
-**Name posture**: "TesseraRiss" is a constructed compound with clear, on-theme etymology in two non-Russian/English roots:
+**Name posture**: "Tesseriss" is a constructed compound with clear, on-theme etymology in two non-Russian/English roots:
 
-- **Tessera** — Latin for the four-sided mosaic tile; derived from Greek *τέσσαρες / τέσσαρα* ("four"), the same root as the *tetra-* prefix. A *tessera* is literally "a small four-sided piece," which is what a tetromino is.
+- **Tesseris** — Greek *τέσσερις* ("four"), same root as the *tetra-* prefix. The number that defines the game: pieces are tetrominoes (four cells), and the max-value clear is four rows at once.
 - **Riss** — German for "tear / rip / crack / fissure."
 
 Read together: **"the four-tear"** — a direct reference to the player's goal of ripping four rows at once for max points. This is materially different from a Tetris-phonetic mashup like "TetRiss" (which had no semantic content and front-half-collided with the protected mark). Two-language compound, transparent meaning, ties to the actual gameplay verb.
@@ -361,7 +363,7 @@ That's not zero residual echo on the final syllable, but it's defensible: the na
 - App Store metadata describes "minimalist falling-blocks puzzle". The word "Tetris" appears nowhere in app, screenshots, description, keywords, or icon.
 - *Korobeiniki* is public-domain (1861 folk composition). The **recording** must be independently CC0/CC-BY licensed — never a Tetris-branded master.
 - App icon: a single muted tetromino in palette colors, not a rainbow stack.
-- About screen names the etymology explicitly ("Tessera — Latin, a four-sided tile. Riss — German, a tear. Tear the tiles, four rows at a time.") — both for player flavor and because it's a paper trail.
+- About screen names the etymology explicitly ("Tesseris — Greek, four. Riss — German, a tear. Tear the rows, four at a time.") — both for player flavor and because it's a paper trail.
 
 **Contingency if Review rejects on name**: rename to plain **Tessera** and resubmit. ~30 minutes of work (Xcode target rename, asset catalog string, App Store Connect entry). Worth doing only if forced.
 
@@ -372,8 +374,8 @@ These mitigations are not a legal opinion; they're sensible posture for a solo d
 ## Files to create
 
 ```
-TesseraRissApp/
-├── TesseraRissApp.swift
+TesserissApp/
+├── TesserissApp.swift
 ├── Models/
 │   ├── Tetromino.swift
 │   └── Board.swift
@@ -404,14 +406,14 @@ TesseraRissApp/
 │   └── tetris.caf
 └── Info.plist
 
-TesseraRissTests/
+TesserissTests/
 ├── BoardTests.swift
 ├── ScoringTests.swift
 ├── RandomizerTests.swift      // unit + statistical
 ├── TetrominoTests.swift
 └── SeededPRNGTests.swift      // determinism check: same seed → same sequence
 
-TesseraRissUITests/
+TesserissUITests/
 └── SmokeTests.swift
 ```
 
@@ -425,7 +427,7 @@ Each week ends with a real-device session and (from week 2 on) a green test suit
 
 | Week | Goal | Verify |
 |---|---|---|
-| 1 | Apple Developer enrollment kicked off ($99, multi-day wait). SwiftUI tutorial. Static playfield renders in committed palette. Confirm "TesseraRiss" name available on App Store Connect. Audition + pick music + SFX files. App icon v1 sketched. Privacy policy + App Store description text drafted. | Simulator: empty 10×20 grid in cream + 1 sample piece in each palette color; audio loop confirmed seamless |
+| 1 | Apple Developer enrollment kicked off ($99, multi-day wait). SwiftUI tutorial. Static playfield renders in committed palette. Confirm "Tesseriss" name available on App Store Connect. Audition + pick music + SFX files. App icon v1 sketched. Privacy policy + App Store description text drafted. | Simulator: empty 10×20 grid in cream + 1 sample piece in each palette color; audio loop confirmed seamless |
 | 2 | **Core mechanics**: Tetromino + soft anti-drought randomizer + gravity (table 0–19 + saturation curve 20+) + rotation + collision + line clear + scoring (incl. soft-drop) + level progression + game-over. **Unit + statistical test suite written in parallel with the code it covers.** | Tests green; simulator gameplay correct; statistical test confirms drought P ∈ [0.18, 0.22] over 200k draws |
 | 3 | Controls + DAS + haptics + audio (music + 3 SFX) + Tetris celebration + pause + scenePhase auto-pause + highscore persistence + game-over screen + Reduce Motion handling. **Real-device test.** | Real iPhone: score a Tetris, feel the pause + flash + chime + success haptic; background the app and game pauses cleanly; holding ◀ auto-repeats at expected cadence; Reduce Motion (toggled in iOS Settings) suppresses the screen pulse |
 | 4 | **Extended v1**: starting-level picker, Stats page, Daily challenge mode (seeded PRNG), iCloud KVS highscore sync, Menu/Settings/About polish. UI smoke tests written. Friend review of code (1–2 hour walkthrough). | Two-device test: highscore set on device A appears on device B with same iCloud account; Daily mode produces identical piece sequence on both devices; stats increment correctly across multiple games |
@@ -450,7 +452,7 @@ Each week ends with a real-device session and (from week 2 on) a green test suit
 - [ ] iPhone-only target (`UIDeviceFamily = [1]` in Info.plist — prevents janky scaled iPad rendering)
 - [ ] Portrait-only (`UISupportedInterfaceOrientations = [Portrait]`)
 - [ ] Real-device test pass (haptics don't work in simulator)
-- [ ] "TesseraRiss" name not in use on App Store Connect (fallback: plain "Tessera")
+- [ ] "Tesseriss" name not in use on App Store Connect (fallback: plain "Tessera")
 - [ ] Contingency drafted: if Review rejects on name, rename to "Tessera" + resubmit (~30 min)
 
 ---
@@ -473,7 +475,7 @@ End-to-end checks before each milestone:
 12. **iCloud sync**: highscore set on device A appears on device B with the same iCloud account within ~1 min. Sync toggle off → device-local only.
 13. **Stats**: lifetime totals increment correctly across games — lines, tetrises, games played, highest level reached, longest tetris streak, total play time.
 14. **Haptics** (real device): `.light` on move, `.medium` on lock, `.success` on Tetris. Settings toggle silences all of them.
-15. **Audio**: music loops seamlessly (no click at the seam); SFX layer cleanly over music; settings toggles work independently; an active podcast on the device is **not** ducked when TesseraRiss is opened.
+15. **Audio**: music loops seamlessly (no click at the seam); SFX layer cleanly over music; settings toggles work independently; an active podcast on the device is **not** ducked when Tesseriss is opened.
 16. **Pause**: PAUSE button freezes gravity + audio. Backgrounding the app auto-pauses. Returning to foreground stays paused until the player taps resume.
 17. **DAS**: holding ◀ moves the piece once, then again after ~270ms, then every ~50ms. Holding ROTATE does **not** repeat.
 18. **Highscore**: kill the app, relaunch — highscore still shown on menu (from `UserDefaults`, mirrored to iCloud KVS if synced).
