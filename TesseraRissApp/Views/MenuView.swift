@@ -10,7 +10,7 @@ struct MenuView: View {
     var body: some View {
         VStack(spacing: 24) {
             Spacer(minLength: 12)
-            Text("TesseraRiss")
+            Text("Tesseriss")
                 .font(.system(size: 44, weight: .semibold, design: .rounded))
                 .foregroundStyle(Color("PaletteInk"))
             Text(s.tagline)
