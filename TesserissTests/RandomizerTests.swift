@@ -2,13 +2,13 @@ import XCTest
 @testable import Tesseriss
 
 final class RandomizerTests: XCTestCase {
-    func test_seven_consecutive_draws_cover_all_pieces() {
+    func test_seven_consecutive_draws_cover_all_tetrominoes() {
         var bag = SevenBag()
         var seen = Set<PieceKind>()
         for _ in 0..<7 {
             seen.insert(bag.next())
         }
-        XCTAssertEqual(seen, Set(PieceKind.allCases))
+        XCTAssertEqual(seen, Set(PieceKind.tetrominoes))
     }
 
     func test_each_piece_appears_exactly_once_per_bag_over_many_bags() {
@@ -18,8 +18,8 @@ final class RandomizerTests: XCTestCase {
             for _ in 0..<7 {
                 seen.insert(bag.next())
             }
-            XCTAssertEqual(seen, Set(PieceKind.allCases),
-                           "Bag #\(bagIndex) did not contain all 7 pieces")
+            XCTAssertEqual(seen, Set(PieceKind.tetrominoes),
+                           "Bag #\(bagIndex) did not contain all 7 tetrominoes")
         }
     }
 
@@ -30,15 +30,13 @@ final class RandomizerTests: XCTestCase {
         for _ in 0..<(bags * 7) {
             counts[bag.next(), default: 0] += 1
         }
-        for kind in PieceKind.allCases {
+        for kind in PieceKind.tetrominoes {
             XCTAssertEqual(counts[kind] ?? 0, bags,
                            "\(kind) should appear exactly \(bags) times in \(bags) bags")
         }
     }
 
     func test_max_repeat_run_is_bounded() {
-        // In a 7-bag, a piece can repeat at most twice in a row across bag boundaries
-        // (last of one bag + first of next bag).
         var bag = SevenBag()
         var previous: PieceKind?
         var runLength = 1
@@ -54,5 +52,23 @@ final class RandomizerTests: XCTestCase {
             previous = next
         }
         XCTAssertLessThanOrEqual(maxRun, 2)
+    }
+
+    func test_piece_randomizer_with_zero_pentomino_chance_never_spawns_pentominoes() {
+        var rng = PieceRandomizer(pentominoChance: 0)
+        for _ in 0..<1000 {
+            let kind = rng.next()
+            XCTAssertTrue(PieceKind.tetrominoes.contains(kind),
+                          "Should never spawn \(kind) when chance is 0")
+        }
+    }
+
+    func test_piece_randomizer_with_full_pentomino_chance_always_spawns_pentominoes() {
+        var rng = PieceRandomizer(pentominoChance: 1)
+        for _ in 0..<500 {
+            let kind = rng.next()
+            XCTAssertTrue(PieceKind.pentominoes.contains(kind),
+                          "Should always spawn pentomino when chance is 1, got \(kind)")
+        }
     }
 }

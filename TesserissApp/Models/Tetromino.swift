@@ -2,6 +2,12 @@ import Foundation
 
 enum PieceKind: CaseIterable, Equatable {
     case I, O, T, S, Z, L, J
+    case U, P, plus, F
+
+    static let tetrominoes: [PieceKind] = [.I, .O, .T, .S, .Z, .L, .J]
+    static let pentominoes: [PieceKind] = [.U, .P, .plus, .F]
+
+    var cellCount: Int { Self.pentominoes.contains(self) ? 5 : 4 }
 
     var colorName: String {
         switch self {
@@ -12,6 +18,10 @@ enum PieceKind: CaseIterable, Equatable {
         case .Z: return "PieceZ"
         case .L: return "PieceL"
         case .J: return "PieceJ"
+        case .U: return "PieceU"
+        case .P: return "PieceP"
+        case .plus: return "PiecePlus"
+        case .F: return "PieceF"
         }
     }
 }
@@ -45,9 +55,10 @@ struct Tetromino: Equatable {
     }
 
     static func spawn(kind: PieceKind, boardWidth: Int, boardHeight: Int) -> Tetromino {
-        let spawnX = (boardWidth / 2) - 2
-        let spawnY = 0
-        return Tetromino(kind: kind, rotation: 0, origin: GridPoint(x: spawnX, y: spawnY))
+        let local = cells(kind: kind, rotation: 0)
+        let pieceWidth = (local.map(\.x).max() ?? 0) + 1
+        let spawnX = (boardWidth - pieceWidth) / 2
+        return Tetromino(kind: kind, rotation: 0, origin: GridPoint(x: spawnX, y: 0))
     }
 
     static func cells(kind: PieceKind, rotation: Int) -> [GridPoint] {
@@ -102,6 +113,30 @@ struct Tetromino: Equatable {
                 [(1,0),(1,1),(1,2),(2,0)],
                 [(0,1),(1,1),(2,1),(2,2)],
                 [(0,2),(1,0),(1,1),(1,2)],
+            ]
+        case .U:
+            coords = [
+                [(0,0),(2,0),(0,1),(1,1),(2,1)],
+                [(0,0),(1,0),(0,1),(0,2),(1,2)],
+                [(0,0),(1,0),(2,0),(0,1),(2,1)],
+                [(0,0),(1,0),(1,1),(0,2),(1,2)],
+            ]
+        case .P:
+            coords = [
+                [(0,0),(1,0),(0,1),(1,1),(0,2)],
+                [(0,0),(1,0),(2,0),(1,1),(2,1)],
+                [(1,0),(0,1),(1,1),(0,2),(1,2)],
+                [(0,0),(1,0),(0,1),(1,1),(2,1)],
+            ]
+        case .plus:
+            let same: [(Int,Int)] = [(1,0),(0,1),(1,1),(2,1),(1,2)]
+            coords = [same, same, same, same]
+        case .F:
+            coords = [
+                [(1,0),(2,0),(0,1),(1,1),(1,2)],
+                [(1,0),(0,1),(1,1),(2,1),(2,2)],
+                [(1,0),(1,1),(2,1),(0,2),(1,2)],
+                [(0,0),(0,1),(1,1),(2,1),(1,2)],
             ]
         }
         return coords[r].map { GridPoint(x: $0.0, y: $0.1) }

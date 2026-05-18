@@ -4,28 +4,36 @@ import Combine
 final class HighscoreStore: ObservableObject {
     static let shared = HighscoreStore()
 
-    private let key = "tesseriss.highscore"
-    @Published private(set) var highscore: Int
-
-    init(defaults: UserDefaults = .standard) {
-        self.defaults = defaults
-        self.highscore = defaults.integer(forKey: key)
-    }
+    @Published private(set) var highscores: [GameMode: Int] = [:]
 
     private let defaults: UserDefaults
 
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+        var loaded: [GameMode: Int] = [:]
+        for mode in GameMode.allCases {
+            loaded[mode] = defaults.integer(forKey: mode.highscoreKey)
+        }
+        self.highscores = loaded
+    }
+
+    func highscore(for mode: GameMode) -> Int { highscores[mode] ?? 0 }
+
     @discardableResult
-    func maybeUpdate(with score: Int) -> Bool {
-        if score > highscore {
-            highscore = score
-            defaults.set(score, forKey: key)
+    func maybeUpdate(_ score: Int, for mode: GameMode) -> Bool {
+        let current = highscore(for: mode)
+        if score > current {
+            highscores[mode] = score
+            defaults.set(score, forKey: mode.highscoreKey)
             return true
         }
         return false
     }
 
     func resetForTesting() {
-        highscore = 0
-        defaults.removeObject(forKey: key)
+        for mode in GameMode.allCases {
+            defaults.removeObject(forKey: mode.highscoreKey)
+            highscores[mode] = 0
+        }
     }
 }

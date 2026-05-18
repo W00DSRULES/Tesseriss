@@ -13,7 +13,7 @@ struct GameView: View {
                 header
                 HStack(alignment: .top, spacing: 16) {
                     PlayfieldView()
-                        .aspectRatio(CGFloat(Board.width) / CGFloat(Board.height), contentMode: .fit)
+                        .aspectRatio(CGFloat(engine.board.width) / CGFloat(engine.board.height), contentMode: .fit)
                         .scaleEffect(celebrationScale)
                         .animation(reduceMotion ? nil : .easeInOut(duration: 0.18), value: engine.celebrationActive)
                     sidebar

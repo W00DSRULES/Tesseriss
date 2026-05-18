@@ -31,9 +31,31 @@ struct Strings {
     let ghostLabel: String
     let volumeLabel: String
     let playlistLabel: String
+    let modeFastName: String
+    let modeOgName: String
+    let modeHardName: String
+    let modeFastSubtitle: String
+    let modeOgSubtitle: String
+    let modeHardSubtitle: String
     let aboutLine1: String
     let aboutLine2: String
     let aboutLine3: String
+
+    func modeName(_ mode: GameMode) -> String {
+        switch mode {
+        case .fast: return modeFastName
+        case .og:   return modeOgName
+        case .hard: return modeHardName
+        }
+    }
+
+    func modeSubtitle(_ mode: GameMode) -> String {
+        switch mode {
+        case .fast: return modeFastSubtitle
+        case .og:   return modeOgSubtitle
+        case .hard: return modeHardSubtitle
+        }
+    }
 
     static let tr = Strings(
         tagline: "Dizileri yırt.",
@@ -66,6 +88,12 @@ struct Strings {
         ghostLabel: "👻 Gölge",
         volumeLabel: "🔊 Ses",
         playlistLabel: "🎼 Çalma listesi",
+        modeFastName: "Çatlak",
+        modeOgName: "Yırtık",
+        modeHardName: "Parçalanma",
+        modeFastSubtitle: "hızlı",
+        modeOgSubtitle: "klasik",
+        modeHardSubtitle: "zor",
         aboutLine1: "Tesseris — Yunanca, dört.",
         aboutLine2: "Riss — Almanca, bir yırtık.",
         aboutLine3: "Dizileri yırt — dört sıra birden.\nMüzik: Satie, Debussy, Ravel — kamu malı kayıtlar."
@@ -102,6 +130,12 @@ struct Strings {
         ghostLabel: "👻 Shadow",
         volumeLabel: "🔊 Volume",
         playlistLabel: "🎼 Playlist",
+        modeFastName: "Crack",
+        modeOgName: "Tear",
+        modeHardName: "Shatter",
+        modeFastSubtitle: "fast",
+        modeOgSubtitle: "og",
+        modeHardSubtitle: "hard",
         aboutLine1: "Tesseris — Greek, four.",
         aboutLine2: "Riss — German, a tear.",
         aboutLine3: "Tear the rows — four at once.\nMusic: Satie, Debussy, Ravel — public-domain recordings."

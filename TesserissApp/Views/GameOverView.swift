@@ -20,7 +20,7 @@ struct GameOverView: View {
                 Text("\(engine.score)")
                     .font(.system(size: 48, weight: .semibold, design: .rounded))
                     .foregroundStyle(Color("PaletteInk"))
-                if engine.score >= hs.highscore && engine.score > 0 {
+                if engine.score >= hs.highscore(for: engine.mode) && engine.score > 0 {
                     Text(s.newBest)
                         .font(.system(.callout, design: .rounded).weight(.semibold))
                         .foregroundStyle(Color("PieceL"))
@@ -32,7 +32,7 @@ struct GameOverView: View {
             }
             Spacer()
             VStack(spacing: 14) {
-                Button(action: { engine.startNewGame() }) {
+                Button(action: { engine.startNewGame(mode: engine.mode) }) {
                     Text(s.playAgain)
                         .font(.system(.title3, design: .rounded).weight(.semibold))
                         .foregroundStyle(Color("PaletteBackground"))

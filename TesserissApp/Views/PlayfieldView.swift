@@ -5,18 +5,20 @@ struct PlayfieldView: View {
     @EnvironmentObject var settings: SettingsStore
 
     var body: some View {
-        GeometryReader { geo in
-            let cell = min(geo.size.width / CGFloat(Board.width),
-                           geo.size.height / CGFloat(Board.height))
-            let width = cell * CGFloat(Board.width)
-            let height = cell * CGFloat(Board.height)
+        let bw = engine.board.width
+        let bh = engine.board.height
+        return GeometryReader { geo in
+            let cell = min(geo.size.width / CGFloat(bw),
+                           geo.size.height / CGFloat(bh))
+            let width = cell * CGFloat(bw)
+            let height = cell * CGFloat(bh)
             ZStack(alignment: .topLeading) {
                 Rectangle()
                     .fill(Color("PaletteBackground"))
                     .frame(width: width, height: height)
 
-                ForEach(0..<Board.height, id: \.self) { y in
-                    ForEach(0..<Board.width, id: \.self) { x in
+                ForEach(0..<bh, id: \.self) { y in
+                    ForEach(0..<bw, id: \.self) { x in
                         let flashing = engine.flashingRows.contains(y)
                         let content = cellContent(x: x, y: y)
                         CellView(kind: content.0, style: content.1, isFlashing: flashing)
@@ -45,7 +47,7 @@ struct PlayfieldView: View {
                 return (ghost.kind, .ghost)
             }
         }
-        if y < 0 || y >= Board.height { return (nil, .solid) }
+        if y < 0 || y >= engine.board.height { return (nil, .solid) }
         return (engine.board.grid[y][x], .solid)
     }
 }

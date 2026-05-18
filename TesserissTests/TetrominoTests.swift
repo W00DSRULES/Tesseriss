@@ -18,11 +18,28 @@ final class TetrominoTests: XCTestCase {
         }
     }
 
-    func test_every_piece_has_exactly_four_cells_in_every_rotation() {
-        for kind in PieceKind.allCases {
+    func test_plus_pentomino_is_rotation_invariant() {
+        let base = Set(Tetromino.cells(kind: .plus, rotation: 0).map { GridPoint(x: $0.x, y: $0.y) })
+        for r in 1..<4 {
+            let rotated = Set(Tetromino.cells(kind: .plus, rotation: r).map { GridPoint(x: $0.x, y: $0.y) })
+            XCTAssertEqual(base, rotated, "+ pentomino must be invariant at rotation \(r)")
+        }
+    }
+
+    func test_every_tetromino_has_exactly_four_cells_in_every_rotation() {
+        for kind in PieceKind.tetrominoes {
             for r in 0..<4 {
                 XCTAssertEqual(Tetromino.cells(kind: kind, rotation: r).count, 4,
                                "\(kind) rotation \(r) does not have 4 cells")
+            }
+        }
+    }
+
+    func test_every_pentomino_has_exactly_five_cells_in_every_rotation() {
+        for kind in PieceKind.pentominoes {
+            for r in 0..<4 {
+                XCTAssertEqual(Tetromino.cells(kind: kind, rotation: r).count, 5,
+                               "\(kind) rotation \(r) does not have 5 cells")
             }
         }
     }

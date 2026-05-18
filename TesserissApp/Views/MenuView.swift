@@ -22,12 +22,12 @@ struct MenuView: View {
                 Text(s.highscore)
                     .font(.system(.caption, design: .rounded).weight(.semibold))
                     .foregroundStyle(Color("PaletteInk").opacity(0.6))
-                Text("\(hs.highscore)")
+                Text("\(hs.highscore(for: settings.selectedMode))")
                     .font(.system(size: 36, weight: .semibold, design: .rounded))
                     .foregroundStyle(Color("PaletteInk"))
             }
-            VStack(spacing: 16) {
-                Button(action: { engine.startNewGame() }) {
+            VStack(spacing: 14) {
+                Button(action: { engine.startNewGame(mode: settings.selectedMode) }) {
                     Text(s.start)
                         .font(.system(.title2, design: .rounded).weight(.semibold))
                         .foregroundStyle(Color("PaletteBackground"))
@@ -35,6 +35,7 @@ struct MenuView: View {
                         .background(Color("PaletteInk"))
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
+                modePicker
                 Button(action: { engine.openSettings() }) {
                     Text(s.settings)
                         .font(.system(.title3, design: .rounded).weight(.medium))
@@ -63,5 +64,35 @@ struct MenuView: View {
         .font(.system(.footnote, design: .rounded).weight(.medium))
         .foregroundStyle(Color("PaletteInk").opacity(0.55))
         .padding(.top, 4)
+    }
+
+    private var modePicker: some View {
+        HStack(spacing: 8) {
+            ForEach(GameMode.allCases) { mode in
+                modeButton(mode)
+            }
+        }
+    }
+
+    private func modeButton(_ mode: GameMode) -> some View {
+        let isSelected = settings.selectedMode == mode
+        return Button(action: { settings.selectedMode = mode }) {
+            VStack(spacing: 2) {
+                Text(s.modeName(mode))
+                    .font(.system(.callout, design: .rounded).weight(.semibold))
+                Text(s.modeSubtitle(mode))
+                    .font(.system(.caption2, design: .rounded).weight(.medium))
+                    .opacity(0.7)
+            }
+            .foregroundStyle(isSelected ? Color("PaletteBackground") : Color("PaletteInk"))
+            .frame(maxWidth: .infinity, minHeight: 52)
+            .background(isSelected ? Color("PaletteInk") : Color("PaletteCard"))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(isSelected ? Color("PaletteInk") : Color("PaletteGrid"), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
     }
 }

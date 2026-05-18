@@ -20,6 +20,7 @@
 		3647C8C9625B9EE0C1FCEB66 /* Scoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31B1CFCC2CD6880AC0D6554C /* Scoring.swift */; };
 		37174477B65D9D543C272BBE /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 751B95964000073F6C43EF2C /* MenuView.swift */; };
 		3C0A071558F0E6161443FFA2 /* HapticController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05ADA06C9F519C13B8E71407 /* HapticController.swift */; };
+		41A7241FD6517B0D551F7BD7 /* GameModeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44E2B874DA0F4A9664D2FEA /* GameModeTests.swift */; };
 		4D4876643C936C5440438687 /* PlayfieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96C15D6B2917D0A06A4DC049 /* PlayfieldView.swift */; };
 		5FD07FA7FA96CC1ADBFA8E90 /* TesserissApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228A36365E58DF41C1519120 /* TesserissApp.swift */; };
 		6DF188FB7FB525C6E138E20A /* tetris.wav in Resources */ = {isa = PBXBuildFile; fileRef = 79EA3D26D7FC8ACAAA14E3AD /* tetris.wav */; };
@@ -29,6 +30,7 @@
 		88FDFCF5FE7D4F1937591A24 /* GameEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00389A7FE7FABF7C2A416AC /* GameEngine.swift */; };
 		8A7281343B0785C8E57BA376 /* RandomizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6F38B03465A5E839C6B7DBC /* RandomizerTests.swift */; };
 		A090AC9B586D9FF6385250F7 /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 293DDF731B89588BA3C2F3A6 /* Strings.swift */; };
+		A4845155CD05FDC4283193B1 /* GameMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 448474ABB6ACA3BD90D880F3 /* GameMode.swift */; };
 		C0AEDCA15CC756E5DC057D7C /* BoardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36792EE54D0EB743D806119D /* BoardTests.swift */; };
 		CBD3B78F5668F9931FA96512 /* TetrominoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D353210E11A5700FD2C37BC1 /* TetrominoTests.swift */; };
 		DFC400A263800B22657E1A06 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C0AF58B4C2737166EFBDEE /* SettingsView.swift */; };
@@ -57,6 +59,7 @@
 		36792EE54D0EB743D806119D /* BoardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardTests.swift; sourceTree = "<group>"; };
 		3B5C13D7ADCE1BFA338023C5 /* Randomizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Randomizer.swift; sourceTree = "<group>"; };
 		43AB1D999DC8C685EA85D271 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		448474ABB6ACA3BD90D880F3 /* GameMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameMode.swift; sourceTree = "<group>"; };
 		4865FD04DEFE2E0FD6E95F6B /* TesserissTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = TesserissTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		751B95964000073F6C43EF2C /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
 		76C63CA70E031829B0D17C56 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
@@ -69,6 +72,7 @@
 		9DC96FF9CF28641F05259000 /* AudioController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioController.swift; sourceTree = "<group>"; };
 		9F8129E93C8A5D3AF9EAB39B /* GameOverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOverView.swift; sourceTree = "<group>"; };
 		A14C13C60158FEAA4DBF6140 /* CellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellView.swift; sourceTree = "<group>"; };
+		A44E2B874DA0F4A9664D2FEA /* GameModeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModeTests.swift; sourceTree = "<group>"; };
 		CC36718C073F4F74B6856C40 /* Tesseriss.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Tesseriss.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2FB967D8D1736D9BB1598EB /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		D353210E11A5700FD2C37BC1 /* TetrominoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TetrominoTests.swift; sourceTree = "<group>"; };
@@ -83,6 +87,7 @@
 			isa = PBXGroup;
 			children = (
 				F00389A7FE7FABF7C2A416AC /* GameEngine.swift */,
+				448474ABB6ACA3BD90D880F3 /* GameMode.swift */,
 				76C63CA70E031829B0D17C56 /* GameState.swift */,
 				3B5C13D7ADCE1BFA338023C5 /* Randomizer.swift */,
 				31B1CFCC2CD6880AC0D6554C /* Scoring.swift */,
@@ -116,6 +121,7 @@
 			isa = PBXGroup;
 			children = (
 				36792EE54D0EB743D806119D /* BoardTests.swift */,
+				A44E2B874DA0F4A9664D2FEA /* GameModeTests.swift */,
 				F6F38B03465A5E839C6B7DBC /* RandomizerTests.swift */,
 				9ADF55DA600178206F4689E5 /* ScoringTests.swift */,
 				D353210E11A5700FD2C37BC1 /* TetrominoTests.swift */,
@@ -271,6 +277,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C0AEDCA15CC756E5DC057D7C /* BoardTests.swift in Sources */,
+				41A7241FD6517B0D551F7BD7 /* GameModeTests.swift in Sources */,
 				8A7281343B0785C8E57BA376 /* RandomizerTests.swift in Sources */,
 				E345160FCD99F62DC7D8D42F /* ScoringTests.swift in Sources */,
 				CBD3B78F5668F9931FA96512 /* TetrominoTests.swift in Sources */,
@@ -286,6 +293,7 @@
 				80AAECE01B8FEDD784353B06 /* CellView.swift in Sources */,
 				E1756B4A82C99657860F45ED /* ControlsView.swift in Sources */,
 				88FDFCF5FE7D4F1937591A24 /* GameEngine.swift in Sources */,
+				A4845155CD05FDC4283193B1 /* GameMode.swift in Sources */,
 				06AA1288B7A65E0A4DB46D7A /* GameOverView.swift in Sources */,
 				12C1C0DEAD6F009337E82846 /* GameState.swift in Sources */,
 				250FBE6784A99928A6F0FAD8 /* GameView.swift in Sources */,

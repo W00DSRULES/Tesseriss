@@ -1,24 +1,25 @@
 import Foundation
 
 struct Board {
-    static let width = 10
-    static let height = 20
-
+    let width: Int
+    let height: Int
     var grid: [[PieceKind?]]
 
-    init() {
-        grid = Array(repeating: Array(repeating: nil, count: Board.width), count: Board.height)
+    init(width: Int = 10, height: Int = 20) {
+        self.width = width
+        self.height = height
+        self.grid = Array(repeating: Array(repeating: nil, count: width), count: height)
     }
 
     func cell(_ p: GridPoint) -> PieceKind? {
-        guard p.x >= 0, p.x < Board.width, p.y >= 0, p.y < Board.height else { return nil }
+        guard p.x >= 0, p.x < width, p.y >= 0, p.y < height else { return nil }
         return grid[p.y][p.x]
     }
 
     func collides(_ piece: Tetromino) -> Bool {
         for c in piece.cells {
-            if c.x < 0 || c.x >= Board.width { return true }
-            if c.y >= Board.height { return true }
+            if c.x < 0 || c.x >= width { return true }
+            if c.y >= height { return true }
             if c.y < 0 { continue }
             if grid[c.y][c.x] != nil { return true }
         }
@@ -26,14 +27,14 @@ struct Board {
     }
 
     mutating func lock(_ piece: Tetromino) {
-        for c in piece.cells where c.y >= 0 && c.y < Board.height && c.x >= 0 && c.x < Board.width {
+        for c in piece.cells where c.y >= 0 && c.y < height && c.x >= 0 && c.x < width {
             grid[c.y][c.x] = piece.kind
         }
     }
 
     func fullRows() -> [Int] {
         var rows: [Int] = []
-        for y in 0..<Board.height where grid[y].allSatisfy({ $0 != nil }) {
+        for y in 0..<height where grid[y].allSatisfy({ $0 != nil }) {
             rows.append(y)
         }
         return rows
@@ -45,7 +46,7 @@ struct Board {
             grid.remove(at: r)
         }
         for _ in 0..<sorted.count {
-            grid.insert(Array(repeating: nil, count: Board.width), at: 0)
+            grid.insert(Array(repeating: nil, count: width), at: 0)
         }
     }
 

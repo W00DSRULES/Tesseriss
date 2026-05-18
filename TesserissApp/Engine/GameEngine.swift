@@ -13,8 +13,9 @@ final class GameEngine: ObservableObject {
     @Published var screen: Screen = .menu
     @Published private(set) var flashingRows: [Int] = []
     @Published private(set) var celebrationActive: Bool = false
+    @Published private(set) var mode: GameMode = .og
 
-    private var bag = SevenBag()
+    private var randomizer = PieceRandomizer()
     private var timer: Timer?
     private var clearTimer: Timer?
     private var lastTickAt: Date = .distantPast
@@ -34,7 +35,7 @@ final class GameEngine: ObservableObject {
         self.haptics = haptics
     }
 
-    var highscore: Int { highscoreStore.highscore }
+    var highscore: Int { highscoreStore.highscore(for: mode) }
 
     var ghostPiece: Tetromino? {
         guard phase == .playing, let piece = current else { return nil }
@@ -48,15 +49,16 @@ final class GameEngine: ObservableObject {
 
     // MARK: - Lifecycle
 
-    func startNewGame() {
+    func startNewGame(mode: GameMode = .og) {
         stopTimer()
         stopClearTimer()
-        board = Board()
+        self.mode = mode
+        board = Board(width: mode.boardWidth, height: mode.boardHeight)
         score = 0
         lines = 0
         level = 0
-        bag = SevenBag()
-        nextKind = bag.next()
+        randomizer = PieceRandomizer(pentominoChance: mode.pentominoChance)
+        nextKind = randomizer.next()
         flashingRows = []
         celebrationActive = false
         screen = .game
@@ -104,8 +106,8 @@ final class GameEngine: ObservableObject {
 
     private func spawnNext() {
         guard let kind = nextKind else { return }
-        let piece = Tetromino.spawn(kind: kind, boardWidth: Board.width, boardHeight: Board.height)
-        nextKind = bag.next()
+        let piece = Tetromino.spawn(kind: kind, boardWidth: board.width, boardHeight: board.height)
+        nextKind = randomizer.next()
         if board.collides(piece) {
             current = piece
             triggerGameOver()
@@ -121,14 +123,14 @@ final class GameEngine: ObservableObject {
         screen = .gameOver
         audio.stopMusic()
         haptics.gameOver(enabled: settings.hapticsEnabled)
-        highscoreStore.maybeUpdate(with: score)
+        highscoreStore.maybeUpdate(score, for: mode)
     }
 
     // MARK: - Timer
 
     private func startTimer() {
         stopTimer()
-        let interval = Scoring.gravityInterval(level: level)
+        let interval = Scoring.gravityInterval(level: level) * mode.gravityScale
         timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
             self?.gravityTick()
         }
