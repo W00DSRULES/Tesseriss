@@ -1,4 +1,4 @@
-name: TesseraRiss
+name: Tesseriss
 options:
   bundleIdPrefix: de.maindtec
   deploymentTarget:
@@ -16,20 +16,20 @@ settings:
     DEAD_CODE_STRIPPING: YES
 
 targets:
-  TesseraRiss:
+  Tesseriss:
     type: application
     platform: iOS
     deploymentTarget: "17.0"
     sources:
-      - path: TesseraRissApp
+      - path: TesserissApp
         excludes:
           - "Info.plist"
     resources:
-      - path: TesseraRissApp/Resources
+      - path: TesserissApp/Resources
     info:
-      path: TesseraRissApp/Info.plist
+      path: TesserissApp/Info.plist
       properties:
-        CFBundleDisplayName: TesseraRiss
+        CFBundleDisplayName: Tesseriss
         CFBundleShortVersionString: "0.1.0"
         CFBundleVersion: "1"
         LSRequiresIPhoneOS: true
@@ -42,8 +42,8 @@ targets:
         UIViewControllerBasedStatusBarAppearance: true
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: de.maindtec.TesseraRiss
-        PRODUCT_NAME: TesseraRiss
+        PRODUCT_BUNDLE_IDENTIFIER: de.maindtec.Tesseriss
+        PRODUCT_NAME: Tesseriss
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         DEVELOPMENT_TEAM: ""
@@ -56,17 +56,17 @@ targets:
         SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
         ENABLE_TESTABILITY: YES
 
-  TesseraRissTests:
+  TesserissTests:
     type: bundle.unit-test
     platform: iOS
     deploymentTarget: "17.0"
     sources:
-      - path: TesseraRissTests
+      - path: TesserissTests
     dependencies:
-      - target: TesseraRiss
+      - target: Tesseriss
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: de.maindtec.TesseraRissTests
+        PRODUCT_BUNDLE_IDENTIFIER: de.maindtec.TesserissTests
         GENERATE_INFOPLIST_FILE: YES
         TARGETED_DEVICE_FAMILY: "1"
         CODE_SIGN_IDENTITY: "-"
@@ -75,12 +75,12 @@ targets:
         SWIFT_VERSION: "5.0"
 
 schemes:
-  TesseraRiss:
+  Tesseriss:
     build:
       targets:
-        TesseraRiss: all
-        TesseraRissTests: [test]
+        Tesseriss: all
+        TesserissTests: [test]
     test:
       targets:
-        - TesseraRissTests
+        - TesserissTests
       gatherCoverageData: false

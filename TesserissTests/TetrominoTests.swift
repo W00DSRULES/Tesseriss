@@ -1,5 +1,5 @@
 import XCTest
-@testable import TesseraRiss
+@testable import Tesseriss
 
 final class TetrominoTests: XCTestCase {
     func test_four_rotations_return_to_identity() {

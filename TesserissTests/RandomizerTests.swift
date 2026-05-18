@@ -1,5 +1,5 @@
 import XCTest
-@testable import TesseraRiss
+@testable import Tesseriss
 
 final class RandomizerTests: XCTestCase {
     func test_seven_consecutive_draws_cover_all_pieces() {

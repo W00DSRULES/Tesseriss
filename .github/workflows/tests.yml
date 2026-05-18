@@ -39,8 +39,8 @@ jobs:
         run: |
           set -o pipefail
           xcodebuild test \
-            -project TesseraRiss.xcodeproj \
-            -scheme TesseraRiss \
+            -project Tesseriss.xcodeproj \
+            -scheme Tesseriss \
             -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }},OS=latest" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO

@@ -15,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DF332BCF7316560AF0775840"
-               BuildableName = "TesseraRiss.app"
-               BlueprintName = "TesseraRiss"
-               ReferencedContainer = "container:TesseraRiss.xcodeproj">
+               BlueprintIdentifier = "D7EFC7B21ED0F6F14E8C5DB4"
+               BuildableName = "Tesseriss.app"
+               BlueprintName = "Tesseriss"
+               ReferencedContainer = "container:Tesseriss.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -29,10 +29,10 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C523486FB599E689DF91EBAF"
-               BuildableName = "TesseraRissTests.xctest"
-               BlueprintName = "TesseraRissTests"
-               ReferencedContainer = "container:TesseraRiss.xcodeproj">
+               BlueprintIdentifier = "A28BC4A755F2C4A34FFE1412"
+               BuildableName = "TesserissTests.xctest"
+               BlueprintName = "TesserissTests"
+               ReferencedContainer = "container:Tesseriss.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -46,10 +46,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DF332BCF7316560AF0775840"
-            BuildableName = "TesseraRiss.app"
-            BlueprintName = "TesseraRiss"
-            ReferencedContainer = "container:TesseraRiss.xcodeproj">
+            BlueprintIdentifier = "D7EFC7B21ED0F6F14E8C5DB4"
+            BuildableName = "Tesseriss.app"
+            BlueprintName = "Tesseriss"
+            ReferencedContainer = "container:Tesseriss.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -58,10 +58,10 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C523486FB599E689DF91EBAF"
-               BuildableName = "TesseraRissTests.xctest"
-               BlueprintName = "TesseraRissTests"
-               ReferencedContainer = "container:TesseraRiss.xcodeproj">
+               BlueprintIdentifier = "A28BC4A755F2C4A34FFE1412"
+               BuildableName = "TesserissTests.xctest"
+               BlueprintName = "TesserissTests"
+               ReferencedContainer = "container:Tesseriss.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -82,10 +82,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DF332BCF7316560AF0775840"
-            BuildableName = "TesseraRiss.app"
-            BlueprintName = "TesseraRiss"
-            ReferencedContainer = "container:TesseraRiss.xcodeproj">
+            BlueprintIdentifier = "D7EFC7B21ED0F6F14E8C5DB4"
+            BuildableName = "Tesseriss.app"
+            BlueprintName = "Tesseriss"
+            ReferencedContainer = "container:Tesseriss.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -99,10 +99,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DF332BCF7316560AF0775840"
-            BuildableName = "TesseraRiss.app"
-            BlueprintName = "TesseraRiss"
-            ReferencedContainer = "container:TesseraRiss.xcodeproj">
+            BlueprintIdentifier = "D7EFC7B21ED0F6F14E8C5DB4"
+            BuildableName = "Tesseriss.app"
+            BlueprintName = "Tesseriss"
+            ReferencedContainer = "container:Tesseriss.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

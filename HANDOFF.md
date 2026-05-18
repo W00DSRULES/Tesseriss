@@ -1,6 +1,6 @@
-# TesseraRiss — Handoff
+# Tesseriss — Handoff
 
-iOS 17+, SwiftUI end-to-end, XcodeGen-managed. Bundle id `de.maindtec.TesseraRiss`.
+iOS 17+, SwiftUI end-to-end, XcodeGen-managed. Bundle id `de.maindtec.Tesseriss`.
 
 ---
 
@@ -34,10 +34,10 @@ Pause / lifecycle
 - `scenePhase` observer auto-pauses on background / Control Center; resume requires an explicit tap.
 
 Persistence
-- Highscore in `UserDefaults` (`tesserariss.highscore`) — shown on menu and game-over screen with a "NEW BEST" badge.
+- Highscore in `UserDefaults` (`tesseriss.highscore`) — shown on menu and game-over screen with a "NEW BEST" badge.
 
 Tests
-- `TesseraRissTests` covers Board (8 tests), Tetromino (5), Scoring (6), Randomizer (4) — 23 unit tests, all pure-Swift, run in <50 ms.
+- `TesserissTests` covers Board (8 tests), Tetromino (5), Scoring (6), Randomizer (4) — 23 unit tests, all pure-Swift, run in <50 ms.
 - CI runs on every push via `.github/workflows/tests.yml` (macOS-15 runner).
 
 ---
@@ -66,8 +66,8 @@ xcodegen generate
 **Build for simulator:**
 ```bash
 xcodebuild \
-  -project TesseraRiss.xcodeproj \
-  -scheme TesseraRiss \
+  -project Tesseriss.xcodeproj \
+  -scheme Tesseriss \
   -destination 'platform=iOS Simulator,name=iPhone 16' \
   build
 ```
@@ -75,8 +75,8 @@ xcodebuild \
 **Run unit tests:**
 ```bash
 xcodebuild test \
-  -project TesseraRiss.xcodeproj \
-  -scheme TesseraRiss \
+  -project Tesseriss.xcodeproj \
+  -scheme Tesseriss \
   -destination 'platform=iOS Simulator,name=iPhone 16'
 ```
 
@@ -84,19 +84,19 @@ xcodebuild test \
 ```bash
 xcrun simctl boot 'iPhone 16' 2>/dev/null || true
 open -a Simulator
-xcrun simctl install booted ~/Library/Developer/Xcode/DerivedData/TesseraRiss-*/Build/Products/Debug-iphonesimulator/TesseraRiss.app
-xcrun simctl launch booted de.maindtec.TesseraRiss
+xcrun simctl install booted ~/Library/Developer/Xcode/DerivedData/Tesseriss-*/Build/Products/Debug-iphonesimulator/Tesseriss.app
+xcrun simctl launch booted de.maindtec.Tesseriss
 ```
 
-Or just `open TesseraRiss.xcodeproj` and ⌘R.
+Or just `open Tesseriss.xcodeproj` and ⌘R.
 
 ---
 
 ## 🎼 Music — Playlist 1: Impressionists
 
-Playlists are now a first-class concept (`MusicPlaylist` in `Services/`). The active playlist id is persisted as `tesserariss.settings.playlist`; defaults to `impressionists`. `AudioController` reloads tracks if the id changes, so swapping playlists is a single setter.
+Playlists are now a first-class concept (`MusicPlaylist` in `Services/`). The active playlist id is persisted as `tesseriss.settings.playlist`; defaults to `impressionists`. `AudioController` reloads tracks if the id changes, so swapping playlists is a single setter.
 
-**Playlist 1** is ~31 min, Satie / Debussy / Ravel — all compositions out of copyright. Drop these files into `TesseraRissApp/Resources/` with the exact filenames in the **Filename** column, then re-run `xcodegen generate`. Volume is fixed at 0.5; audio session is `.ambient` + `.mixWithOthers`.
+**Playlist 1** is ~31 min, Satie / Debussy / Ravel — all compositions out of copyright. Drop these files into `TesserissApp/Resources/` with the exact filenames in the **Filename** column, then re-run `xcodegen generate`. Volume is fixed at 0.5; audio session is `.ambient` + `.mixWithOthers`.
 
 | # | Composer · Piece | Approx. duration | Filename | Source | License |
 |---|---|---|---|---|---|
@@ -122,7 +122,7 @@ Or macOS-native (no ffmpeg needed) — decode .ogg via Audacity first, then `afc
 ### Adding a Playlist 2
 
 1. Append a `static let yourID = MusicPlaylist(...)` to `MusicPlaylist+Catalog` and add it to `MusicPlaylist.all`.
-2. Add the audio files to `TesseraRissApp/Resources/` (or tag them as On-Demand Resources — see below).
+2. Add the audio files to `TesserissApp/Resources/` (or tag them as On-Demand Resources — see below).
 3. Either set `settings.playlistID` programmatically, or add a picker to `SettingsView` (`Picker(...)` bound to `$settings.playlistID`).
 
 ### Cost / storage of more music
@@ -146,7 +146,7 @@ Where to store track bytes — three reasonable options for this app:
 2. **On-Demand Resources (ODR)** — Apple's official answer. Tag each playlist's files in Xcode with a string tag, then `NSBundleResourceRequest(tags:)` downloads them from Apple's CDN the first time a player picks that playlist. Apple hosts; no bandwidth bill. Caps: 2 GB initial install footprint + 20 GB total. Adds a one-time "downloading…" UX you'll need to handle.
 3. **Your own CDN** (CloudKit asset, Cloudflare R2, S3). Cheapest at scale (~$0.015/GB/month + bandwidth) and lets you swap playlists without a binary update. Adds privacy-policy and reliability concerns; the app needs network code.
 
-For TesseraRiss, the bundle (option 1) is the right answer until you're past ~3 playlists or ~90 MB. After that, ODR is the cleanest next step — same App Store distribution, no server work.
+For Tesseriss, the bundle (option 1) is the right answer until you're past ~3 playlists or ~90 MB. After that, ODR is the cleanest next step — same App Store distribution, no server work.
 
 ## 📋 Known gaps
 

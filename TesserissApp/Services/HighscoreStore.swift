@@ -4,7 +4,7 @@ import Combine
 final class HighscoreStore: ObservableObject {
     static let shared = HighscoreStore()
 
-    private let key = "tesserariss.highscore"
+    private let key = "tesseriss.highscore"
     @Published private(set) var highscore: Int
 
     init(defaults: UserDefaults = .standard) {

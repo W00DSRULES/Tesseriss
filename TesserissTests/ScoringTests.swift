@@ -1,5 +1,5 @@
 import XCTest
-@testable import TesseraRiss
+@testable import Tesseriss
 
 final class ScoringTests: XCTestCase {
     func test_points_at_level_zero() {

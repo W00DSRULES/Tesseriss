@@ -1,12 +1,12 @@
 import SwiftUI
 
 @main
-struct TesseraRissApp: App {
+struct TesserissApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var engine = GameEngine()
     @StateObject private var settings = SettingsStore.shared
     @StateObject private var highscore = HighscoreStore.shared
-    @AppStorage("tesserariss.settings.appearance") private var appearanceRaw: String = AppearanceMode.day.rawValue
+    @AppStorage("tesseriss.settings.appearance") private var appearanceRaw: String = AppearanceMode.day.rawValue
 
     var body: some Scene {
         let appearance = AppearanceMode(rawValue: appearanceRaw) ?? .day

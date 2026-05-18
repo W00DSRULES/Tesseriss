@@ -17,13 +17,13 @@ enum Language: String, CaseIterable, Identifiable {
 final class SettingsStore: ObservableObject {
     static let shared = SettingsStore()
 
-    private let musicKey = "tesserariss.settings.music"
-    private let musicVolumeKey = "tesserariss.settings.musicVolume"
-    private let hapticsKey = "tesserariss.settings.haptics"
-    private let appearanceKey = "tesserariss.settings.appearance"
-    private let languageKey = "tesserariss.settings.language"
-    private let ghostKey = "tesserariss.settings.ghost"
-    private let playlistKey = "tesserariss.settings.playlist"
+    private let musicKey = "tesseriss.settings.music"
+    private let musicVolumeKey = "tesseriss.settings.musicVolume"
+    private let hapticsKey = "tesseriss.settings.haptics"
+    private let appearanceKey = "tesseriss.settings.appearance"
+    private let languageKey = "tesseriss.settings.language"
+    private let ghostKey = "tesseriss.settings.ghost"
+    private let playlistKey = "tesseriss.settings.playlist"
 
     @Published var musicEnabled: Bool {
         didSet { defaults.set(musicEnabled, forKey: musicKey) }

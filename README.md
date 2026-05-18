@@ -1,13 +1,14 @@
-# TesseraRiss
+# Tesseriss
 
-Minimalist falling-blocks puzzle for iOS. Comforting palette, big-button touch controls, NES scoring, *Korobeiniki* loop. Built in SwiftUI for iOS 17+.
+Minimalist falling-blocks puzzle for iOS. Comforting palette, big-button touch controls, NES scoring, public-domain Impressionist piano loop. Built in SwiftUI for iOS 17+.
 
-The name is Latin *tessera* ("four-sided tile") + German *Riss* ("tear") — "tear the tiles".
+The name is Greek *tesseris* ("four") + German *Riss* ("tear") — tear the rows four at a time.
 
 ## Highlights
 
-- 10×20 grid, SRS rotation tables, 7-bag randomizer, ghost piece.
+- 10×20 grid, NES-style rotation tables, 7-bag randomizer, ghost piece.
 - NES gravity table (levels 0–19) → smooth saturation curve afterwards.
+- Scoring 100 / 300 / 1000 / 4000 × (level + 1) per cleared lines.
 - Tetris (4-line) celebration: 500 ms pause + row flash + chime + success haptic.
 - Day / Night theme, Turkish + English in-app, persisted in `UserDefaults`.
 - Pause auto-fires on scene background; resume only via the explicit button.
@@ -18,8 +19,8 @@ The name is Latin *tessera* ("four-sided tile") + German *Riss* ("tear") — "te
 brew install xcodegen
 xcodegen generate
 xcodebuild \
-  -project TesseraRiss.xcodeproj \
-  -scheme TesseraRiss \
+  -project Tesseriss.xcodeproj \
+  -scheme Tesseriss \
   -destination 'platform=iOS Simulator,name=iPhone 16' \
   build
 ```
@@ -28,18 +29,18 @@ xcodebuild \
 
 ```bash
 xcodebuild test \
-  -project TesseraRiss.xcodeproj \
-  -scheme TesseraRiss \
+  -project Tesseriss.xcodeproj \
+  -scheme Tesseriss \
   -destination 'platform=iOS Simulator,name=iPhone 16'
 ```
 
-`TesseraRissTests` covers `Board`, `Tetromino`, `Scoring`, and the 7-bag `Randomizer`. CI runs on every push (`.github/workflows/tests.yml`, macOS-15 runner).
+`TesserissTests` covers `Board`, `Tetromino`, `Scoring`, and the 7-bag `Randomizer`. CI runs on every push (`.github/workflows/tests.yml`, macOS-15 runner).
 
 ## Run in Xcode
 
 ```bash
 xcodegen generate
-open TesseraRiss.xcodeproj
+open Tesseriss.xcodeproj
 ```
 
 Pick any iPhone simulator and ⌘R.
@@ -47,16 +48,16 @@ Pick any iPhone simulator and ⌘R.
 ## Project layout
 
 ```
-TesseraRissApp/
-  TesseraRissApp.swift            // @main entry
+TesserissApp/
+  TesserissApp.swift              // @main entry
   Models/                         // Tetromino, Board
   Engine/                         // GameEngine, GameState, Scoring, Randomizer
   Services/                       // SettingsStore, HighscoreStore, AudioController,
-                                  // HapticController, Strings (TR + EN)
+                                  // HapticController, Strings (TR + EN), MusicPlaylist
   Views/                          // MenuView, GameView, ControlsView, CellView,
                                   // PlayfieldView, SettingsView, GameOverView
   Resources/                      // Assets.xcassets, placeholder .wav audio
-TesseraRissTests/                 // XCTest unit tests
+TesserissTests/                   // XCTest unit tests
 project.yml                       // XcodeGen source of truth
 .github/workflows/tests.yml       // CI
 PLAN.md                           // original 5-week plan

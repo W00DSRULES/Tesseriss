@@ -1,5 +1,5 @@
 import XCTest
-@testable import TesseraRiss
+@testable import Tesseriss
 
 final class BoardTests: XCTestCase {
     func test_empty_board_has_no_collision_at_spawn() {
