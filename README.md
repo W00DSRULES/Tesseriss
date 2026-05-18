@@ -60,8 +60,8 @@ TesserissApp/
 TesserissTests/                   // XCTest unit tests
 project.yml                       // XcodeGen source of truth
 .github/workflows/tests.yml       // CI
-PLAN.md                           // original 5-week plan
-HANDOFF.md                        // current state + what needs manual action
+docs/PLAN.md                      // original 5-week plan
+docs/HANDOFF.md                   // current state + what needs manual action
 LICENSE                           // MIT
 ```
 
