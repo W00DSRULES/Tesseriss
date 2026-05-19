@@ -25,6 +25,7 @@ final class SettingsStore: ObservableObject {
     private let ghostKey = "tesseriss.settings.ghost"
     private let playlistKey = "tesseriss.settings.playlist"
     private let selectedModeKey = "tesseriss.settings.selectedMode"
+    private let themeKindKey = "tesseriss.settings.themeKind"
 
     @Published var musicEnabled: Bool {
         didSet { defaults.set(musicEnabled, forKey: musicKey) }
@@ -58,7 +59,18 @@ final class SettingsStore: ObservableObject {
         didSet { defaults.set(selectedMode.rawValue, forKey: selectedModeKey) }
     }
 
+    @Published var themeKind: ThemeKind {
+        didSet { defaults.set(themeKind.rawValue, forKey: themeKindKey) }
+    }
+
     var activePlaylist: MusicPlaylist { MusicPlaylist.playlist(forID: playlistID) }
+
+    var activeTheme: Theme {
+        switch themeKind {
+        case .classic:  return ClassicTheme()
+        case .kanagawa: return KanagawaTheme()
+        }
+    }
 
     var strings: Strings { Strings.current(for: language) }
 
@@ -74,6 +86,7 @@ final class SettingsStore: ObservableObject {
         if defaults.object(forKey: ghostKey) == nil { defaults.set(true, forKey: ghostKey) }
         if defaults.object(forKey: playlistKey) == nil { defaults.set(MusicPlaylist.impressionists.id, forKey: playlistKey) }
         if defaults.object(forKey: selectedModeKey) == nil { defaults.set(GameMode.og.rawValue, forKey: selectedModeKey) }
+        if defaults.object(forKey: themeKindKey) == nil { defaults.set(ThemeKind.classic.rawValue, forKey: themeKindKey) }
         self.musicEnabled = defaults.bool(forKey: musicKey)
         self.musicVolume = defaults.object(forKey: musicVolumeKey) as? Float ?? 0.5
         self.hapticsEnabled = defaults.bool(forKey: hapticsKey)
@@ -85,5 +98,7 @@ final class SettingsStore: ObservableObject {
         self.playlistID = defaults.string(forKey: playlistKey) ?? MusicPlaylist.impressionists.id
         let modeRaw = defaults.string(forKey: selectedModeKey) ?? GameMode.og.rawValue
         self.selectedMode = GameMode(rawValue: modeRaw) ?? .og
+        let themeRaw = defaults.string(forKey: themeKindKey) ?? ThemeKind.classic.rawValue
+        self.themeKind = ThemeKind(rawValue: themeRaw) ?? .classic
     }
 }

@@ -55,14 +55,24 @@ struct SettingsView: View {
                 Toggle(s.ghostLabel, isOn: $settings.ghostEnabled)
                     .toggleStyle(.switch)
                 HStack {
-                    Text(s.themeLabel)
+                    Text(s.appearanceLabel)
                     Spacer()
-                    Picker(s.themeLabel, selection: $settings.appearance) {
+                    Picker(s.appearanceLabel, selection: $settings.appearance) {
                         Text(s.dayLabel).tag(AppearanceMode.day)
                         Text(s.nightLabel).tag(AppearanceMode.night)
                     }
                     .pickerStyle(.segmented)
                     .frame(maxWidth: 200)
+                }
+                HStack {
+                    Text(s.themeStyleLabel)
+                    Spacer()
+                    Picker(s.themeStyleLabel, selection: $settings.themeKind) {
+                        Text(s.themeClassic).tag(ThemeKind.classic)
+                        Text(s.themeHokusai).tag(ThemeKind.kanagawa)
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(maxWidth: 220)
                 }
                 HStack {
                     Text(s.languageLabel)

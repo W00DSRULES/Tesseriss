@@ -28,7 +28,38 @@ struct GameView: View {
                 Color.black.opacity(0.25).ignoresSafeArea()
                 pausedOverlay
             }
+            if engine.celebrationActive {
+                celebrationBanner
+                    .transition(reduceMotion ? .opacity : .opacity.combined(with: .scale(scale: 0.85)))
+            }
         }
+        .animation(reduceMotion ? nil : .easeOut(duration: 0.18), value: engine.celebrationActive)
+    }
+
+    @ViewBuilder
+    private var celebrationBanner: some View {
+        if let custom = settings.activeTheme.fourLineBanner(strings: s) {
+            custom
+        } else {
+            ultimateRissBanner
+        }
+    }
+
+    private var ultimateRissBanner: some View {
+        Text(s.ultimateRiss)
+            .font(.system(.largeTitle, design: .rounded).weight(.heavy))
+            .tracking(2)
+            .foregroundStyle(Color("PaletteInk"))
+            .padding(.vertical, 14)
+            .padding(.horizontal, 28)
+            .background(Color("PaletteCard"))
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(Color("PaletteInk").opacity(0.15), lineWidth: 1)
+            )
+            .shadow(color: Color.black.opacity(0.18), radius: 10, y: 3)
+            .allowsHitTesting(false)
     }
 
     private var celebrationScale: CGFloat {

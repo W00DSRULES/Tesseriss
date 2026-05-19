@@ -217,26 +217,26 @@ final class GameEngine: ObservableObject {
             spawnNext()
             return
         }
-        let isTetris = rows.count == 4
-        beginClearAnimation(rows: rows, isTetris: isTetris)
+        let isFourLine = rows.count == 4
+        beginClearAnimation(rows: rows, isFourLine: isFourLine)
     }
 
-    private func beginClearAnimation(rows: [Int], isTetris: Bool) {
+    private func beginClearAnimation(rows: [Int], isFourLine: Bool) {
         stopTimer()
         current = nil
         flashingRows = rows
-        celebrationActive = isTetris
-        phase = .clearing(rows: rows, isTetris: isTetris)
+        celebrationActive = isFourLine
+        phase = .clearing(rows: rows, isFourLine: isFourLine)
 
-        if isTetris {
-            audio.playTetrisChime(enabled: settings.musicEnabled)
+        if isFourLine {
+            audio.playFourLineChime(enabled: settings.musicEnabled)
             haptics.success(enabled: settings.hapticsEnabled)
         } else {
             audio.playLineClear(enabled: settings.musicEnabled)
             haptics.medium(enabled: settings.hapticsEnabled)
         }
 
-        let pauseSeconds: TimeInterval = isTetris ? 0.5 : 0.2
+        let pauseSeconds: TimeInterval = isFourLine ? 0.5 : 0.2
         clearTimer = Timer.scheduledTimer(withTimeInterval: pauseSeconds, repeats: false) { [weak self] _ in
             self?.completeClearAnimation(rows: rows)
         }

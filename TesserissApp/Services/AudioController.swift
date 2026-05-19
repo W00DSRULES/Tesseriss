@@ -12,7 +12,7 @@ final class AudioController: NSObject {
     private var currentTrackIndex: Int = 0
 
     private var lineClearPlayer: AVAudioPlayer?
-    private var tetrisPlayer: AVAudioPlayer?
+    private var fourLinePlayer: AVAudioPlayer?
     private var sessionConfigured = false
 
     private let settings: SettingsStore
@@ -60,7 +60,7 @@ final class AudioController: NSObject {
 
     private func loadSFX() {
         lineClearPlayer = makeSFXPlayer(named: "line_clear", volume: 1.0)
-        tetrisPlayer = makeSFXPlayer(named: "tetris", volume: 1.0)
+        fourLinePlayer = makeSFXPlayer(named: "four_line", volume: 1.0)
     }
 
     private func makeSFXPlayer(named name: String, volume: Float) -> AVAudioPlayer? {
@@ -123,8 +123,8 @@ final class AudioController: NSObject {
         p.play()
     }
 
-    func playTetrisChime(enabled: Bool) {
-        guard enabled, let p = tetrisPlayer else { return }
+    func playFourLineChime(enabled: Bool) {
+        guard enabled, let p = fourLinePlayer else { return }
         p.currentTime = 0
         p.play()
     }

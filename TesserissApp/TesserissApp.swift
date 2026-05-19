@@ -27,10 +27,13 @@ struct TesserissApp: App {
 
 struct RootView: View {
     @EnvironmentObject private var engine: GameEngine
+    @EnvironmentObject private var settings: SettingsStore
 
     var body: some View {
         ZStack {
-            Color("PaletteBackground").ignoresSafeArea()
+            settings.activeTheme
+                .backgroundView(appearance: settings.appearance)
+                .ignoresSafeArea()
             switch engine.screen {
             case .menu:
                 MenuView()

@@ -9,15 +9,18 @@ struct CellView: View {
     let kind: PieceKind?
     let style: CellStyle
     let isFlashing: Bool
+    let theme: Theme
+    let appearance: AppearanceMode
+    let flashTint: Color
 
     var body: some View {
         ZStack {
-            Color("PaletteBackground")
             if let kind {
+                let color = theme.pieceColor(kind, appearance: appearance)
                 switch style {
                 case .solid:
                     Rectangle()
-                        .fill(Color(kind.colorName))
+                        .fill(color)
                         .padding(0.5)
                         .overlay(
                             Rectangle()
@@ -26,14 +29,14 @@ struct CellView: View {
                         )
                 case .ghost:
                     Rectangle()
-                        .strokeBorder(Color(kind.colorName).opacity(0.55), lineWidth: 2)
+                        .strokeBorder(color.opacity(0.55), lineWidth: 2)
                         .padding(2)
                 }
             }
             Rectangle()
-                .strokeBorder(Color("PaletteGrid"), lineWidth: 0.5)
+                .strokeBorder(theme.gridLineColor(appearance: appearance), lineWidth: 0.5)
             if isFlashing {
-                Color.white.opacity(0.85)
+                flashTint
             }
         }
     }

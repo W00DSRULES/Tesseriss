@@ -10,6 +10,6 @@ enum Screen: Equatable {
 enum PlayPhase: Equatable {
     case playing
     case paused
-    case clearing(rows: [Int], isTetris: Bool)
+    case clearing(rows: [Int], isFourLine: Bool)
     case gameOver
 }

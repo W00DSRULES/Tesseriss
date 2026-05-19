@@ -7,17 +7,17 @@ iOS 17+, SwiftUI end-to-end, XcodeGen-managed. Bundle id `de.maindtec.Tesseriss`
 ## ✅ What's working
 
 Core mechanics
-- 10×20 board, 7-piece bag randomizer, gravity tick driven by `Scoring.gravityInterval(level:)` (NES table 0–19 then a saturation curve approaching 20 ms by level 60+).
+- 10×20 board, 7-piece bag randomizer, gravity tick driven by `Scoring.gravityInterval(level:)` (classic table 0–19 then a saturation curve approaching 20 ms by level 60+).
 - Single rotate button (CW); three taps = CCW. Move left / soft-drop / move right with hold-to-repeat (270 ms initial / 50 ms repeat). Hard drop locks instantly.
-- NES scoring 40 / 100 / 300 / 1200 × (level + 1). Soft drop awards +1 per cell while ▼ is held.
+- Classic scoring 40 / 100 / 300 / 1200 × (level + 1). Soft drop awards +1 per cell while ▼ is held.
 - Level rises +1 per 10 lines cleared; gravity shortens accordingly.
-- Top-out game over fires on the spawn frame (NES-faithful).
+- Top-out game over fires on the spawn frame (era-classic-faithful).
 - Ghost piece outlines the landing position; toggleable in Settings.
 
 Visual / theme
 - Comforting palette in `Assets.xcassets` with Day + Night variants for background / grid / ink / card colors.
 - Grid lines visible on the playfield (0.5 pt per cell).
-- Tetris (4-line) clear: 500 ms gravity pause + row flash + chime + `.success` haptic. 1–3 line clears: 200 ms + soft flash + `.medium` haptic.
+- Four-line clear: 500 ms gravity pause + row flash + chime + `.success` haptic. 1–3 line clears: 200 ms + soft flash + `.medium` haptic.
 - Reduce Motion respected on the celebration's screen-pulse.
 
 I18n
@@ -45,12 +45,12 @@ Tests
 ## 🛠️ Manual action needed
 
 1. **Music playlist** — `AudioController` now expects 8 bundled tracks (see §🎼 Music playlist below). None are bundled — the Music toggle is a no-op until you drop them in. Format: any of `.m4a`, `.mp3`, `.wav`, `.caf`, `.aiff`, `.flac`.
-2. **SFX placeholders** — `line_clear.wav` and `tetris.wav` ship as silent WAVs. Replace with CC0 recordings (Pixabay / Freesound).
+2. **SFX placeholders** — `line_clear.wav` and `four_line.wav` ship as silent WAVs. Replace with CC0 recordings (Pixabay / Freesound).
 2. **Apple Developer signing** — `project.yml` disables code signing for simulator (`CODE_SIGN_IDENTITY = "-"`, empty `DEVELOPMENT_TEAM`). Set your Team ID and re-enable automatic signing for device / TestFlight / App Store.
 3. **App icon** — `Assets.xcassets/AppIcon.appiconset/AppIcon.png` is a 1024×1024 lavender T-piece placeholder. Replace before submitting.
 4. **Real-device haptics check** — simulator haptics are no-ops. Verify `.light` / `.medium` / `.success` / `.error` feel right on a physical iPhone.
-5. **App Store submission** — none of the App Store Connect / TestFlight / privacy-policy steps from PLAN.md are done; the codebase just compiles and tests cleanly.
-6. **Extended v1 features** (PLAN.md week 4) — not implemented: starting-level picker, Stats page, Daily challenge, iCloud KVS sync. The base architecture leaves room (`GameEngine.init` can take an optional `startLevel` etc.).
+5. **App Store submission** — none of the App Store Connect / TestFlight / privacy-policy steps are done; the codebase just compiles and tests cleanly.
+6. **Extended features** — not implemented: starting-level picker, Stats page, Daily challenge. iCloud KVS sync intentionally out of scope (local-only highscore by design). The base architecture leaves room (`GameEngine.init` can take an optional `startLevel` etc.).
 
 ---
 
@@ -154,9 +154,9 @@ For Tesseriss, the bundle (option 1) is the right answer until you're past ~3 pl
 - No UI XCUITests yet (only unit tests).
 - No SwiftUI previews (intentional — kept out of scope).
 - Bundle ID is a placeholder using `de.maindtec`. Change `PRODUCT_BUNDLE_IDENTIFIER` in `project.yml` and re-run `xcodegen generate` if needed.
-- Rotation uses fixed 4-state tables without SRS wall kicks — NES-style, intentional per PLAN.md.
-- Tetris celebration row-flash is single-pass; PLAN.md asks for a two-cycle flash and a screen pulse on the whole view (currently only the playfield scales).
-- Backgrounding *during* a Tetris celebration: the clear timer keeps running on background; when you foreground, the celebration may already be over. Cosmetic, not a correctness bug.
+- Rotation uses fixed 4-state tables without SRS wall kicks — classic-era, intentional.
+- Four-line celebration row-flash is single-pass; a two-cycle flash with a screen pulse on the whole view would be a polish step (currently only the playfield scales).
+- Backgrounding *during* a Four-line celebration: the clear timer keeps running on background; when you foreground, the celebration may already be over. Cosmetic, not a correctness bug.
 - Status bar style is fixed to `UIStatusBarStyleDefault`; iOS should pick light content automatically in Night mode via `preferredColorScheme`, but worth verifying on hardware.
 - Dynamic Type not yet supported (fonts use literal sizes).
 - VoiceOver — buttons are icon-only with no accessibility labels.

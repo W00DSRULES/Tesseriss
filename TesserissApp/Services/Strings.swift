@@ -22,7 +22,6 @@ struct Strings {
     let back: String
     let musicLabel: String
     let hapticsLabel: String
-    let themeLabel: String
     let dayLabel: String
     let nightLabel: String
     let languageLabel: String
@@ -40,6 +39,12 @@ struct Strings {
     let aboutLine1: String
     let aboutLine2: String
     let aboutLine3: String
+    let ultimateRiss: String
+    let appearanceLabel: String
+    let themeStyleLabel: String
+    let themeClassic: String
+    let themeHokusai: String
+    let greatWave: String
 
     func modeName(_ mode: GameMode) -> String {
         switch mode {
@@ -79,13 +84,12 @@ struct Strings {
         back: "GERİ",
         musicLabel: "🎵 Müzik",
         hapticsLabel: "📳 Titreşim",
-        themeLabel: "🎨 Tema",
         dayLabel: "☀️ Gündüz",
         nightLabel: "🌙 Gece",
         languageLabel: "🌐 Dil",
         turkishLabel: "Türkçe",
         englishLabel: "English",
-        ghostLabel: "👻 Gölge",
+        ghostLabel: "📍 İniş",
         volumeLabel: "🔊 Ses",
         playlistLabel: "🎼 Çalma listesi",
         modeFastName: "Çatlak",
@@ -96,7 +100,13 @@ struct Strings {
         modeHardSubtitle: "zor",
         aboutLine1: "Tesseris — Yunanca, dört.",
         aboutLine2: "Riss — Almanca, bir yırtık.",
-        aboutLine3: "Dizileri yırt — dört sıra birden.\nMüzik: Satie, Debussy, Ravel — kamu malı kayıtlar."
+        aboutLine3: "Dizileri yırt — dört sıra birden.\nMüzik: Satie, Debussy, Ravel — kamu malı kayıtlar.",
+        ultimateRiss: "ULTIMATE RISS",
+        appearanceLabel: "☀️ Görünüm",
+        themeStyleLabel: "🌊 Tema",
+        themeClassic: "Klasik",
+        themeHokusai: "Hokusai",
+        greatWave: "MUHTEŞEM DALGA"
     )
 
     static let en = Strings(
@@ -121,13 +131,12 @@ struct Strings {
         back: "BACK",
         musicLabel: "🎵 Music",
         hapticsLabel: "📳 Haptics",
-        themeLabel: "🎨 Theme",
         dayLabel: "☀️ Day",
         nightLabel: "🌙 Night",
         languageLabel: "🌐 Language",
         turkishLabel: "Türkçe",
         englishLabel: "English",
-        ghostLabel: "👻 Shadow",
+        ghostLabel: "📍 Landing",
         volumeLabel: "🔊 Volume",
         playlistLabel: "🎼 Playlist",
         modeFastName: "Crack",
@@ -138,7 +147,13 @@ struct Strings {
         modeHardSubtitle: "hard",
         aboutLine1: "Tesseris — Greek, four.",
         aboutLine2: "Riss — German, a tear.",
-        aboutLine3: "Tear the rows — four at once.\nMusic: Satie, Debussy, Ravel — public-domain recordings."
+        aboutLine3: "Tear the rows — four at once.\nMusic: Satie, Debussy, Ravel — public-domain recordings.",
+        ultimateRiss: "ULTIMATE RISS",
+        appearanceLabel: "☀️ Appearance",
+        themeStyleLabel: "🌊 Theme",
+        themeClassic: "Classic",
+        themeHokusai: "Hokusai",
+        greatWave: "A GREAT WAVE"
     )
 
     static func current(for lang: Language) -> Strings {

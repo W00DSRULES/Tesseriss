@@ -7,30 +7,48 @@ struct PlayfieldView: View {
     var body: some View {
         let bw = engine.board.width
         let bh = engine.board.height
+        let theme = settings.activeTheme
+        let appearance = settings.appearance
         return GeometryReader { geo in
             let cell = min(geo.size.width / CGFloat(bw),
                            geo.size.height / CGFloat(bh))
             let width = cell * CGFloat(bw)
             let height = cell * CGFloat(bh)
             ZStack(alignment: .topLeading) {
-                Rectangle()
-                    .fill(Color("PaletteBackground"))
+                theme.playfieldBoardView(appearance: appearance)
                     .frame(width: width, height: height)
 
                 ForEach(0..<bh, id: \.self) { y in
                     ForEach(0..<bw, id: \.self) { x in
                         let flashing = engine.flashingRows.contains(y)
                         let content = cellContent(x: x, y: y)
-                        CellView(kind: content.0, style: content.1, isFlashing: flashing)
-                            .frame(width: cell, height: cell)
-                            .offset(x: CGFloat(x) * cell, y: CGFloat(y) * cell)
+                        CellView(
+                            kind: content.0,
+                            style: content.1,
+                            isFlashing: flashing,
+                            theme: theme,
+                            appearance: appearance,
+                            flashTint: theme.flashTint(appearance: appearance)
+                        )
+                        .frame(width: cell, height: cell)
+                        .offset(x: CGFloat(x) * cell, y: CGFloat(y) * cell)
                     }
+                }
+
+                if theme.usesWaveLineClear && !engine.flashingRows.isEmpty {
+                    WaveSplashView(
+                        appearance: appearance,
+                        rows: Array(engine.flashingRows),
+                        cellSize: cell,
+                        isFourLine: engine.celebrationActive
+                    )
+                    .frame(width: width, height: height)
                 }
             }
             .frame(width: width, height: height)
             .overlay(
                 Rectangle()
-                    .stroke(Color("PaletteInk").opacity(0.55), lineWidth: 2)
+                    .stroke(theme.playfieldBorderColor(appearance: appearance), lineWidth: 2)
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -55,15 +73,18 @@ struct PlayfieldView: View {
 struct NextPieceView: View {
     let kind: PieceKind?
     let label: String
+    @EnvironmentObject var settings: SettingsStore
 
     var body: some View {
+        let theme = settings.activeTheme
+        let appearance = settings.appearance
         VStack(alignment: .leading, spacing: 6) {
             Text(label)
                 .font(.system(.caption, design: .rounded).weight(.semibold))
                 .foregroundStyle(Color("PaletteInk").opacity(0.7))
             ZStack {
-                Rectangle().fill(Color("PaletteBackground"))
-                Rectangle().strokeBorder(Color("PaletteGrid"), lineWidth: 0.5)
+                theme.playfieldBoardView(appearance: appearance)
+                Rectangle().strokeBorder(theme.gridLineColor(appearance: appearance), lineWidth: 0.5)
                 if let kind {
                     let cells = Tetromino.cells(kind: kind, rotation: 0)
                     let minX = cells.map(\.x).min() ?? 0
@@ -81,7 +102,7 @@ struct NextPieceView: View {
                         ForEach(0..<cells.count, id: \.self) { i in
                             let c = cells[i]
                             Rectangle()
-                                .fill(Color(kind.colorName))
+                                .fill(theme.pieceColor(kind, appearance: appearance))
                                 .frame(width: cellSize, height: cellSize)
                                 .position(
                                     x: originX + (CGFloat(c.x - minX) + 0.5) * cellSize,
@@ -92,7 +113,7 @@ struct NextPieceView: View {
                 }
             }
             .frame(width: 80, height: 60)
-            .overlay(Rectangle().stroke(Color("PaletteInk").opacity(0.45), lineWidth: 1))
+            .overlay(Rectangle().stroke(theme.playfieldBorderColor(appearance: appearance), lineWidth: 1))
         }
     }
 }

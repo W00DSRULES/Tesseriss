@@ -1,15 +1,15 @@
 # Tesseriss
 
-Minimalist falling-blocks puzzle for iOS. Comforting palette, big-button touch controls, NES scoring, public-domain Impressionist piano loop. Built in SwiftUI for iOS 17+.
+Minimalist falling-blocks puzzle for iOS. Comforting palette, big-button touch controls, classic-era scoring, public-domain Impressionist piano loop. Built in SwiftUI for iOS 17+.
 
 The name is Greek *tesseris* ("four") + German *Riss* ("tear") — tear the rows four at a time.
 
 ## Highlights
 
-- 10×20 grid, NES-style rotation tables, 7-bag randomizer, ghost piece.
-- NES gravity table (levels 0–19) → smooth saturation curve afterwards.
+- 10×20 grid, classic-era rotation tables, 7-bag randomizer, ghost piece.
+- Table-based gravity (levels 0–19) → smooth saturation curve afterwards.
 - Scoring 100 / 300 / 1000 / 4000 × (level + 1) per cleared lines.
-- Tetris (4-line) celebration: 500 ms pause + row flash + chime + success haptic.
+- Four-line clear celebration: 500 ms pause + row flash + chime + success haptic.
 - Day / Night theme, Turkish + English in-app, persisted in `UserDefaults`.
 - Pause auto-fires on scene background; resume only via the explicit button.
 
@@ -60,7 +60,6 @@ TesserissApp/
 TesserissTests/                   // XCTest unit tests
 project.yml                       // XcodeGen source of truth
 .github/workflows/tests.yml       // CI
-docs/PLAN.md                      // original 5-week plan
 docs/HANDOFF.md                   // current state + what needs manual action
 LICENSE                           // MIT
 ```
