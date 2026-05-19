@@ -71,4 +71,20 @@ final class RandomizerTests: XCTestCase {
                           "Should always spawn pentomino when chance is 1, got \(kind)")
         }
     }
+
+    func test_same_seed_produces_identical_piece_sequence() {
+        var a = PieceRandomizer(rng: SeededRandomNumberGenerator(seed: 1337))
+        var b = PieceRandomizer(rng: SeededRandomNumberGenerator(seed: 1337))
+        let aSeq = (0..<100).map { _ in a.next() }
+        let bSeq = (0..<100).map { _ in b.next() }
+        XCTAssertEqual(aSeq, bSeq, "Same seed must produce identical sequences")
+    }
+
+    func test_different_seeds_diverge() {
+        var a = PieceRandomizer(rng: SeededRandomNumberGenerator(seed: 1))
+        var b = PieceRandomizer(rng: SeededRandomNumberGenerator(seed: 2))
+        let aSeq = (0..<50).map { _ in a.next() }
+        let bSeq = (0..<50).map { _ in b.next() }
+        XCTAssertNotEqual(aSeq, bSeq, "Different seeds should diverge within 50 draws")
+    }
 }

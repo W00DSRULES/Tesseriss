@@ -24,15 +24,18 @@ final class GameEngine: ObservableObject {
     let haptics: HapticController
     private let settings: SettingsStore
     private let highscoreStore: HighscoreStore
+    private let randomizerFactory: (Double) -> PieceRandomizer
 
     init(settings: SettingsStore = SettingsStore.shared,
          highscoreStore: HighscoreStore = HighscoreStore.shared,
          audio: AudioController = AudioController.shared,
-         haptics: HapticController = HapticController.shared) {
+         haptics: HapticController = HapticController.shared,
+         randomizerFactory: @escaping (Double) -> PieceRandomizer = { PieceRandomizer(pentominoChance: $0) }) {
         self.settings = settings
         self.highscoreStore = highscoreStore
         self.audio = audio
         self.haptics = haptics
+        self.randomizerFactory = randomizerFactory
     }
 
     var highscore: Int { highscoreStore.highscore(for: mode) }
@@ -57,7 +60,7 @@ final class GameEngine: ObservableObject {
         score = 0
         lines = 0
         level = 0
-        randomizer = PieceRandomizer(pentominoChance: mode.pentominoChance)
+        randomizer = randomizerFactory(mode.pentominoChance)
         nextKind = randomizer.next()
         flashingRows = []
         celebrationActive = false
