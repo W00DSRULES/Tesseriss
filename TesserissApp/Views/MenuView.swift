@@ -76,6 +76,9 @@ struct MenuView: View {
 
     private func modeButton(_ mode: GameMode) -> some View {
         let isSelected = settings.selectedMode == mode
+        // Selected mode uses a neutral grey so it doesn't compete with the Ink-colored Start button.
+        let selectedBg = Color(red: 0.45, green: 0.45, blue: 0.46)
+        let selectedStroke = Color(red: 0.32, green: 0.32, blue: 0.34)
         return Button(action: { settings.selectedMode = mode }) {
             VStack(spacing: 2) {
                 Text(s.modeName(mode))
@@ -84,13 +87,13 @@ struct MenuView: View {
                     .font(.system(.caption2, design: .rounded).weight(.medium))
                     .opacity(0.7)
             }
-            .foregroundStyle(isSelected ? Color("PaletteBackground") : Color("PaletteInk"))
+            .foregroundStyle(isSelected ? Color.white : Color("PaletteInk"))
             .frame(maxWidth: .infinity, minHeight: 52)
-            .background(isSelected ? Color("PaletteInk") : Color("PaletteCard"))
+            .background(isSelected ? selectedBg : Color("PaletteCard"))
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
-                    .stroke(isSelected ? Color("PaletteInk") : Color("PaletteGrid"), lineWidth: 1)
+                    .stroke(isSelected ? selectedStroke : Color("PaletteGrid"), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
