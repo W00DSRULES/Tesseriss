@@ -357,7 +357,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = de.maindtec.TesserissTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.W00DSRULES.TesserissTests;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -447,7 +447,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = de.maindtec.Tesseriss;
+				PRODUCT_BUNDLE_IDENTIFIER = com.W00DSRULES.Tesseriss;
 				PRODUCT_NAME = Tesseriss;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -531,7 +531,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = de.maindtec.Tesseriss;
+				PRODUCT_BUNDLE_IDENTIFIER = com.W00DSRULES.Tesseriss;
 				PRODUCT_NAME = Tesseriss;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -554,7 +554,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = de.maindtec.TesserissTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.W00DSRULES.TesserissTests;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;

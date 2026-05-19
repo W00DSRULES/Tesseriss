@@ -1,6 +1,6 @@
 # Tesseriss — Handoff
 
-iOS 17+, SwiftUI end-to-end, XcodeGen-managed. Bundle id `de.maindtec.Tesseriss`.
+iOS 17+, SwiftUI end-to-end, XcodeGen-managed. Bundle id `com.W00DSRULES.Tesseriss`.
 
 ---
 
@@ -85,7 +85,7 @@ xcodebuild test \
 xcrun simctl boot 'iPhone 16' 2>/dev/null || true
 open -a Simulator
 xcrun simctl install booted ~/Library/Developer/Xcode/DerivedData/Tesseriss-*/Build/Products/Debug-iphonesimulator/Tesseriss.app
-xcrun simctl launch booted de.maindtec.Tesseriss
+xcrun simctl launch booted com.W00DSRULES.Tesseriss
 ```
 
 Or just `open Tesseriss.xcodeproj` and ⌘R.
@@ -153,7 +153,7 @@ For Tesseriss, the bundle (option 1) is the right answer until you're past ~3 pl
 - Silent audio. The wiring is correct; you'll hear it the moment you swap the WAV bytes.
 - No UI XCUITests yet (only unit tests).
 - No SwiftUI previews (intentional — kept out of scope).
-- Bundle ID is a placeholder using `de.maindtec`. Change `PRODUCT_BUNDLE_IDENTIFIER` in `project.yml` and re-run `xcodegen generate` if needed.
+- Bundle ID is `com.W00DSRULES.Tesseriss`. If you ever need to change it, edit `project.yml` and re-run `xcodegen generate`.
 - Rotation uses fixed 4-state tables without SRS wall kicks — classic-era, intentional.
 - Four-line celebration row-flash is single-pass; a two-cycle flash with a screen pulse on the whole view would be a polish step (currently only the playfield scales).
 - Backgrounding *during* a Four-line celebration: the clear timer keeps running on background; when you foreground, the celebration may already be over. Cosmetic, not a correctness bug.
