@@ -18,6 +18,7 @@ struct SettingsView: View {
                         .background(Color("PaletteCard"))
                         .clipShape(Capsule())
                 }
+                .accessibilityIdentifier("back-button")
                 Spacer()
             }
             .padding(.horizontal, 16)
@@ -63,6 +64,7 @@ struct SettingsView: View {
                     }
                     .pickerStyle(.segmented)
                     .frame(maxWidth: 200)
+                    .accessibilityIdentifier("appearance-picker")
                 }
                 HStack {
                     Text(s.themeStyleLabel)
@@ -73,6 +75,7 @@ struct SettingsView: View {
                     }
                     .pickerStyle(.segmented)
                     .frame(maxWidth: 220)
+                    .accessibilityIdentifier("theme-picker")
                 }
                 HStack {
                     Text(s.languageLabel)

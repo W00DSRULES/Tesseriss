@@ -17,6 +17,7 @@ struct ControlsView: View {
                 Spacer()
                 iconButton(systemName: "arrow.clockwise") { engine.rotateCW() }
                     .frame(maxWidth: 200)
+                    .accessibilityIdentifier("rotate-button")
                 Spacer()
             }
             HStack(spacing: 14) {
@@ -28,6 +29,7 @@ struct ControlsView: View {
                 Spacer()
                 iconButton(systemName: "chevron.down.2") { engine.hardDrop() }
                     .frame(maxWidth: 200)
+                    .accessibilityIdentifier("hard-drop-button")
                 Spacer()
             }
         }

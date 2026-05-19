@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   test:
-    name: unit tests
+    name: unit + UI tests
     runs-on: macos-15
     timeout-minutes: 30
     steps:
@@ -35,7 +35,7 @@ jobs:
           echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
           echo "Picked simulator: $DEVICE"
 
-      - name: Run unit tests
+      - name: Run unit + UI tests
         run: |
           set -o pipefail
           xcodebuild test \

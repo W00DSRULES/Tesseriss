@@ -78,6 +78,7 @@ struct GameView: View {
                     .background(Color("PaletteCard"))
                     .clipShape(Capsule())
             }
+            .accessibilityIdentifier("menu-button")
             Spacer()
             Button(action: {
                 if engine.phase == .playing { engine.togglePause() }
@@ -114,6 +115,7 @@ struct GameView: View {
             Text(value)
                 .font(.system(.title3, design: .rounded).weight(.semibold))
                 .foregroundStyle(Color("PaletteInk"))
+                .accessibilityIdentifier("stat-\(label.lowercased())")
         }
     }
 

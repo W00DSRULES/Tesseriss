@@ -35,6 +35,20 @@
                ReferencedContainer = "container:Tesseriss.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "331A29E670D048329CFC4B03"
+               BuildableName = "TesserissUITests.xctest"
+               BlueprintName = "TesserissUITests"
+               ReferencedContainer = "container:Tesseriss.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -61,6 +75,17 @@
                BlueprintIdentifier = "A28BC4A755F2C4A34FFE1412"
                BuildableName = "TesserissTests.xctest"
                BlueprintName = "TesserissTests"
+               ReferencedContainer = "container:Tesseriss.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "331A29E670D048329CFC4B03"
+               BuildableName = "TesserissUITests.xctest"
+               BlueprintName = "TesserissUITests"
                ReferencedContainer = "container:Tesseriss.xcodeproj">
             </BuildableReference>
          </TestableReference>

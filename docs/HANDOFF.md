@@ -37,8 +37,12 @@ Persistence
 - Highscore in `UserDefaults` (`tesseriss.highscore`) — shown on menu and game-over screen with a "NEW BEST" badge.
 
 Tests
-- `TesserissTests` covers Board (8 tests), Tetromino (5), Scoring (6), Randomizer (4) — 23 unit tests, all pure-Swift, run in <50 ms.
-- CI runs on every push via `.github/workflows/tests.yml` (macOS-15 runner).
+- `TesserissTests` covers Board (8), Tetromino (7), Scoring (6), Randomizer (8), GameMode (6) — 25 unit tests, all pure-Swift, run in <50 ms.
+- `TesserissUITests` covers the menu/game/settings flow + seeded deterministic gameplay — 8 XCUITests, ~3 min on simulator.
+- CI runs both suites on every push via `.github/workflows/tests.yml` (macOS-15 runner).
+- For deterministic gameplay tests, the app reads two process inputs at launch:
+  - `--ui-test` (launch argument) → wipes UserDefaults for a clean baseline.
+  - `TESSERISS_RNG_SEED=<uint64>` (env var) → seeds `PieceRandomizer` so the same input sequence produces the same gameplay outcome.
 
 ---
 
@@ -151,7 +155,7 @@ For Tesseriss, the bundle (option 1) is the right answer until you're past ~3 pl
 ## 📋 Known gaps
 
 - Silent audio. The wiring is correct; you'll hear it the moment you swap the WAV bytes.
-- No UI XCUITests yet (only unit tests).
+- UI XCUITests cover smoke + settings persistence + seeded gameplay determinism (see `TesserissUITests/SmokeTests.swift`).
 - No SwiftUI previews (intentional — kept out of scope).
 - Bundle ID is `com.W00DSRULES.Tesseriss`. If you ever need to change it, edit `project.yml` and re-run `xcodegen generate`.
 - Rotation uses fixed 4-state tables without SRS wall kicks — classic-era, intentional.

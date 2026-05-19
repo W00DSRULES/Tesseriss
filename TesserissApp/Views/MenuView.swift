@@ -25,6 +25,7 @@ struct MenuView: View {
                 Text("\(hs.highscore(for: settings.selectedMode))")
                     .font(.system(size: 36, weight: .semibold, design: .rounded))
                     .foregroundStyle(Color("PaletteInk"))
+                    .accessibilityIdentifier("highscore-value")
             }
             VStack(spacing: 14) {
                 Button(action: { engine.startNewGame(mode: settings.selectedMode) }) {
@@ -35,6 +36,7 @@ struct MenuView: View {
                         .background(Color("PaletteInk"))
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
+                .accessibilityIdentifier("start-button")
                 modePicker
                 Button(action: { engine.openSettings() }) {
                     Text(s.settings)
@@ -44,6 +46,7 @@ struct MenuView: View {
                         .background(Color("PaletteCard"))
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
+                .accessibilityIdentifier("settings-button")
             }
             .padding(.horizontal, 32)
             Spacer()

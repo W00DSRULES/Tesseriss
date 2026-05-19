@@ -74,13 +74,34 @@ targets:
         CODE_SIGNING_ALLOWED: NO
         SWIFT_VERSION: "5.0"
 
+  TesserissUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: TesserissUITests
+    dependencies:
+      - target: Tesseriss
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.W00DSRULES.TesserissUITests
+        GENERATE_INFOPLIST_FILE: YES
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGNING_REQUIRED: NO
+        CODE_SIGNING_ALLOWED: NO
+        SWIFT_VERSION: "5.0"
+        TEST_TARGET_NAME: Tesseriss
+
 schemes:
   Tesseriss:
     build:
       targets:
         Tesseriss: all
         TesserissTests: [test]
+        TesserissUITests: [test]
     test:
       targets:
         - TesserissTests
+        - TesserissUITests
       gatherCoverageData: false
