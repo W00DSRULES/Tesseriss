@@ -17,22 +17,18 @@ The name is Greek *tesseris* ("four") + German *Riss* ("tear") — tear the rows
 
 ## Audio
 
-**Recordings are not committed to this repo.** The bundled sound effects (`line_clear.wav`, `four_line.wav`) are silent placeholders, and the music tracks are absent — so the game is silent until you supply your own files. Drop replacements into `TesserissApp/Resources/` and re-run `xcodegen generate`.
+The Music toggle plays a 6-track Impressionist playlist (`MusicPlaylist.impressionists`), bundled in `TesserissApp/Resources/`. **Every track is Public Domain or CC0 — no attribution required.** (The two bundled sound effects, `line_clear.wav` / `four_line.wav`, are still silent placeholders — swap them for CC0 SFX when you have them.)
 
-The Music toggle expects an 8-track Impressionist playlist (`MusicPlaylist.impressionists`). Source public-domain / CC-BY recordings (e.g. [Wikimedia Commons](https://commons.wikimedia.org/)), convert to `.m4a`/`.wav` (AVAudioPlayer can't decode `.ogg`: `ffmpeg -i in.ogg -c:a aac -b:a 192k out.m4a`), and name them exactly:
+| File | Piece | Instrument | Source / licence |
+|---|---|---|---|
+| `01_satie_gymnopedie_1.mp3` | Satie — Gymnopédie No. 1 | piano | Robin Alciatore · Public Domain |
+| `02_satie_gnossienne_3.mp3` | Satie — Gnossienne No. 3 | piano | GregorQuendel · Pixabay |
+| `03_debussy_clair_de_lune.mp3` | Debussy — Clair de Lune | piano | "1905 solo" · Public Domain Mark |
+| `05_debussy_reverie.mp3` | Debussy — Rêverie | piano | Anonymous · Public Domain Mark |
+| `06_satie_gymnopedie_3.mp3` | Satie — Gymnopédie No. 3 | piano | Teknopazzo · CC0 |
+| `07_debussy_clair_de_lune_brass.mp3` | Debussy — Clair de Lune | brass | USAF Band of Flight · Public Domain |
 
-| File | Piece |
-|---|---|
-| `01_satie_gymnopedie_1` | Satie — Gymnopédie No. 1 |
-| `02_satie_gymnopedie_3` | Satie — Gymnopédie No. 3 |
-| `03_satie_gnossienne_1` | Satie — Gnossienne No. 1 |
-| `04_satie_gnossienne_3` | Satie — Gnossienne No. 3 |
-| `05_debussy_clair_de_lune` | Debussy — Clair de Lune |
-| `06_debussy_reverie` | Debussy — Rêverie |
-| `07_debussy_arabesque_1` | Debussy — Première Arabesque |
-| `08_ravel_pavane` | Ravel — Pavane pour une infante défunte |
-
-⚠️ **Licensing:** the compositions are out of copyright, but specific *recordings* may be **CC-BY** (e.g. a common Clair de Lune recording by Laurens Goedhart), which requires visible attribution. Verify each file's licence on its source page and credit performers on-screen before shipping.
+Slot `04` (a harp Gymnopédie 1) is intentionally unused. To add or swap a track, drop a file into `Resources/` (`.m4a`/`.mp3`/`.wav`/`.caf`/`.aiff`/`.flac`; convert `.ogg`/`.opus` first with `ffmpeg -i in.ogg -c:a aac -b:a 192k out.m4a`), add its basename to `MusicPlaylist.swift`, and re-run `xcodegen generate`. If you swap in a different recording, re-check *its* licence — many Creative Commons performances are **CC-BY** (attribution) or **CC BY-NC/ND** (unusable in a commercial app).
 
 ## Build (CLI)
 

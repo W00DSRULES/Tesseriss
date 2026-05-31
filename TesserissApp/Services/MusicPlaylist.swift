@@ -16,15 +16,16 @@ extension MusicPlaylist {
         id: "impressionists",
         nameEN: "Impressionists",
         nameTR: "İzlenimciler",
+        // All tracks Public Domain / CC0 (zero attribution). Timbres alternate;
+        // the two Gymnopédie 1s and two Clair de Lunes are spread out. Slot 04 (a
+        // harp Gymnopédie 1) is intentionally reserved/unused. See README "Audio".
         tracks: [
-            "01_satie_gymnopedie_1",
-            "02_satie_gymnopedie_3",
-            "03_satie_gnossienne_1",
-            "04_satie_gnossienne_3",
-            "05_debussy_clair_de_lune",
-            "06_debussy_reverie",
-            "07_debussy_arabesque_1",
-            "08_ravel_pavane",
+            "01_satie_gymnopedie_1",          // Gymnopédie No. 1, piano (Robin Alciatore, PD)
+            "02_satie_gnossienne_3",          // Gnossienne No. 3, piano (GregorQuendel, Pixabay)
+            "03_debussy_clair_de_lune",       // Clair de Lune, piano (1905 solo, PD Mark)
+            "05_debussy_reverie",             // Rêverie, piano (Anonymous, PD Mark)
+            "06_satie_gymnopedie_3",          // Gymnopédie No. 3, piano (Teknopazzo, CC0)
+            "07_debussy_clair_de_lune_brass", // Clair de Lune, brass (USAF Band of Flight, PD)
         ]
     )
 
