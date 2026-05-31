@@ -30,8 +30,8 @@ targets:
       path: TesserissApp/Info.plist
       properties:
         CFBundleDisplayName: Tesseriss
-        CFBundleShortVersionString: "0.1.0"
-        CFBundleVersion: "2"
+        CFBundleShortVersionString: "0.2.0"
+        CFBundleVersion: "1"
         ITSAppUsesNonExemptEncryption: false
         LSRequiresIPhoneOS: true
         UILaunchScreen:
