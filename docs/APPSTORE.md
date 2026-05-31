@@ -50,9 +50,10 @@ at a time.
 Stack, clear, breathe. Tear the rows.
 ```
 
-**Support URL** — _(required — e.g. a simple page or GitHub repo URL)_
-**Marketing URL** — _(optional)_
-**Copyright** — `2026 Vibalyze OU`
+**Support URL** — `https://w00dsrules.github.io/Tesseriss/support.html`
+**Marketing URL** (optional) — `https://w00dsrules.github.io/Tesseriss/`
+**Privacy Policy URL** — `https://w00dsrules.github.io/Tesseriss/privacy.html`
+**Copyright** — `2026 Vibalyze OÜ`
 **Category** — Primary: Games → Puzzle · Secondary (optional): Games → Arcade
 
 ---
