@@ -92,15 +92,20 @@ final class AudioController: NSObject {
         musicPlayer?.volume = settings.musicVolume
     }
 
-    func startMusicIfEnabled() {
+    /// Starts the playlist the first time it's called, then keeps it going across
+    /// menu/game transitions: it never rewinds an already-loaded track and only
+    /// resumes if paused. Music therefore plays continuously for the life of the
+    /// app process and only resets (back to track 1) when the app is relaunched.
+    func ensureMusicPlaying() {
         reloadIfPlaylistChanged()
         guard settings.musicEnabled, !musicPlaylist.isEmpty else { return }
         if musicPlayer == nil {
             currentTrackIndex = 0
             musicPlayer = loadTrack(at: currentTrackIndex)
         }
-        musicPlayer?.currentTime = 0
-        musicPlayer?.play()
+        if musicPlayer?.isPlaying == false {
+            musicPlayer?.play()
+        }
     }
 
     func resumeMusicIfEnabled() {

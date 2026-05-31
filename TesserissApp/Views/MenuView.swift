@@ -82,7 +82,11 @@ struct MenuView: View {
         // Selected mode uses a neutral grey so it doesn't compete with the Ink-colored Start button.
         let selectedBg = Color(red: 0.45, green: 0.45, blue: 0.46)
         let selectedStroke = Color(red: 0.32, green: 0.32, blue: 0.34)
-        return Button(action: { settings.selectedMode = mode }) {
+        return Button(action: {
+            guard settings.selectedMode != mode else { return }
+            engine.haptics.light(enabled: settings.hapticsEnabled)
+            settings.selectedMode = mode
+        }) {
             VStack(spacing: 2) {
                 Text(s.modeName(mode))
                     .font(.system(.callout, design: .rounded).weight(.semibold))
