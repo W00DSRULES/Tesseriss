@@ -19,20 +19,19 @@ The name is Greek *tesseris* ("four") + German *Riss* ("tear") — tear the rows
 
 **Recordings are not committed to this repo.** The bundled sound effects (`line_clear.wav`, `four_line.wav`) are silent placeholders, and the music tracks are absent — so the game is silent until you supply your own files. Drop replacements into `TesserissApp/Resources/` and re-run `xcodegen generate`.
 
-The Music toggle expects an 8-track Impressionist playlist (`MusicPlaylist.impressionists`). Source public-domain / CC-BY recordings (e.g. [Wikimedia Commons](https://commons.wikimedia.org/)), convert to `.m4a`/`.wav` (AVAudioPlayer can't decode `.ogg`: `ffmpeg -i in.ogg -c:a aac -b:a 192k out.m4a`), and name them exactly:
+The Music toggle expects a 7-track Impressionist playlist (`MusicPlaylist.impressionists`). Every track in the curated set is **Public Domain or CC0 — no attribution required**. Source the recordings (e.g. [Wikimedia Commons](https://commons.wikimedia.org/), [Musopen](https://musopen.org/)), convert to `.m4a` if needed (AVAudioPlayer can't decode `.ogg`/`.opus`: `ffmpeg -i in.ogg -c:a aac -b:a 192k out.m4a`; `.mp3` plays as-is), and name them exactly:
 
-| File | Piece |
-|---|---|
-| `01_satie_gymnopedie_1` | Satie — Gymnopédie No. 1 |
-| `02_satie_gymnopedie_3` | Satie — Gymnopédie No. 3 |
-| `03_satie_gnossienne_1` | Satie — Gnossienne No. 1 |
-| `04_satie_gnossienne_3` | Satie — Gnossienne No. 3 |
-| `05_debussy_clair_de_lune` | Debussy — Clair de Lune |
-| `06_debussy_reverie` | Debussy — Rêverie |
-| `07_debussy_arabesque_1` | Debussy — Première Arabesque |
-| `08_ravel_pavane` | Ravel — Pavane pour une infante défunte |
+| File | Piece | Instrument |
+|---|---|---|
+| `01_satie_gymnopedie_1` | Satie — Gymnopédie No. 1 | piano |
+| `02_satie_gnossienne_3` | Satie — Gnossienne No. 3 | piano |
+| `03_debussy_clair_de_lune` | Debussy — Clair de Lune | piano |
+| `04_satie_gymnopedie_1_harp` | Satie — Gymnopédie No. 1 | harp |
+| `05_debussy_reverie` | Debussy — Rêverie | piano |
+| `06_satie_gymnopedie_3` | Satie — Gymnopédie No. 3 | piano |
+| `07_debussy_clair_de_lune_brass` | Debussy — Clair de Lune | brass |
 
-⚠️ **Licensing:** the compositions are out of copyright, but specific *recordings* may be **CC-BY** (e.g. a common Clair de Lune recording by Laurens Goedhart), which requires visible attribution. Verify each file's licence on its source page and credit performers on-screen before shipping.
+The compositions are long out of copyright; the curated recordings above are all PD/CC0, so no on-screen credit is required. If you swap in a different recording, re-check *its* licence — many Creative Commons performances are **CC-BY** (attribution) or **CC BY-NC/ND** (unusable in a commercial app).
 
 ## Build (CLI)
 
