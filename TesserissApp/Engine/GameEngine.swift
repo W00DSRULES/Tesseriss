@@ -68,13 +68,15 @@ final class GameEngine: ObservableObject {
         phase = .playing
         spawnNext()
         startTimer()
-        audio.startMusicIfEnabled()
+        audio.ensureMusicPlaying()
     }
 
     func returnToMenu() {
         stopTimer()
         stopClearTimer()
-        audio.stopMusic()
+        // Music keeps playing across the menu (resumes if it was paused), so it
+        // stays continuous when bouncing between the menu and a game.
+        audio.resumeMusicIfEnabled()
         screen = .menu
         phase = .paused
     }
@@ -124,7 +126,7 @@ final class GameEngine: ObservableObject {
         stopClearTimer()
         phase = .gameOver
         screen = .gameOver
-        audio.stopMusic()
+        // Leave music playing on the game-over screen for continuity.
         haptics.gameOver(enabled: settings.hapticsEnabled)
         highscoreStore.maybeUpdate(score, for: mode)
     }

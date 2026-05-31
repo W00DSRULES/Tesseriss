@@ -11,10 +11,10 @@ struct SettingsView: View {
             HStack {
                 Button(action: { engine.closeSettings() }) {
                     Text(s.back)
-                        .font(.system(.caption, design: .rounded).weight(.semibold))
-                        .foregroundStyle(Color("PaletteInk").opacity(0.7))
-                        .padding(.vertical, 6)
-                        .padding(.horizontal, 12)
+                        .font(.system(.body, design: .rounded).weight(.semibold))
+                        .foregroundStyle(Color("PaletteInk").opacity(0.8))
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 18)
                         .background(Color("PaletteCard"))
                         .clipShape(Capsule())
                 }
@@ -22,6 +22,11 @@ struct SettingsView: View {
                 Spacer()
             }
             .padding(.horizontal, 16)
+            .padding(.top, 8)
+
+            // Push the title + controls block toward the middle of the screen
+            // (the content doesn't fill the height, so this reads less top-heavy).
+            Spacer()
 
             Text(s.settings)
                 .font(.system(.title, design: .rounded).weight(.semibold))
