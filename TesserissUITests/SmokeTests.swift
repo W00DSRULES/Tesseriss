@@ -110,12 +110,19 @@ final class SmokeTests: XCTestCase {
         app.buttons["start-button"].tap()
         let hardDrop = app.buttons["hard-drop-button"]
         XCTAssertTrue(hardDrop.waitForExistence(timeout: 3))
-        for _ in 0..<10 {
+        // Default mode "og" is 10x20. Five pieces stacked in the spawn column
+        // (~2 rows each) can't top out a 20-row board, so the game must stay
+        // alive regardless of runner timing. A brief settle between taps lets
+        // each piece lock and the next spawn, so no tap is swallowed by a
+        // lock/clear frame (where hardDrop is a no-op) — keeping this test
+        // deterministic instead of timing-dependent.
+        for _ in 0..<5 {
             hardDrop.tap()
+            Thread.sleep(forTimeInterval: 0.15)
         }
         // Still on the game screen, controls still responsive.
         XCTAssertTrue(app.buttons["menu-button"].exists,
-                      "Should still be on game screen after 10 deterministic drops")
+                      "Should still be on game screen after 5 deterministic drops")
         XCTAssertTrue(hardDrop.exists)
     }
 
@@ -128,7 +135,10 @@ final class SmokeTests: XCTestCase {
             app.buttons["start-button"].tap()
             let hardDrop = app.buttons["hard-drop-button"]
             _ = hardDrop.waitForExistence(timeout: 3)
-            for _ in 0..<drops { hardDrop.tap() }
+            // Settle between taps so every drop locks in both runs; otherwise a
+            // tap swallowed by a lock/clear frame in one run but not the other
+            // would diverge the scores and flake this comparison.
+            for _ in 0..<drops { hardDrop.tap(); Thread.sleep(forTimeInterval: 0.15) }
             let stat = app.staticTexts["stat-skor"].exists
                 ? app.staticTexts["stat-skor"]
                 : app.staticTexts["stat-score"]
