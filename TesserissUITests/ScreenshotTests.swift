@@ -23,32 +23,38 @@ final class ScreenshotTests: XCTestCase {
         add(a)
     }
 
-    /// Launch fresh (wipes UserDefaults to defaults: Turkish, og mode, classic,
-    /// day) with a fixed seed so the board is reproducible.
-    private func launch() -> XCUIApplication {
+    /// Launch fresh (wipes UserDefaults; language then follows the simulator's
+    /// device language) with a fixed seed so the board is reproducible.
+    private func launch(extraEnv: [String: String] = [:]) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["--ui-test"]
-        app.launchEnvironment = ["TESSERISS_RNG_SEED": "1337"]
+        var env = ["TESSERISS_RNG_SEED": "1337"]
+        for (k, v) in extraEnv { env[k] = v }
+        app.launchEnvironment = env
         app.launch()
         return app
     }
 
-    private func switchToEnglish(_ app: XCUIApplication) {
+    /// Select a language by its picker label ("English" / "Türkçe").
+    private func selectLanguage(_ app: XCUIApplication, _ label: String) {
         app.buttons["settings-button"].tap()
-        let english = app.buttons["English"]
-        XCTAssertTrue(english.waitForExistence(timeout: 3))
-        english.tap()
+        let button = app.buttons[label]
+        XCTAssertTrue(button.waitForExistence(timeout: 3))
+        button.tap()
         app.buttons["back-button"].tap()
         XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3))
     }
 
-    func test_capture_store_screenshots() {
+    func test_screenshots_english() { captureSet(language: "English", prefix: "en") }
+    func test_screenshots_turkish() { captureSet(language: "Türkçe", prefix: "tr") }
+
+    private func captureSet(language: String, prefix: String) {
         let app = launch()
         XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 5))
-        switchToEnglish(app)
+        selectLanguage(app, language)
 
         // 1) Menu — title, tagline, scoring, modes, highscore.
-        snap("01-menu")
+        snap("\(prefix)-01-menu")
 
         // 2) Gameplay — stack a few pieces so the board reads as a real game.
         app.buttons["start-button"].tap()
@@ -60,7 +66,7 @@ final class ScreenshotTests: XCTestCase {
             hardDrop.tap()
             Thread.sleep(forTimeInterval: 0.2)
         }
-        snap("02-game")
+        snap("\(prefix)-02-game")
 
         // 3) Settings — toggles, theme/appearance/language pickers, about.
         app.buttons["menu-button"].tap()
@@ -68,7 +74,7 @@ final class ScreenshotTests: XCTestCase {
         XCTAssertTrue(settings.waitForExistence(timeout: 3))
         settings.tap()
         XCTAssertTrue(app.buttons["back-button"].waitForExistence(timeout: 3))
-        snap("03-settings")
+        snap("\(prefix)-03-settings")
 
         // 4) Hokusai + Night gameplay — show the alternate theme.
         if app.buttons["Hokusai"].exists { app.buttons["Hokusai"].tap() }
@@ -78,7 +84,7 @@ final class ScreenshotTests: XCTestCase {
         if night.exists { night.tap() }
         app.buttons["back-button"].tap()
         XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3))
-        snap("04-menu-hokusai-night")
+        snap("\(prefix)-04-menu-hokusai-night")
 
         app.buttons["start-button"].tap()
         XCTAssertTrue(hardDrop.waitForExistence(timeout: 5))
@@ -87,6 +93,23 @@ final class ScreenshotTests: XCTestCase {
             hardDrop.tap()
             Thread.sleep(forTimeInterval: 0.2)
         }
-        snap("05-game-hokusai-night")
+        snap("\(prefix)-05-game-hokusai-night")
+
+        // 6) Four-line clear flash — fresh launch with the prefilled board and
+        //    a stretched flash so the screenshot lands inside the celebration.
+        let tetrisApp = launch(extraEnv: [
+            "TESSERISS_TETRIS_SETUP": "1",
+            "TESSERISS_CLEAR_PAUSE": "3",
+        ])
+        XCTAssertTrue(tetrisApp.buttons["start-button"].waitForExistence(timeout: 5))
+        selectLanguage(tetrisApp, language)
+        tetrisApp.buttons["start-button"].tap()
+        let drop = tetrisApp.buttons["hard-drop-button"]
+        XCTAssertTrue(drop.waitForExistence(timeout: 5))
+        tetrisApp.buttons["rotate-button"].tap()                       // I piece → vertical
+        tetrisApp.buttons["move-right-button"].press(forDuration: 1.5) // auto-repeat to the right wall
+        drop.tap()                                                     // into the gap → four-line clear
+        Thread.sleep(forTimeInterval: 0.4)                             // let the flash render
+        snap("\(prefix)-06-four-line-flash")
     }
 }
