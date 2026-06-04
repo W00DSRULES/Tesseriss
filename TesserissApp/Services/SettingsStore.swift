@@ -12,6 +12,11 @@ enum AppearanceMode: String, CaseIterable, Identifiable {
 enum Language: String, CaseIterable, Identifiable {
     case tr, en
     var id: String { rawValue }
+
+    /// First-launch default: follow the device language (Turkish → tr, anything else → en).
+    static func deviceDefault(preferredLanguages: [String] = Locale.preferredLanguages) -> Language {
+        preferredLanguages.first?.hasPrefix("tr") == true ? .tr : .en
+    }
 }
 
 final class SettingsStore: ObservableObject {
@@ -82,7 +87,7 @@ final class SettingsStore: ObservableObject {
         if defaults.object(forKey: musicVolumeKey) == nil { defaults.set(Float(0.5), forKey: musicVolumeKey) }
         if defaults.object(forKey: hapticsKey) == nil { defaults.set(true, forKey: hapticsKey) }
         if defaults.object(forKey: appearanceKey) == nil { defaults.set(AppearanceMode.day.rawValue, forKey: appearanceKey) }
-        if defaults.object(forKey: languageKey) == nil { defaults.set(Language.tr.rawValue, forKey: languageKey) }
+        if defaults.object(forKey: languageKey) == nil { defaults.set(Language.deviceDefault().rawValue, forKey: languageKey) }
         if defaults.object(forKey: ghostKey) == nil { defaults.set(true, forKey: ghostKey) }
         if defaults.object(forKey: playlistKey) == nil { defaults.set(MusicPlaylist.impressionists.id, forKey: playlistKey) }
         if defaults.object(forKey: selectedModeKey) == nil { defaults.set(GameMode.og.rawValue, forKey: selectedModeKey) }
@@ -92,8 +97,8 @@ final class SettingsStore: ObservableObject {
         self.hapticsEnabled = defaults.bool(forKey: hapticsKey)
         let araw = defaults.string(forKey: appearanceKey) ?? AppearanceMode.day.rawValue
         self.appearance = AppearanceMode(rawValue: araw) ?? .day
-        let lraw = defaults.string(forKey: languageKey) ?? Language.tr.rawValue
-        self.language = Language(rawValue: lraw) ?? .tr
+        let lraw = defaults.string(forKey: languageKey) ?? Language.deviceDefault().rawValue
+        self.language = Language(rawValue: lraw) ?? Language.deviceDefault()
         self.ghostEnabled = defaults.bool(forKey: ghostKey)
         self.playlistID = defaults.string(forKey: playlistKey) ?? MusicPlaylist.impressionists.id
         let modeRaw = defaults.string(forKey: selectedModeKey) ?? GameMode.og.rawValue
