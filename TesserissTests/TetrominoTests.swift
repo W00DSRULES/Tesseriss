@@ -52,6 +52,18 @@ final class TetrominoTests: XCTestCase {
         }
     }
 
+    func test_ccw_rotation_inverts_cw_rotation() {
+        for kind in PieceKind.allCases {
+            for start in 0..<4 {
+                let piece = Tetromino(kind: kind, rotation: start, origin: GridPoint(x: 3, y: 5))
+                XCTAssertEqual(piece.rotated(by: 1).rotated(by: -1), piece,
+                               "CCW must invert CW for \(kind) at rotation \(start)")
+                XCTAssertEqual(piece.rotated(by: -1).rotation, ((start - 1) % 4 + 4) % 4,
+                               "CCW from rotation \(start) must land on \((start + 3) % 4) for \(kind)")
+            }
+        }
+    }
+
     func test_rotated_by_delta_is_consistent_with_static_table() {
         for kind in PieceKind.allCases {
             let piece = Tetromino(kind: kind, rotation: 0, origin: GridPoint(x: 0, y: 0))

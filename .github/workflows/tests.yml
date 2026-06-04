@@ -35,12 +35,23 @@ jobs:
           echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
           echo "Picked simulator: $DEVICE"
 
+      - name: Boot simulator
+        run: |
+          set -euo pipefail
+          # Pre-boot so the first UI test doesn't hit a cold simulator
+          # ("Failed to get background assertion" flake at app launch).
+          xcrun simctl boot "${{ steps.sim.outputs.device }}" || true
+          xcrun simctl bootstatus "${{ steps.sim.outputs.device }}" -b
+
       - name: Run unit + UI tests
         run: |
           set -o pipefail
+          # ScreenshotTests captures App Store marketing shots — not a
+          # correctness test (see its doc comment); run it manually instead.
           xcodebuild test \
             -project Tesseriss.xcodeproj \
             -scheme Tesseriss \
             -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }},OS=latest" \
+            -skip-testing:TesserissUITests/ScreenshotTests \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO

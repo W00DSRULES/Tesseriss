@@ -182,9 +182,12 @@ final class GameEngine: ObservableObject {
         }
     }
 
-    func rotateCW() {
+    func rotateCW()  { rotate(by:  1) }
+    func rotateCCW() { rotate(by: -1) }
+
+    private func rotate(by delta: Int) {
         guard phase == .playing, let piece = current else { return }
-        let rotated = piece.rotated(by: 1)
+        let rotated = piece.rotated(by: delta)
         if !board.collides(rotated) {
             current = rotated
             haptics.light(enabled: settings.hapticsEnabled)

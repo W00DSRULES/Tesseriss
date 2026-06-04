@@ -1,8 +1,8 @@
 import SwiftUI
 
 /// Wooden-board surface used as the playfield backdrop in the Hokusai theme.
-/// Procedural — a soft wood-tone base with subtle plank shading, sparse grain
-/// lines, and a couple of knots. Drawn entirely with SwiftUI Canvas.
+/// Procedural — a soft wood-tone base with subtle plank shading and sparse
+/// grain lines. Drawn entirely with SwiftUI Canvas.
 struct WoodenBoardView: View {
     let appearance: AppearanceMode
 
@@ -13,9 +13,6 @@ struct WoodenBoardView: View {
                 drawColorBands(ctx: &ctx, size: size)
                 drawGrainLines(ctx: &ctx, size: size)
                 drawEndGrainTicks(ctx: &ctx, size: size)
-                if size.width > 120 && size.height > 120 {
-                    drawKnots(ctx: &ctx, size: size)
-                }
                 drawEdgeShadow(ctx: &ctx, size: size)
             }
             .frame(width: geo.size.width, height: geo.size.height)
@@ -28,27 +25,23 @@ struct WoodenBoardView: View {
 
     private var woodLight: Color {
         isDay ? Color(red: 0.741, green: 0.604, blue: 0.443)
-              : Color(red: 0.196, green: 0.122, blue: 0.075)
+              : Color(red: 0.275, green: 0.180, blue: 0.114)
     }
     private var woodMid: Color {
         isDay ? Color(red: 0.620, green: 0.475, blue: 0.318)
-              : Color(red: 0.137, green: 0.082, blue: 0.047)
+              : Color(red: 0.208, green: 0.133, blue: 0.080)
     }
     private var woodDark: Color {
         isDay ? Color(red: 0.494, green: 0.353, blue: 0.212)
-              : Color(red: 0.090, green: 0.051, blue: 0.027)
+              : Color(red: 0.149, green: 0.090, blue: 0.051)
     }
     private var grainDark: Color {
         isDay ? Color(red: 0.290, green: 0.180, blue: 0.078)
-              : Color(red: 0.039, green: 0.020, blue: 0.012)
+              : Color(red: 0.063, green: 0.035, blue: 0.020)
     }
     private var grainHighlight: Color {
         isDay ? Color(red: 0.831, green: 0.706, blue: 0.541)
-              : Color(red: 0.275, green: 0.184, blue: 0.118)
-    }
-    private var knotColor: Color {
-        isDay ? Color(red: 0.224, green: 0.122, blue: 0.047)
-              : Color(red: 0.020, green: 0.012, blue: 0.008)
+              : Color(red: 0.357, green: 0.247, blue: 0.161)
     }
 
     // MARK: drawing
@@ -143,50 +136,6 @@ struct WoodenBoardView: View {
             ctx.stroke(tick,
                        with: .color(grainDark.opacity(0.06 + CGFloat(rng.nextUnit()) * 0.08)),
                        style: StrokeStyle(lineWidth: 0.5, lineCap: .round))
-        }
-    }
-
-    /// 1–2 sparse knots — gives the board character without being busy.
-    private func drawKnots(ctx: inout GraphicsContext, size: CGSize) {
-        var rng = SeededRNG(seed: 9001)
-        let area = size.width * size.height
-        let knotCount = max(1, min(2, Int(area / 90000)))
-        for _ in 0..<knotCount {
-            let cx = size.width  * CGFloat(0.15 + rng.nextUnit() * 0.70)
-            let cy = size.height * CGFloat(0.15 + rng.nextUnit() * 0.70)
-            let outer: CGFloat = 5 + CGFloat(rng.nextUnit()) * 6
-            let inner: CGFloat = outer * 0.55
-
-            // Halo: a slightly darker stain around the knot where the grain bends.
-            let haloRect = CGRect(x: cx - outer * 1.7, y: cy - outer * 1.1,
-                                  width: outer * 3.4, height: outer * 2.2)
-            let haloGrad = Gradient(stops: [
-                .init(color: grainDark.opacity(0.18), location: 0.0),
-                .init(color: grainDark.opacity(0.0),  location: 1.0),
-            ])
-            ctx.fill(Path(ellipseIn: haloRect),
-                     with: .radialGradient(haloGrad,
-                                           center: CGPoint(x: cx, y: cy),
-                                           startRadius: 0, endRadius: outer * 1.7))
-
-            // The knot itself: dark center fading out.
-            let knotRect = CGRect(x: cx - outer, y: cy - outer * 0.75,
-                                  width: outer * 2, height: outer * 1.5)
-            let gradient = Gradient(stops: [
-                .init(color: knotColor,                 location: 0.0),
-                .init(color: knotColor.opacity(0.55),   location: 0.55),
-                .init(color: knotColor.opacity(0.0),    location: 1.0),
-            ])
-            ctx.fill(Path(ellipseIn: knotRect),
-                     with: .radialGradient(gradient,
-                                           center: CGPoint(x: cx, y: cy),
-                                           startRadius: 0, endRadius: outer))
-
-            // Inner ring of denser wood.
-            let innerRing = Path(ellipseIn: CGRect(x: cx - inner, y: cy - inner * 0.8,
-                                                   width: inner * 2, height: inner * 1.6))
-            ctx.stroke(innerRing, with: .color(grainDark.opacity(0.45)),
-                       style: StrokeStyle(lineWidth: 0.7))
         }
     }
 
