@@ -29,22 +29,28 @@ struct MenuView: View {
             }
             VStack(spacing: 14) {
                 Button(action: { engine.startNewGame(mode: settings.selectedMode) }) {
-                    Text(s.start)
-                        .font(.system(.title2, design: .rounded).weight(.semibold))
-                        .foregroundStyle(Color("PaletteBackground"))
-                        .frame(maxWidth: .infinity, minHeight: 64)
-                        .background(Color("PaletteInk"))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    HStack(spacing: 10) {
+                        Image(systemName: "play.fill")
+                        Text(s.start)
+                    }
+                    .font(.system(.title2, design: .rounded).weight(.semibold))
+                    .foregroundStyle(Color("PaletteBackground"))
+                    .frame(maxWidth: .infinity, minHeight: 64)
+                    .background(Color("PaletteInk"))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
                 .accessibilityIdentifier("start-button")
                 modePicker
                 Button(action: { engine.openSettings() }) {
-                    Text(s.settings)
-                        .font(.system(.title3, design: .rounded).weight(.medium))
-                        .foregroundStyle(Color("PaletteInk"))
-                        .frame(maxWidth: .infinity, minHeight: 56)
-                        .background(Color("PaletteCard"))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    HStack(spacing: 8) {
+                        Image(systemName: "gearshape.fill")
+                        Text(s.settings)
+                    }
+                    .font(.system(.title3, design: .rounded).weight(.medium))
+                    .foregroundStyle(Color("PaletteInk"))
+                    .frame(maxWidth: .infinity, minHeight: 56)
+                    .background(Color("PaletteCard"))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
                 .accessibilityIdentifier("settings-button")
             }
@@ -77,6 +83,15 @@ struct MenuView: View {
         }
     }
 
+    /// Language-independent glyph per mode: bolt = fast, grid = classic board, flame = hard.
+    private func modeIcon(_ mode: GameMode) -> String {
+        switch mode {
+        case .fast: return "bolt.fill"
+        case .og:   return "square.grid.3x3.fill"
+        case .hard: return "flame.fill"
+        }
+    }
+
     private func modeButton(_ mode: GameMode) -> some View {
         let isSelected = settings.selectedMode == mode
         // Selected mode uses a neutral grey so it doesn't compete with the Ink-colored Start button.
@@ -88,8 +103,12 @@ struct MenuView: View {
             settings.selectedMode = mode
         }) {
             VStack(spacing: 2) {
-                Text(s.modeName(mode))
-                    .font(.system(.callout, design: .rounded).weight(.semibold))
+                HStack(spacing: 4) {
+                    Image(systemName: modeIcon(mode))
+                        .font(.system(.caption, design: .rounded).weight(.semibold))
+                    Text(s.modeName(mode))
+                        .font(.system(.callout, design: .rounded).weight(.semibold))
+                }
                 Text(s.modeSubtitle(mode))
                     .font(.system(.caption2, design: .rounded).weight(.medium))
                     .opacity(0.7)
