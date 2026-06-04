@@ -62,6 +62,7 @@ final class GameEngine: ObservableObject {
         level = 0
         randomizer = randomizerFactory(mode.pentominoChance)
         nextKind = randomizer.next()
+        applyTetrisSetupIfRequested()
         flashingRows = []
         celebrationActive = false
         screen = .game
@@ -69,6 +70,20 @@ final class GameEngine: ObservableObject {
         spawnNext()
         startTimer()
         audio.ensureMusicPlaying()
+    }
+
+    /// Screenshot hook (UI tests only): TESSERISS_TETRIS_SETUP prefills the
+    /// bottom four rows with a one-column gap on the right and deals an I
+    /// piece, so the screenshot test can trigger a four-line clear on demand.
+    private func applyTetrisSetupIfRequested() {
+        guard ProcessInfo.processInfo.environment["TESSERISS_TETRIS_SETUP"] != nil else { return }
+        let fillKinds: [PieceKind] = [.J, .L, .S, .Z, .O, .T]
+        for (i, y) in ((board.height - 4)..<board.height).enumerated() {
+            for x in 0..<(board.width - 1) {
+                board.grid[y][x] = fillKinds[(x + i) % fillKinds.count]
+            }
+        }
+        nextKind = .I
     }
 
     func returnToMenu() {
@@ -244,7 +259,10 @@ final class GameEngine: ObservableObject {
             haptics.medium(enabled: settings.hapticsEnabled)
         }
 
-        let pauseSeconds: TimeInterval = isFourLine ? 0.5 : 0.2
+        // TESSERISS_CLEAR_PAUSE (UI tests only) stretches the flash so the
+        // screenshot test can capture it.
+        let pauseSeconds = ProcessInfo.processInfo.environment["TESSERISS_CLEAR_PAUSE"]
+            .flatMap(TimeInterval.init) ?? (isFourLine ? 0.5 : 0.2)
         clearTimer = Timer.scheduledTimer(withTimeInterval: pauseSeconds, repeats: false) { [weak self] _ in
             self?.completeClearAnimation(rows: rows)
         }

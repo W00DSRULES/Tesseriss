@@ -35,6 +35,14 @@ struct SettingsView: View {
             VStack(spacing: 16) {
                 Toggle(s.musicLabel, isOn: $settings.musicEnabled)
                     .toggleStyle(.switch)
+                    .onChange(of: settings.musicEnabled) { _, enabled in
+                        // Take effect immediately — don't wait for the next game.
+                        if enabled {
+                            engine.audio.ensureMusicPlaying()
+                        } else {
+                            engine.audio.pauseMusic()
+                        }
+                    }
                 HStack(spacing: 12) {
                     Text(s.volumeLabel)
                     Slider(value: $settings.musicVolume, in: 0...1)

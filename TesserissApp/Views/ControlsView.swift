@@ -15,8 +15,11 @@ struct ControlsView: View {
         VStack(spacing: 12) {
             HStack(spacing: 12) {
                 pressableButton("◀", onPress: startLeft, onRelease: stopLeft)
+                    .accessibilityIdentifier("move-left-button")
                 pressableButton("▼", onPress: startDown, onRelease: stopDown)
+                    .accessibilityIdentifier("soft-drop-button")
                 pressableButton("▶", onPress: startRight, onRelease: stopRight)
+                    .accessibilityIdentifier("move-right-button")
             }
             HStack(spacing: 12) {
                 iconButton(systemName: "arrow.counterclockwise") { engine.rotateCCW() }
@@ -102,6 +105,7 @@ private struct HoldButton: View {
             .background(Color("PaletteCard").opacity(isHeld ? 0.7 : 1.0))
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .contentShape(Rectangle())
+            .accessibilityAddTraits(.isButton)
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { _ in
