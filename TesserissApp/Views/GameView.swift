@@ -103,6 +103,14 @@ struct GameView: View {
                 statRow(label: s.level, value: "\(engine.level)")
                 statRow(label: s.lines, value: "\(engine.lines)")
             }
+            // Card backdrop (like the MENU capsule) keeps the numbers readable
+            // against the Hokusai artwork.
+            .padding(10)
+            .background(Color("PaletteCard").opacity(0.85))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            // Sit below the wave crest in the Hokusai theme so the numbers
+            // land on the calmer part of the artwork.
+            .padding(.top, 60)
         }
         .frame(maxWidth: 100, alignment: .leading)
     }
