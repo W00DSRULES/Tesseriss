@@ -35,12 +35,14 @@ final class ScreenshotTests: XCTestCase {
         return app
     }
 
-    /// Select a language by its picker label ("English" / "Türkçe").
-    private func selectLanguage(_ app: XCUIApplication, _ label: String) {
+    /// Select the language by its picker label ("English" / "Türkçe") and the
+    /// Hokusai theme (Day stays the wiped default) — the marketing look.
+    private func configure(_ app: XCUIApplication, language: String) {
         app.buttons["settings-button"].tap()
-        let button = app.buttons[label]
+        let button = app.buttons[language]
         XCTAssertTrue(button.waitForExistence(timeout: 3))
         button.tap()
+        if app.buttons["Hokusai"].exists { app.buttons["Hokusai"].tap() }
         app.buttons["back-button"].tap()
         XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3))
     }
@@ -51,7 +53,7 @@ final class ScreenshotTests: XCTestCase {
     private func captureSet(language: String, prefix: String) {
         let app = launch()
         XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 5))
-        selectLanguage(app, language)
+        configure(app, language: language)
 
         // 1) Menu — title, tagline, scoring, modes, highscore.
         snap("\(prefix)-01-menu")
@@ -76,33 +78,14 @@ final class ScreenshotTests: XCTestCase {
         XCTAssertTrue(app.buttons["back-button"].waitForExistence(timeout: 3))
         snap("\(prefix)-03-settings")
 
-        // 4) Hokusai + Night gameplay — show the alternate theme.
-        if app.buttons["Hokusai"].exists { app.buttons["Hokusai"].tap() }
-        let night = app.buttons.matching(
-            NSPredicate(format: "label CONTAINS[c] 'Night' OR label CONTAINS[c] 'Gece'")
-        ).firstMatch
-        if night.exists { night.tap() }
-        app.buttons["back-button"].tap()
-        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3))
-        snap("\(prefix)-04-menu-hokusai-night")
-
-        app.buttons["start-button"].tap()
-        XCTAssertTrue(hardDrop.waitForExistence(timeout: 5))
-        for i in 0..<6 {
-            if i % 2 == 1 && rotate.exists { rotate.tap() }
-            hardDrop.tap()
-            Thread.sleep(forTimeInterval: 0.2)
-        }
-        snap("\(prefix)-05-game-hokusai-night")
-
-        // 6) Four-line clear flash — fresh launch with the prefilled board and
+        // 4) Four-line clear flash — fresh launch with the prefilled board and
         //    a stretched flash so the screenshot lands inside the celebration.
         let tetrisApp = launch(extraEnv: [
             "TESSERISS_TETRIS_SETUP": "1",
             "TESSERISS_CLEAR_PAUSE": "3",
         ])
         XCTAssertTrue(tetrisApp.buttons["start-button"].waitForExistence(timeout: 5))
-        selectLanguage(tetrisApp, language)
+        configure(tetrisApp, language: language)
         tetrisApp.buttons["start-button"].tap()
         let drop = tetrisApp.buttons["hard-drop-button"]
         XCTAssertTrue(drop.waitForExistence(timeout: 5))
@@ -110,6 +93,6 @@ final class ScreenshotTests: XCTestCase {
         tetrisApp.buttons["move-right-button"].press(forDuration: 1.5) // auto-repeat to the right wall
         drop.tap()                                                     // into the gap → four-line clear
         Thread.sleep(forTimeInterval: 0.4)                             // let the flash render
-        snap("\(prefix)-06-four-line-flash")
+        snap("\(prefix)-04-four-line-flash")
     }
 }
