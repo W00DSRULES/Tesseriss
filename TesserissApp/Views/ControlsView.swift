@@ -12,25 +12,19 @@ struct ControlsView: View {
     private let repeatDelay: UInt64 = 50_000_000
 
     var body: some View {
-        VStack(spacing: 14) {
-            HStack {
-                Spacer()
-                iconButton(systemName: "arrow.clockwise") { engine.rotateCW() }
-                    .frame(maxWidth: 200)
-                    .accessibilityIdentifier("rotate-button")
-                Spacer()
-            }
-            HStack(spacing: 14) {
+        VStack(spacing: 12) {
+            HStack(spacing: 12) {
                 pressableButton("◀", onPress: startLeft, onRelease: stopLeft)
                 pressableButton("▼", onPress: startDown, onRelease: stopDown)
                 pressableButton("▶", onPress: startRight, onRelease: stopRight)
             }
-            HStack {
-                Spacer()
+            HStack(spacing: 12) {
+                iconButton(systemName: "arrow.counterclockwise") { engine.rotateCCW() }
+                    .accessibilityIdentifier("rotate-ccw-button")
                 iconButton(systemName: "chevron.down.2") { engine.hardDrop() }
-                    .frame(maxWidth: 200)
                     .accessibilityIdentifier("hard-drop-button")
-                Spacer()
+                iconButton(systemName: "arrow.clockwise") { engine.rotateCW() }
+                    .accessibilityIdentifier("rotate-button")
             }
         }
         .padding(.horizontal, 16)
@@ -44,7 +38,7 @@ struct ControlsView: View {
             Image(systemName: systemName)
                 .font(.system(size: 28, weight: .semibold))
                 .foregroundStyle(Color("PaletteInk"))
-                .frame(maxWidth: .infinity, minHeight: 64)
+                .frame(maxWidth: .infinity, minHeight: 76)
                 .background(Color("PaletteCard"))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
         }
@@ -104,7 +98,7 @@ private struct HoldButton: View {
         Text(title)
             .font(.system(.title2, design: .rounded).weight(.semibold))
             .foregroundStyle(Color("PaletteInk"))
-            .frame(maxWidth: .infinity, minHeight: 80)
+            .frame(maxWidth: .infinity, minHeight: 76)
             .background(Color("PaletteCard").opacity(isHeld ? 0.7 : 1.0))
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .contentShape(Rectangle())
