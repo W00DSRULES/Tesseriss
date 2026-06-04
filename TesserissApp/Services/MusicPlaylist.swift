@@ -16,7 +16,7 @@ extension MusicPlaylist {
         id: "impressionists",
         nameEN: "Impressionists",
         nameTR: "İzlenimciler",
-        // All tracks Public Domain / CC0 (zero attribution). Timbres alternate;
+        // All tracks Public Domain / CC0 / Pixabay licence (zero attribution). Timbres alternate;
         // the two Gymnopédie 1s and two Clair de Lunes are spread out. Slot 04 (a
         // harp Gymnopédie 1) is intentionally reserved/unused. See README "Audio".
         tracks: [

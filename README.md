@@ -1,6 +1,6 @@
 # Tesseriss
 
-Minimalist falling-blocks puzzle for iOS. Comforting palette, big-button touch controls, three game modes, and an optional public-domain Impressionist piano playlist. Built in SwiftUI for iOS 17+.
+Minimalist falling-blocks puzzle for iOS. Comforting palette, big-button touch controls, three game modes, and an optional Impressionist piano playlist. Built in SwiftUI for iOS 17+.
 
 The name is Greek *tesseris* ("four") + German *Riss* ("tear") — tear the rows four at a time.
 
@@ -12,12 +12,12 @@ The name is Greek *tesseris* ("four") + German *Riss* ("tear") — tear the rows
 - Scoring 100 / 300 / 1000 / 4000 × (level + 1) per cleared lines. Per-mode highscores.
 - Four-line clear celebration: 500 ms pause + row flash + chime + success haptic.
 - Two theme styles — **Classic** and **Kanagawa / Hokusai** (wooden board + Great Wave line-clear splash) — each with **Day / Night** appearance.
-- Turkish + English in-app (default Turkish); all settings persisted in `UserDefaults`.
+- Turkish + English in-app (first launch follows the device language); all settings persisted in `UserDefaults`.
 - Pause auto-fires on scene background; resume only via the explicit button.
 
 ## Audio
 
-The Music toggle plays a 6-track Impressionist playlist (`MusicPlaylist.impressionists`), bundled in `TesserissApp/Resources/`. **Every track is Public Domain or CC0 — no attribution required.** (The two bundled sound effects, `line_clear.wav` / `four_line.wav`, are still silent placeholders — swap them for CC0 SFX when you have them.)
+The Music toggle plays a 6-track Impressionist playlist (`MusicPlaylist.impressionists`), bundled in `TesserissApp/Resources/`. **Every track is Public Domain, CC0, or Pixabay Content License — none requires attribution.** (The two bundled sound effects, `line_clear.wav` / `four_line.wav`, are still silent placeholders — swap them for CC0 SFX when you have them.)
 
 | File | Piece | Instrument | Source / licence |
 |---|---|---|---|
