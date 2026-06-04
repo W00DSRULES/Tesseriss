@@ -100,8 +100,10 @@ struct GameView: View {
             NextPieceView(kind: engine.nextKind, label: s.next)
             VStack(alignment: .leading, spacing: 8) {
                 statRow(label: s.score, value: "\(engine.score)")
-                statRow(label: s.level, value: "\(engine.level)")
-                statRow(label: s.lines, value: "\(engine.lines)")
+                HStack(alignment: .top, spacing: 14) {
+                    statRow(label: s.level, value: "\(engine.level)")
+                    statRow(label: s.lines, value: "\(engine.lines)")
+                }
             }
             // Sit below the wave crest in the Hokusai theme so the numbers
             // land on the calmer part of the artwork.
@@ -118,6 +120,8 @@ struct GameView: View {
             Text(value)
                 .font(.system(.title3, design: .rounded).weight(.semibold))
                 .foregroundStyle(Color("PaletteInk"))
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
                 .accessibilityIdentifier("stat-\(label.lowercased())")
         }
     }
