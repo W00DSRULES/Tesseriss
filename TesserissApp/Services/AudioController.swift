@@ -59,8 +59,8 @@ final class AudioController: NSObject {
     }
 
     private func loadSFX() {
-        lineClearPlayer = makeSFXPlayer(named: "line_clear", volume: 1.0)
-        fourLinePlayer = makeSFXPlayer(named: "four_line", volume: 1.0)
+        lineClearPlayer = makeSFXPlayer(named: "line_clear", volume: settings.musicVolume)
+        fourLinePlayer = makeSFXPlayer(named: "four_line", volume: settings.musicVolume)
     }
 
     private func makeSFXPlayer(named name: String, volume: Float) -> AVAudioPlayer? {
@@ -90,6 +90,8 @@ final class AudioController: NSObject {
 
     func applyVolume() {
         musicPlayer?.volume = settings.musicVolume
+        lineClearPlayer?.volume = settings.musicVolume
+        fourLinePlayer?.volume = settings.musicVolume
     }
 
     /// Starts the playlist the first time it's called, then keeps it going across
@@ -124,12 +126,14 @@ final class AudioController: NSObject {
 
     func playLineClear(enabled: Bool) {
         guard enabled, let p = lineClearPlayer else { return }
+        p.volume = settings.musicVolume
         p.currentTime = 0
         p.play()
     }
 
     func playFourLineChime(enabled: Bool) {
         guard enabled, let p = fourLinePlayer else { return }
+        p.volume = settings.musicVolume
         p.currentTime = 0
         p.play()
     }
