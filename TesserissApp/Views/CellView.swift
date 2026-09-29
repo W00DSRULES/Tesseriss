@@ -12,6 +12,7 @@ struct CellView: View {
     let theme: Theme
     let appearance: AppearanceMode
     let flashTint: Color
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         ZStack {
@@ -35,9 +36,11 @@ struct CellView: View {
             }
             Rectangle()
                 .strokeBorder(theme.gridLineColor(appearance: appearance), lineWidth: 0.5)
-            if isFlashing {
-                flashTint
-            }
+            // Fading the flash instead of hard-toggling it gives the Classic theme a
+            // line-clear it can be seen to do, not just a one-frame blink.
+            flashTint
+                .opacity(isFlashing ? 1 : 0)
+                .animation(reduceMotion ? nil : .easeOut(duration: 0.18), value: isFlashing)
         }
     }
 }

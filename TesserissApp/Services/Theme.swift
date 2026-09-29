@@ -21,6 +21,63 @@ protocol Theme {
     func flashTint(appearance: AppearanceMode) -> Color
     /// When true, GameView overlays WaveSplashView during line clears.
     var usesWaveLineClear: Bool { get }
+
+    // MARK: Chrome
+    // Menus, HUD, controls and overlays draw through these so a theme skins the
+    // whole app, not just the playfield.
+
+    /// Primary text, and the fill of primary buttons.
+    func inkColor(appearance: AppearanceMode) -> Color
+    /// Text drawn on top of `inkColor` (i.e. inside a primary button).
+    func onInkColor(appearance: AppearanceMode) -> Color
+    /// Secondary button and card fill.
+    func cardColor(appearance: AppearanceMode) -> Color
+    /// Hairline borders.
+    func strokeColor(appearance: AppearanceMode) -> Color
+    /// Badges and selected states.
+    func accentColor(appearance: AppearanceMode) -> Color
+    /// True when the backdrop is artwork rather than a flat colour, so text laid
+    /// over it needs a panel behind it to stay readable.
+    var backgroundIsArtwork: Bool { get }
+}
+
+/// Classic palette assets are the default chrome, so a theme only overrides what
+/// it actually restyles.
+extension Theme {
+    func inkColor(appearance: AppearanceMode) -> Color { Color("PaletteInk") }
+    func onInkColor(appearance: AppearanceMode) -> Color { Color("PaletteBackground") }
+    func cardColor(appearance: AppearanceMode) -> Color { Color("PaletteCard") }
+    func strokeColor(appearance: AppearanceMode) -> Color { Color("PaletteGrid") }
+    func accentColor(appearance: AppearanceMode) -> Color { Color("PieceL") }
+    var backgroundIsArtwork: Bool { false }
+}
+
+/// Frosted panel that keeps a block of text readable when it sits over artwork.
+/// A no-op on themes with a flat backdrop, so Classic is untouched.
+struct LegibilityPanel: ViewModifier {
+    let active: Bool
+    let stroke: Color
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if active {
+            content
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14).stroke(stroke, lineWidth: 1)
+                )
+        } else {
+            content
+        }
+    }
+}
+
+extension View {
+    func legibilityPanel(_ active: Bool, stroke: Color) -> some View {
+        modifier(LegibilityPanel(active: active, stroke: stroke))
+    }
 }
 
 struct ClassicTheme: Theme {
@@ -78,6 +135,40 @@ struct KanagawaTheme: Theme {
     }
 
     var usesWaveLineClear: Bool { true }
+    var backgroundIsArtwork: Bool { true }
+
+    // MARK: Chrome — ukiyo-e ink and paper, so menus and HUD sit with the artwork
+    // instead of dropping Classic grey on top of it.
+
+    func inkColor(appearance: AppearanceMode) -> Color {
+        appearance == .day
+            ? Self.waveDeepColor(appearance: .day)          // Prussian ink on paper
+            : Self.foamColor(appearance: .night)            // foam on deep water
+    }
+
+    func onInkColor(appearance: AppearanceMode) -> Color {
+        appearance == .day
+            ? Color(red: 0.97, green: 0.94, blue: 0.86)     // banner cream
+            : Color(red: 0.055, green: 0.102, blue: 0.188)  // deepest navy
+    }
+
+    func cardColor(appearance: AppearanceMode) -> Color {
+        appearance == .day
+            ? Color(red: 0.945, green: 0.918, blue: 0.847)  // aged paper
+            : Color(red: 0.102, green: 0.180, blue: 0.310)  // shadowed wave
+    }
+
+    func strokeColor(appearance: AppearanceMode) -> Color {
+        appearance == .day
+            ? Color(red: 0.235, green: 0.137, blue: 0.063).opacity(0.35)
+            : Self.foamColor(appearance: .night).opacity(0.22)
+    }
+
+    func accentColor(appearance: AppearanceMode) -> Color {
+        appearance == .day
+            ? Color(red: 0.784, green: 0.255, blue: 0.180)  // Fuji red
+            : Color(red: 0.929, green: 0.522, blue: 0.380)  // Fuji orange
+    }
 
     static func palette(for piece: PieceKind, appearance: AppearanceMode) -> Color {
         switch appearance {
