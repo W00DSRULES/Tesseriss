@@ -30,8 +30,13 @@ targets:
       path: TesserissApp/Info.plist
       properties:
         CFBundleDisplayName: Tesseriss
-        CFBundleShortVersionString: "1.0.0"
-        CFBundleVersion: "1"
+        CFBundleShortVersionString: "1.1.0"
+        CFBundleVersion: "2"
+        # The app ships Turkish and English (Services/Strings.swift) but never said
+        # so in the bundle, which is why the App Store listed it as English-only.
+        CFBundleLocalizations:
+          - en
+          - tr
         ITSAppUsesNonExemptEncryption: false
         LSRequiresIPhoneOS: true
         UILaunchScreen:
