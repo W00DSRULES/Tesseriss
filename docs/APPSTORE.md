@@ -13,14 +13,35 @@ Character limits noted in parentheses — App Store Connect enforces them.
 
 **App Name** (≤30) — `Tesseriss`
 
-**Subtitle** (≤30) — `A calm falling-blocks puzzle`
+**Subtitle** (≤30) — `Calm falling blocks puzzle` (26)
 
 **Promotional text** (≤170, editable anytime without review)
-> Stack the tetrominoes, try to tear four rows at once, and settle into a comforting palette with
-> calm classical music. No ads, no accounts, fully offline.
+> Now with real sound, wall kicks and a moment to slide a piece before it locks — plus a Hokusai
+> theme that colours the whole app. No ads, no accounts, fully offline.
 
-**Keywords** (≤100, comma-separated, no spaces after commas to save room)
-`falling blocks,tetromino,block puzzle,line clear,arcade,calm,minimal,zen,relax,offline,puzzle`
+**Keywords** (≤100) — 100/100, 16 unique single tokens
+`tetromino,brick,tile,stack,drop,line,clear,arcade,retro,classic,minimal,zen,relax,offline,brain,grid`
+
+**What's New** (≤4000)
+```
+The Hokusai theme now colours the whole app, not just the board — menus, buttons and the score
+panel all follow it, and the numbers finally stay readable over the artwork.
+
+Pieces can now rotate against a wall and off the floor, and a piece gets a moment to be nudged
+before it locks. Every piece also starts at the same height, so a game no longer ends early just
+because of which piece came next.
+
+Line clears have real sound for the first time, and follow the volume slider.
+
+Also: bigger buttons, a score readout that stops jittering as it counts, and menus that no longer
+clip on smaller iPhones.
+```
+
+> **Why these keywords.** Apple indexes the app name, subtitle and keyword field as one pool, splits
+> on commas *and* spaces, and builds phrase combinations itself — so repeating a word buys nothing.
+> The v1.0 field spent ~35 of its 100 characters on `falling`, `blocks`, `calm` and `puzzle` (all
+> already in the subtitle), on multi-word phrases Apple recombines anyway, and on spaces after
+> commas. The list above is single tokens only, none repeated from the name or subtitle.
 
 **Description** (≤4000)
 ```
@@ -56,14 +77,29 @@ Turkish and English, switchable in Settings.
 
 **Uygulama adı** (≤30) — `Tesseriss`
 
-**Alt başlık** (≤30) — `Sakin bir blok bulmacası`
+**Alt başlık** (≤30) — `Sakin blok bulmaca oyunu` (24)
 
 **Tanıtım metni** (≤170)
-> Tetrominoları üst üste diz, dört sırayı tek hamlede yırtmayı dene; sakin klasik müzik ve göz
-> yormayan bir paletin tadını çıkar. Reklamsız, hesapsız, tamamen çevrimdışı.
+> Parçalar artık duvara yaslıyken de dönüyor, yere değince kısa bir an duruyor ve sesler ilk kez
+> gerçekten duyuluyor. Reklamsız, hesapsız, tamamen çevrimdışı.
 
-**Anahtar kelimeler** (≤100)
-`düşen bloklar,tetromino,blok bulmaca,sıra temizleme,arcade,sakin,minimal,zen,rahatlatıcı,çevrimdışı`
+**Anahtar kelimeler** (≤100) — 99/100, 14 benzersiz kelime
+`tetromino,düşen,bloklar,sıra,temizleme,tuğla,klasik,retro,arcade,minimal,zen,rahatlatıcı,beyin,zeka`
+
+**Yenilikler** (≤4000)
+```
+Hokusai teması artık yalnızca tahtayı değil, uygulamanın tamamını kaplıyor: menüler, düğmeler ve
+skor paneli de aynı paleti kullanıyor. Sayılar da görselin üzerinde artık rahatça okunuyor.
+
+Parçalar duvara yaslıyken ve yere değmişken de dönebiliyor. Yere oturan parçayı kilitlenmeden önce
+kaydırmak için kısa bir süre tanınıyor. Ayrıca her parça aynı yükseklikten başlıyor; oyun artık
+sırf sıradaki parçanın biçimi yüzünden erkenden bitmiyor.
+
+Sıra temizleme sesleri ilk kez gerçekten duyuluyor ve ses seviyesi ayarına uyuyor.
+
+Bunların yanında: daha büyük düğmeler, sayarken yerinden oynamayan bir skor göstergesi ve küçük
+ekranlı iPhone'larda taşmayan menüler.
+```
 
 **Açıklama** (≤4000)
 ```
