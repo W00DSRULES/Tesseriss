@@ -24,6 +24,7 @@ final class SettingsStore: ObservableObject {
     private let musicKey = "tesseriss.settings.music"
     private let sfxKey = "tesseriss.settings.sfx"
     private let musicVolumeKey = "tesseriss.settings.musicVolume"
+    private let sfxVolumeKey = "tesseriss.settings.sfxVolume"
     private let hapticsKey = "tesseriss.settings.haptics"
     private let appearanceKey = "tesseriss.settings.appearance"
     private let languageKey = "tesseriss.settings.language"
@@ -42,6 +43,10 @@ final class SettingsStore: ObservableObject {
 
     @Published var musicVolume: Float {
         didSet { defaults.set(musicVolume, forKey: musicVolumeKey) }
+    }
+
+    @Published var sfxVolume: Float {
+        didSet { defaults.set(sfxVolume, forKey: sfxVolumeKey) }
     }
 
     @Published var hapticsEnabled: Bool {
@@ -90,6 +95,8 @@ final class SettingsStore: ObservableObject {
         if defaults.object(forKey: musicKey) == nil { defaults.set(true, forKey: musicKey) }
         if defaults.object(forKey: sfxKey) == nil { defaults.set(true, forKey: sfxKey) }
         if defaults.object(forKey: musicVolumeKey) == nil { defaults.set(Float(0.5), forKey: musicVolumeKey) }
+        // Sound effects start at the music volume, the only volume setting before 1.1.1.
+        if defaults.object(forKey: sfxVolumeKey) == nil { defaults.set(defaults.object(forKey: musicVolumeKey) as? Float ?? Float(0.5), forKey: sfxVolumeKey) }
         if defaults.object(forKey: hapticsKey) == nil { defaults.set(true, forKey: hapticsKey) }
         if defaults.object(forKey: appearanceKey) == nil { defaults.set(AppearanceMode.day.rawValue, forKey: appearanceKey) }
         if defaults.object(forKey: languageKey) == nil { defaults.set(Language.deviceDefault().rawValue, forKey: languageKey) }
@@ -100,6 +107,7 @@ final class SettingsStore: ObservableObject {
         self.musicEnabled = defaults.bool(forKey: musicKey)
         self.sfxEnabled = defaults.bool(forKey: sfxKey)
         self.musicVolume = defaults.object(forKey: musicVolumeKey) as? Float ?? 0.5
+        self.sfxVolume = defaults.object(forKey: sfxVolumeKey) as? Float ?? 0.5
         self.hapticsEnabled = defaults.bool(forKey: hapticsKey)
         let araw = defaults.string(forKey: appearanceKey) ?? AppearanceMode.day.rawValue
         self.appearance = AppearanceMode(rawValue: araw) ?? .day

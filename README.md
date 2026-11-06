@@ -17,7 +17,7 @@ The name is Greek *tesseris* ("four") + German *Riss* ("tear") — tear the rows
 
 ## Audio
 
-The Music toggle plays a 6-track Impressionist playlist (`MusicPlaylist.impressionists`), bundled in `TesserissApp/Resources/`. **Every track is Public Domain, CC0, or Pixabay Content License — none requires attribution.** (The two sound effects, `line_clear.wav` and `four_line.wav`, are synthesised by `scripts/make_sfx.py`; re-run it to retune them. They have their own Sound effects toggle in Settings, separate from Music, and share the Volume slider.)
+The Music toggle plays a 6-track Impressionist playlist (`MusicPlaylist.impressionists`), bundled in `TesserissApp/Resources/`. **Every track is Public Domain, CC0, or Pixabay Content License — none requires attribution.** (The two sound effects, `line_clear.wav` and `four_line.wav`, are synthesised by `scripts/make_sfx.py`; re-run it to retune them. They have their own Sound effects toggle and volume slider in Settings, separate from Music's.)
 
 | File | Piece | Instrument | Source / licence |
 |---|---|---|---|
@@ -51,7 +51,7 @@ xcodebuild test \
   -destination 'platform=iOS Simulator,name=iPhone 17'
 ```
 
-`TesserissTests` covers `Board`, `Tetromino`, `Scoring`, `GameMode`, `GameEngine`, `SettingsStore`, and the 7-bag `Randomizer` (67 unit tests); `TesserissUITests` adds 13 XCUITests (menu/game/settings flow + seeded deterministic gameplay). CI runs both suites on every push and pull request (`.github/workflows/tests.yml`, macOS-15 runner).
+`TesserissTests` covers `Board`, `Tetromino`, `Scoring`, `GameMode`, `GameEngine`, `SettingsStore`, and the 7-bag `Randomizer` (73 unit tests); `TesserissUITests` adds 14 XCUITests (menu/game/settings flow + seeded deterministic gameplay). CI runs both suites on every push and pull request (`.github/workflows/tests.yml`, macOS-15 runner).
 
 ## Run in Xcode
 

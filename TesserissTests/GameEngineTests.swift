@@ -313,6 +313,44 @@ final class GameEngineTests: XCTestCase {
                        "quitting mid-game must still record the score as a best")
     }
 
+    func test_returnToMenuDuringALineClearCountsTheClear() {
+        let defaults = UserDefaults(suiteName: "tesseriss.tests.\(UUID().uuidString)")!
+        let engine = makeEngine(highscoreStore: HighscoreStore(defaults: defaults))
+        startGameAndDropAFourLineClear(engine)
+        guard case .clearing = engine.phase else { return XCTFail("precondition: a clear is in flight") }
+
+        engine.returnToMenu()   // quit mid-flash
+
+        XCTAssertEqual(HighscoreStore(defaults: defaults).highscore(for: .og), 4000,
+                       "the best saved on quit must include the clear that was still flashing")
+        XCTAssertEqual(engine.screen, .menu)
+        XCTAssertNil(engine.current, "no next piece is dealt on the way to the menu")
+        RunLoop.current.run(until: Date().addingTimeInterval(0.75))   // past the 0.5 s flash
+        XCTAssertEqual(engine.screen, .menu, "the flash timer must not pull the game back")
+        XCTAssertEqual(engine.lines, 4, "the clear is credited once")
+    }
+
+    // MARK: - Pausing mid-clear
+
+    func test_pauseDuringALineClearCreditsItAndStaysPaused() {
+        let engine = makeEngine()
+        startGameAndDropAFourLineClear(engine)
+        guard case .clearing = engine.phase else { return XCTFail("precondition: a clear is in flight") }
+
+        engine.togglePause()   // the player tapped pause mid-flash
+
+        XCTAssertEqual(engine.phase, .paused, "a pause mid-flash must not be ignored")
+        XCTAssertEqual(engine.lines, 4, "the clear is credited at once")
+        XCTAssertEqual(engine.score, 4000)
+        XCTAssertTrue(engine.flashingRows.isEmpty, "no rows left flashing under the pause overlay")
+        XCTAssertFalse(engine.celebrationActive, "no celebration banner over the pause overlay")
+        XCTAssertNotNil(engine.current, "the next piece is dealt, ready for resume")
+
+        RunLoop.current.run(until: Date().addingTimeInterval(0.75))   // past the 0.5 s flash
+        XCTAssertEqual(engine.phase, .paused, "the flash timer must not resume play")
+        XCTAssertEqual(engine.lines, 4, "the clear is credited once")
+    }
+
     // MARK: - Scene-phase auto-pause
 
     func test_autoPauseDuringALineClearKeepsTheGamePaused() {
@@ -345,10 +383,44 @@ final class GameEngineTests: XCTestCase {
                            "with music off, the chime must follow the sound effects setting (sfx \(sfxOn))")
         }
     }
+
+    func test_lineClearSoundFollowsTheSfxSettingNotMusic() {
+        for sfxOn in [true, false] {
+            let defaults = UserDefaults(suiteName: "tesseriss.tests.\(UUID().uuidString)")!
+            let settings = SettingsStore(defaults: defaults)
+            settings.hapticsEnabled = false
+            settings.musicEnabled = false
+            settings.sfxEnabled = sfxOn
+            let audio = AudioSpy(settings: settings)
+            let engine = GameEngine(settings: settings,
+                                    highscoreStore: HighscoreStore(defaults: defaults),
+                                    audio: audio,
+                                    randomizerFactory: {
+                                        PieceRandomizer(pentominoChance: $0, rng: SeededRandomNumberGenerator(seed: 1))
+                                    })
+            setenv("TESSERISS_TETRIS_SETUP", "1", 1)
+            engine.startNewGame(mode: .og)
+            unsetenv("TESSERISS_TETRIS_SETUP")
+            // Lay the setup's I flat on the stack. Seed 1 deals an S next: stood
+            // up against the right wall, it fills the gap in one row only.
+            engine.hardDrop()
+            Thread.sleep(forTimeInterval: GameEngine.postLockInputLockout + 0.02)
+            engine.rotateCW()
+            for _ in 0..<10 { engine.moveRight(haptic: false) }
+            engine.hardDrop()
+            guard case .clearing(_, isFourLine: false) = engine.phase else {
+                return XCTFail("precondition: a 1-3-line clear is in flight (sfx \(sfxOn))")
+            }
+            XCTAssertEqual(audio.lineClears, [sfxOn],
+                           "with music off, the line-clear sound must follow the sound effects setting (sfx \(sfxOn))")
+        }
+    }
 }
 
-/// Records chime requests instead of playing them.
+/// Records sound effect requests instead of playing them.
 private final class AudioSpy: AudioController {
     var fourLineChimes: [Bool] = []
+    var lineClears: [Bool] = []
     override func playFourLineChime(enabled: Bool) { fourLineChimes.append(enabled) }
+    override func playLineClear(enabled: Bool) { lineClears.append(enabled) }
 }

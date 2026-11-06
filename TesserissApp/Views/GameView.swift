@@ -92,9 +92,7 @@ struct GameView: View {
             }
             .accessibilityIdentifier("menu-button")
             Spacer()
-            Button(action: {
-                if engine.phase == .playing { engine.togglePause() }
-            }) {
+            Button(action: { engine.togglePause() }) {
                 Image(systemName: "pause.fill")
                     .font(.system(size: 14, weight: .bold))
                     .foregroundStyle(ink.opacity(engine.phase == .paused ? 0.3 : 0.8))

@@ -64,14 +64,62 @@ final class SettingsStoreTests: XCTestCase {
         defaults.removePersistentDomain(forName: suiteName)
     }
 
+    func testSfxVolumeDefaultsToHalfOnFreshInstall() {
+        let suiteName = "test.tesseriss.sfxvolume.fresh"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.removePersistentDomain(forName: suiteName)
+
+        let store = SettingsStore(defaults: defaults)
+        XCTAssertEqual(store.sfxVolume, 0.5)
+        XCTAssertEqual(store.musicVolume, 0.5)
+
+        defaults.removePersistentDomain(forName: suiteName)
+    }
+
+    /// Music volume was the only volume setting before 1.1.1: sound effects start at that level.
+    func testSfxVolumeStartsAtTheStoredMusicVolume() {
+        let suiteName = "test.tesseriss.sfxvolume.migrate"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.removePersistentDomain(forName: suiteName)
+        defaults.set(Float(0.25), forKey: "tesseriss.settings.musicVolume")
+
+        let store = SettingsStore(defaults: defaults)
+        XCTAssertEqual(store.musicVolume, 0.25)
+        XCTAssertEqual(store.sfxVolume, 0.25)
+
+        // Copied once: later music changes don't follow into sound effects.
+        store.musicVolume = 0.75
+        XCTAssertEqual(SettingsStore(defaults: defaults).sfxVolume, 0.25)
+
+        defaults.removePersistentDomain(forName: suiteName)
+    }
+
+    func testSfxVolumePersistsAndIsIndependentOfMusicVolume() {
+        let suiteName = "test.tesseriss.sfxvolume"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.removePersistentDomain(forName: suiteName)
+
+        let store = SettingsStore(defaults: defaults)
+        store.sfxVolume = 0.125
+        XCTAssertEqual(store.musicVolume, 0.5, "Moving the sound effects slider must not move music")
+        store.musicVolume = 0.875
+        XCTAssertEqual(store.sfxVolume, 0.125, "Moving the music slider must not move sound effects")
+
+        let reloaded = SettingsStore(defaults: defaults)
+        XCTAssertEqual(reloaded.sfxVolume, 0.125)
+        XCTAssertEqual(reloaded.musicVolume, 0.875)
+
+        defaults.removePersistentDomain(forName: suiteName)
+    }
+
     // MARK: - Strings
 
     func testSettingsLabelsHaveNoEmoji() {
         // SettingsView adds the emoji; the strings stay plain because VoiceOver reads them.
         for s in [Strings.tr, Strings.en] {
             let labels = [s.musicLabel, s.sfxLabel, s.hapticsLabel, s.dayLabel, s.nightLabel,
-                          s.languageLabel, s.ghostLabel, s.volumeLabel, s.playlistLabel,
-                          s.appearanceLabel, s.themeStyleLabel]
+                          s.languageLabel, s.ghostLabel, s.volumeLabel, s.musicVolumeLabel,
+                          s.sfxVolumeLabel, s.playlistLabel, s.appearanceLabel, s.themeStyleLabel]
             for label in labels {
                 XCTAssertTrue(label.unicodeScalars.allSatisfy { !$0.properties.isEmojiPresentation && $0 != "\u{FE0F}" },
                               "\"\(label)\" contains an emoji")

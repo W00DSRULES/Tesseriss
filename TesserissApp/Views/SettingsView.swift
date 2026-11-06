@@ -54,21 +54,39 @@ struct SettingsView: View {
                                 engine.audio.pauseMusic()
                             }
                         }
+                    HStack(spacing: 12) {
+                        // Both rows show "Volume"; the slider carries the spoken label.
+                        Text("🔊 " + s.volumeLabel)
+                            .accessibilityHidden(true)
+                        Slider(value: $settings.musicVolume, in: 0...1)
+                            .tint(ink)
+                            .accessibilityLabel(s.musicVolumeLabel)
+                            .accessibilityIdentifier("music-volume-slider")
+                            .onChange(of: settings.musicVolume) { _, _ in
+                                engine.audio.applyVolume()
+                            }
+                    }
+                    .disabled(!settings.musicEnabled)
+                    .opacity(settings.musicEnabled ? 1.0 : 0.4)
                     Toggle("🔔 " + s.sfxLabel, isOn: $settings.sfxEnabled)
                         .toggleStyle(.switch)
                         .accessibilityLabel(s.sfxLabel)
                     HStack(spacing: 12) {
                         Text("🔊 " + s.volumeLabel)
-                            .accessibilityLabel(s.volumeLabel)
-                        Slider(value: $settings.musicVolume, in: 0...1)
-                            .tint(ink)
-                            .onChange(of: settings.musicVolume) { _, _ in
-                                engine.audio.applyVolume()
-                            }
+                            .accessibilityHidden(true)
+                        Slider(value: $settings.sfxVolume, in: 0...1, onEditingChanged: { editing in
+                            // Play a line clear on release so the player hears the new level.
+                            if !editing { engine.audio.playLineClear(enabled: settings.sfxEnabled) }
+                        })
+                        .tint(ink)
+                        .accessibilityLabel(s.sfxVolumeLabel)
+                        .accessibilityIdentifier("sfx-volume-slider")
+                        .onChange(of: settings.sfxVolume) { _, _ in
+                            engine.audio.applyVolume()
+                        }
                     }
-                    // One slider sets the volume of both music and sound effects.
-                    .disabled(!settings.musicEnabled && !settings.sfxEnabled)
-                    .opacity(settings.musicEnabled || settings.sfxEnabled ? 1.0 : 0.4)
+                    .disabled(!settings.sfxEnabled)
+                    .opacity(settings.sfxEnabled ? 1.0 : 0.4)
                     // A one-option picker is dead UI — only show it once there's a choice.
                     if MusicPlaylist.all.count > 1 {
                         HStack {

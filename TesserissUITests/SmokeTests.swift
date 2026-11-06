@@ -156,7 +156,7 @@ final class SmokeTests: XCTestCase {
         for name in ["Music", "Sound effects", "Haptics", "Landing"] {
             XCTAssertTrue(app.switches[name].exists, "\(name) switch")
         }
-        for name in ["Volume", "Appearance", "Theme", "Language"] {
+        for name in ["Appearance", "Theme", "Language"] {
             XCTAssertTrue(app.staticTexts[name].exists, "\(name) label")
         }
         for name in ["Day", "Night"] {
@@ -167,6 +167,37 @@ final class SmokeTests: XCTestCase {
         let before = sfx.value as? String
         sfx.tap()
         XCTAssertNotEqual(sfx.value as? String, before, "Tapping Sound effects should flip it")
+    }
+
+    /// Music and sound effects each have a volume slider, spoken by name,
+    /// that only its own switch disables.
+    func test_volume_sliders_follow_their_own_switch() {
+        let app = launchedApp()
+        selectLanguage(app, "English")
+        app.buttons["settings-button"].tap()
+        XCTAssertTrue(app.buttons["back-button"].waitForExistence(timeout: 2))
+        let musicSlider = app.sliders["music-volume-slider"]
+        let sfxSlider = app.sliders["sfx-volume-slider"]
+        XCTAssertTrue(musicSlider.exists, "Music volume slider")
+        XCTAssertTrue(sfxSlider.exists, "Sound effects volume slider")
+        XCTAssertEqual(musicSlider.label, "Music volume")
+        XCTAssertEqual(sfxSlider.label, "Sound effects volume")
+        XCTAssertTrue(musicSlider.isEnabled)
+        XCTAssertTrue(sfxSlider.isEnabled)
+
+        let sfx = app.switches["Sound effects"]
+        sfx.tap()
+        XCTAssertFalse(sfxSlider.isEnabled, "Sound effects off disables its slider")
+        XCTAssertTrue(musicSlider.isEnabled, "Sound effects off leaves the music slider enabled")
+        sfx.tap()
+        XCTAssertTrue(sfxSlider.isEnabled, "Sound effects on re-enables its slider")
+
+        let music = app.switches["Music"]
+        music.tap()
+        XCTAssertFalse(musicSlider.isEnabled, "Music off disables its slider")
+        XCTAssertTrue(sfxSlider.isEnabled, "Music off leaves the sound effects slider enabled")
+        music.tap()
+        XCTAssertTrue(musicSlider.isEnabled, "Music on re-enables its slider")
     }
 
     func test_theme_picker_switches_to_hokusai() {

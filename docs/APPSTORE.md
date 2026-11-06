@@ -22,19 +22,19 @@ Character limits noted in parentheses — App Store Connect enforces them.
 **Keywords** (≤100) — 100/100, 16 unique single tokens
 `tetromino,brick,tile,stack,drop,line,clear,arcade,retro,classic,minimal,zen,relax,offline,brain,grid`
 
-**What's New** (≤4000)
+**What's New** (≤4000) — 1.1.1, written for players updating from 1.0
 ```
-The Hokusai theme now colours the whole app, not just the board — menus, buttons and the score
-panel all follow it, and the numbers finally stay readable over the artwork.
+The Hokusai theme now colours the whole app, not just the board — menus, buttons and the score panel all follow it, and the numbers finally stay readable over the artwork.
 
-Pieces can now rotate against a wall and off the floor, and a piece gets a moment to be nudged
-before it locks. Every piece also starts at the same height, so a game no longer ends early just
-because of which piece came next.
+Pieces can now rotate against a wall and off the floor, and a piece gets a moment to be nudged before it locks. Every piece also starts at the same height, so a game no longer ends early just because of which piece came next.
 
-Line clears have real sound for the first time, and follow the volume slider.
+Line clears have real sound for the first time. Sound effects have their own switch and volume in Settings, separate from the music.
 
-Also: bigger buttons, a score readout that stops jittering as it counts, and menus that no longer
-clip on smaller iPhones.
+A new best score is now saved even if you quit to the menu mid-game, and NEW BEST appears only when you beat your previous best.
+
+Every game button now has a VoiceOver label.
+
+Also: bigger buttons, a score readout that stops jittering as it counts, and menus that no longer clip on smaller iPhones.
 ```
 
 > **Why these keywords.** Apple indexes the app name, subtitle and keyword field as one pool, splits
@@ -86,19 +86,19 @@ Turkish and English, switchable in Settings.
 **Anahtar kelimeler** (≤100) — 99/100, 14 benzersiz kelime
 `tetromino,düşen,bloklar,sıra,temizleme,tuğla,klasik,retro,arcade,minimal,zen,rahatlatıcı,beyin,zeka`
 
-**Yenilikler** (≤4000)
+**Yenilikler** (≤4000) — 1.1.1, 1.0'dan güncelleyen oyuncular için
 ```
-Hokusai teması artık yalnızca tahtayı değil, uygulamanın tamamını kaplıyor: menüler, düğmeler ve
-skor paneli de aynı paleti kullanıyor. Sayılar da görselin üzerinde artık rahatça okunuyor.
+Hokusai teması artık yalnızca tahtayı değil, uygulamanın tamamını kaplıyor: menüler, düğmeler ve skor paneli de aynı paleti kullanıyor. Sayılar da görselin üzerinde artık rahatça okunuyor.
 
-Parçalar duvara yaslıyken ve yere değmişken de dönebiliyor. Yere oturan parçayı kilitlenmeden önce
-kaydırmak için kısa bir süre tanınıyor. Ayrıca her parça aynı yükseklikten başlıyor; oyun artık
-sırf sıradaki parçanın biçimi yüzünden erkenden bitmiyor.
+Parçalar duvara yaslıyken ve yere değmişken de dönebiliyor. Yere oturan parçayı kilitlenmeden önce kaydırmak için kısa bir süre tanınıyor. Ayrıca her parça aynı yükseklikten başlıyor; oyun artık sırf sıradaki parçanın biçimi yüzünden erkenden bitmiyor.
 
-Sıra temizleme sesleri ilk kez gerçekten duyuluyor ve ses seviyesi ayarına uyuyor.
+Sıra temizleme sesleri ilk kez gerçekten duyuluyor. Ses efektlerinin artık Ayarlar'da müzikten ayrı, kendi aç/kapa düğmesi ve ses seviyesi var.
 
-Bunların yanında: daha büyük düğmeler, sayarken yerinden oynamayan bir skor göstergesi ve küçük
-ekranlı iPhone'larda taşmayan menüler.
+Oyunu yarıda bırakıp menüye dönsen bile kırdığın rekor kaydediliyor. YENİ REKOR yazısı da artık yalnızca önceki rekorunu geçtiğinde çıkıyor.
+
+VoiceOver artık oyundaki her düğmenin adını okuyor.
+
+Bunların yanında: daha büyük düğmeler, sayarken yerinden oynamayan bir skor göstergesi ve küçük ekranlı iPhone'larda taşmayan menüler.
 ```
 
 **Açıklama** (≤4000)

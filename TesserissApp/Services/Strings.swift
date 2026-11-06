@@ -37,6 +37,8 @@ struct Strings {
     let englishLabel: String
     let ghostLabel: String
     let volumeLabel: String
+    let musicVolumeLabel: String
+    let sfxVolumeLabel: String
     let playlistLabel: String
     let modeFastName: String
     let modeOgName: String
@@ -106,7 +108,9 @@ struct Strings {
         turkishLabel: "Türkçe",
         englishLabel: "English",
         ghostLabel: "İniş",
-        volumeLabel: "Ses",
+        volumeLabel: "Ses düzeyi",
+        musicVolumeLabel: "Müzik sesi",
+        sfxVolumeLabel: "Efekt sesi",
         playlistLabel: "Çalma listesi",
         modeFastName: "Çatlak",
         modeOgName: "Yırtık",
@@ -162,6 +166,8 @@ struct Strings {
         englishLabel: "English",
         ghostLabel: "Landing",
         volumeLabel: "Volume",
+        musicVolumeLabel: "Music volume",
+        sfxVolumeLabel: "Sound effects volume",
         playlistLabel: "Playlist",
         modeFastName: "Crack",
         modeOgName: "Tear",

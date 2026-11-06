@@ -104,6 +104,10 @@ final class GameEngine: ObservableObject {
     func returnToMenu() {
         stopTimer()
         stopClearTimer()
+        // A clear still flashing counts toward the run, but no next piece is dealt.
+        if case let .clearing(rows, _) = phase {
+            creditClear(rows: rows)
+        }
         // Quitting counts as finishing the run, so its score can still be a best.
         highscoreStore.maybeUpdate(score, for: mode)
         // Music keeps playing across the menu (resumes if it was paused), so it
@@ -118,6 +122,12 @@ final class GameEngine: ObservableObject {
 
     func togglePause() {
         guard screen == .game else { return }
+        // Pausing mid-flash settles the clear first, as autoPauseFromScenePhase
+        // does, so the pause below applies to the next piece.
+        if case let .clearing(rows, _) = phase {
+            stopClearTimer()
+            completeClearAnimation(rows: rows)
+        }
         switch phase {
         case .playing:
             phase = .paused
@@ -374,20 +384,28 @@ final class GameEngine: ObservableObject {
     }
 
     private func completeClearAnimation(rows: [Int]) {
-        let count = rows.count
-        board.clearRows(rows)
-        score += Scoring.points(linesCleared: count, level: level)
         let prevLevel = level
-        lines += count
-        level = lines / 10
-        flashingRows = []
-        celebrationActive = false
+        creditClear(rows: rows)
         phase = .playing
         spawnNext()
+        // spawnNext may have ended the game; gravity must then stay stopped.
+        guard phase == .playing else { return }
         if level != prevLevel {
             restartTimerForCurrentLevel()
         } else {
             startTimer()
         }
+    }
+
+    /// Removes the cleared rows and credits their points and lines. Quitting
+    /// mid-flash uses this alone, without dealing the next piece.
+    private func creditClear(rows: [Int]) {
+        let count = rows.count
+        board.clearRows(rows)
+        score += Scoring.points(linesCleared: count, level: level)
+        lines += count
+        level = lines / 10
+        flashingRows = []
+        celebrationActive = false
     }
 }
