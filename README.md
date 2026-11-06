@@ -1,6 +1,6 @@
 # Tesseriss
 
-Minimalist falling-blocks puzzle for iOS. Comforting palette, big-button touch controls, three game modes, and an optional Impressionist piano playlist. Built in SwiftUI for iOS 17+.
+Minimalist falling-blocks puzzle for iOS. Comforting palette, big-button touch controls, three game modes, and an optional Impressionist piano playlist. Built in SwiftUI for iPhone only (portrait, iOS 17+); on iPad it runs in iPhone compatibility mode.
 
 The name is Greek *tesseris* ("four") + German *Riss* ("tear") — tear the rows four at a time.
 
@@ -17,7 +17,7 @@ The name is Greek *tesseris* ("four") + German *Riss* ("tear") — tear the rows
 
 ## Audio
 
-The Music toggle plays a 6-track Impressionist playlist (`MusicPlaylist.impressionists`), bundled in `TesserissApp/Resources/`. **Every track is Public Domain, CC0, or Pixabay Content License — none requires attribution.** (The two bundled sound effects, `line_clear.wav` / `four_line.wav`, are still silent placeholders — swap them for CC0 SFX when you have them.)
+The Music toggle plays a 6-track Impressionist playlist (`MusicPlaylist.impressionists`), bundled in `TesserissApp/Resources/`. **Every track is Public Domain, CC0, or Pixabay Content License — none requires attribution.** (The two sound effects, `line_clear.wav` and `four_line.wav`, are synthesised by `scripts/make_sfx.py`; re-run it to retune them. They have their own Sound effects toggle in Settings, separate from Music, and share the Volume slider.)
 
 | File | Piece | Instrument | Source / licence |
 |---|---|---|---|
@@ -51,7 +51,7 @@ xcodebuild test \
   -destination 'platform=iOS Simulator,name=iPhone 17'
 ```
 
-`TesserissTests` covers `Board`, `Tetromino`, `Scoring`, `GameMode`, and the 7-bag `Randomizer` (38 unit tests); `TesserissUITests` adds 8 XCUITests (menu/game/settings flow + seeded deterministic gameplay). CI runs both suites on every push and pull request (`.github/workflows/tests.yml`, macOS-15 runner).
+`TesserissTests` covers `Board`, `Tetromino`, `Scoring`, `GameMode`, `GameEngine`, `SettingsStore`, and the 7-bag `Randomizer` (67 unit tests); `TesserissUITests` adds 13 XCUITests (menu/game/settings flow + seeded deterministic gameplay). CI runs both suites on every push and pull request (`.github/workflows/tests.yml`, macOS-15 runner).
 
 ## Run in Xcode
 
@@ -75,8 +75,9 @@ TesserissApp/
                                   // SettingsView, GameOverView, WoodenBoardView,
                                   // KanagawaBackgroundView, WaveSplashView
   Resources/                      // Assets.xcassets (incl. AppIcon), PrivacyInfo.xcprivacy,
-                                  // placeholder .wav SFX
-TesserissTests/                   // XCTest unit tests (Board, Tetromino, Scoring, GameMode, Randomizer)
+                                  // line-clear .wav SFX (scripts/make_sfx.py)
+TesserissTests/                   // XCTest unit tests (Board, Tetromino, Scoring, GameMode, GameEngine,
+                                  // SettingsStore, Randomizer)
 TesserissUITests/                 // XCUITest UI tests
 project.yml                       // XcodeGen source of truth (the .xcodeproj is generated, not committed)
 .github/workflows/tests.yml       // CI

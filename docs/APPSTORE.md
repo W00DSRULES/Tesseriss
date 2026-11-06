@@ -51,8 +51,8 @@ The name says what you do: tesseris (Greek, "four") + Riss (German, "tear") — 
 
 Three modes, one tap apart:
 – Crack (fast) — a smaller board and a quicker fall, for short, sharp sessions.
-– Tear (og) — the classic board, the classic pace.
-– Shatter (hard) — the classic board, but five-square pieces sneak into the mix.
+– Tear (classic) — the standard board at the standard pace.
+– Shatter (hard) — the same board, but five-square pieces sneak into the mix.
 
 Classic-arcade feel: a 7-bag piece randomizer, fixed rotation tables, a ghost piece showing where the block will land, and a four-line clear worth 4000 points — with a satisfying flash and chime.
 

@@ -105,6 +105,8 @@ struct GameView: View {
                     .contentShape(Rectangle())
             }
             .disabled(engine.phase == .paused)
+            .accessibilityLabel(s.pause)
+            .accessibilityIdentifier("pause-button")
         }
         .padding(.horizontal, 16)
     }
@@ -115,11 +117,11 @@ struct GameView: View {
                 .legibilityPanel(theme.backgroundIsArtwork,
                                  stroke: theme.strokeColor(appearance: appearance))
             VStack(alignment: .leading, spacing: 10) {
-                statRow(label: s.score, value: engine.score, prominent: true)
+                statRow(id: "score", label: s.score, value: engine.score, prominent: true)
                 Divider().overlay(theme.strokeColor(appearance: appearance))
                 HStack(alignment: .top, spacing: 12) {
-                    statRow(label: s.level, value: engine.level)
-                    statRow(label: s.lines, value: engine.lines)
+                    statRow(id: "level", label: s.level, value: engine.level)
+                    statRow(id: "lines", label: s.lines, value: engine.lines)
                 }
             }
             // Replaces a hardcoded 110pt top inset that was hand-tuned to dodge the
@@ -131,7 +133,8 @@ struct GameView: View {
         .frame(width: 124, alignment: .leading)
     }
 
-    private func statRow(label: String, value: Int, prominent: Bool = false) -> some View {
+    /// `id` keeps the accessibility identifier fixed; `label` follows the app language.
+    private func statRow(id: String, label: String, value: Int, prominent: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 1) {
             Text(label)
                 .font(.system(.caption2, design: .rounded).weight(.semibold))
@@ -149,7 +152,7 @@ struct GameView: View {
                 .foregroundStyle(ink)
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
-                .accessibilityIdentifier("stat-\(label.lowercased())")
+                .accessibilityIdentifier("stat-\(id)")
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -172,6 +175,7 @@ struct GameView: View {
                 .background(ink)
                 .clipShape(RoundedRectangle(cornerRadius: 14))
             }
+            .accessibilityIdentifier("resume-button")
             Button(action: { engine.returnToMenu() }) {
                 HStack(spacing: 10) {
                     Image(systemName: "house.fill")
@@ -189,6 +193,8 @@ struct GameView: View {
                         .stroke(theme.strokeColor(appearance: appearance), lineWidth: 1)
                 )
             }
+            // Not "menu-button": the header MENU keeps that id and stays on screen.
+            .accessibilityIdentifier("pause-menu-button")
         }
         .padding(.vertical, 24)
         .padding(.horizontal, 28)

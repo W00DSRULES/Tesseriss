@@ -6,7 +6,6 @@ enum AppearanceMode: String, CaseIterable, Identifiable {
     case day, night
     var id: String { rawValue }
     var colorScheme: ColorScheme { self == .day ? .light : .dark }
-    var label: String { self == .day ? "Day" : "Night" }
 }
 
 enum Language: String, CaseIterable, Identifiable {
@@ -23,6 +22,7 @@ final class SettingsStore: ObservableObject {
     static let shared = SettingsStore()
 
     private let musicKey = "tesseriss.settings.music"
+    private let sfxKey = "tesseriss.settings.sfx"
     private let musicVolumeKey = "tesseriss.settings.musicVolume"
     private let hapticsKey = "tesseriss.settings.haptics"
     private let appearanceKey = "tesseriss.settings.appearance"
@@ -34,6 +34,10 @@ final class SettingsStore: ObservableObject {
 
     @Published var musicEnabled: Bool {
         didSet { defaults.set(musicEnabled, forKey: musicKey) }
+    }
+
+    @Published var sfxEnabled: Bool {
+        didSet { defaults.set(sfxEnabled, forKey: sfxKey) }
     }
 
     @Published var musicVolume: Float {
@@ -84,6 +88,7 @@ final class SettingsStore: ObservableObject {
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         if defaults.object(forKey: musicKey) == nil { defaults.set(true, forKey: musicKey) }
+        if defaults.object(forKey: sfxKey) == nil { defaults.set(true, forKey: sfxKey) }
         if defaults.object(forKey: musicVolumeKey) == nil { defaults.set(Float(0.5), forKey: musicVolumeKey) }
         if defaults.object(forKey: hapticsKey) == nil { defaults.set(true, forKey: hapticsKey) }
         if defaults.object(forKey: appearanceKey) == nil { defaults.set(AppearanceMode.day.rawValue, forKey: appearanceKey) }
@@ -93,6 +98,7 @@ final class SettingsStore: ObservableObject {
         if defaults.object(forKey: selectedModeKey) == nil { defaults.set(GameMode.og.rawValue, forKey: selectedModeKey) }
         if defaults.object(forKey: themeKindKey) == nil { defaults.set(ThemeKind.classic.rawValue, forKey: themeKindKey) }
         self.musicEnabled = defaults.bool(forKey: musicKey)
+        self.sfxEnabled = defaults.bool(forKey: sfxKey)
         self.musicVolume = defaults.object(forKey: musicVolumeKey) as? Float ?? 0.5
         self.hapticsEnabled = defaults.bool(forKey: hapticsKey)
         let araw = defaults.string(forKey: appearanceKey) ?? AppearanceMode.day.rawValue

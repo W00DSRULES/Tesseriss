@@ -1,6 +1,6 @@
 import AVFoundation
 
-final class AudioController: NSObject {
+class AudioController: NSObject {
     static let shared = AudioController()
 
     private static let musicExtensions = ["m4a", "mp3", "wav", "caf", "aiff", "flac"]

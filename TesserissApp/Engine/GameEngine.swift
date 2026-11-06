@@ -14,6 +14,7 @@ final class GameEngine: ObservableObject {
     @Published private(set) var flashingRows: [Int] = []
     @Published private(set) var celebrationActive: Bool = false
     @Published private(set) var mode: GameMode = .og
+    @Published private(set) var isNewHighscore = false
 
     private var randomizer = PieceRandomizer()
     private var timer: Timer?
@@ -78,6 +79,7 @@ final class GameEngine: ObservableObject {
         applyTetrisSetupIfRequested()
         flashingRows = []
         celebrationActive = false
+        isNewHighscore = false
         screen = .game
         phase = .playing
         spawnNext()
@@ -102,6 +104,8 @@ final class GameEngine: ObservableObject {
     func returnToMenu() {
         stopTimer()
         stopClearTimer()
+        // Quitting counts as finishing the run, so its score can still be a best.
+        highscoreStore.maybeUpdate(score, for: mode)
         // Music keeps playing across the menu (resumes if it was paused), so it
         // stays continuous when bouncing between the menu and a game.
         audio.resumeMusicIfEnabled()
@@ -129,7 +133,14 @@ final class GameEngine: ObservableObject {
     }
 
     func autoPauseFromScenePhase() {
-        guard screen == .game, phase == .playing else { return }
+        guard screen == .game else { return }
+        // A clear still flashing would finish on its timer and resume play
+        // while the app is inactive; settle it now so the pause below sticks.
+        if case let .clearing(rows, _) = phase {
+            stopClearTimer()
+            completeClearAnimation(rows: rows)
+        }
+        guard phase == .playing else { return }
         phase = .paused
         stopTimer()
         audio.pauseMusic()
@@ -144,13 +155,15 @@ final class GameEngine: ObservableObject {
         stopLockTimer()
         lockResets = 0
 
-        // Rows above the board are empty space (Board.collides skips y < 0), so a
-        // blocked spawn gets nudged up into that buffer before we call it a top-out.
+        // A blocked spawn may be nudged up, but only until its bottom row sits on
+        // row 0. Board.collides treats rows above the board as empty, so a piece
+        // lifted any higher always fits and the top-out below could never fire.
+        // Those rows aren't stored either: lockPiece ends the game if cells lock there.
         let local = Tetromino.cells(kind: kind, rotation: 0)
         let pieceHeight = (local.map(\.y).max() ?? 0) - (local.map(\.y).min() ?? 0) + 1
         var piece = spawned
         var lift = 0
-        while board.collides(piece), lift < pieceHeight {
+        while board.collides(piece), lift < pieceHeight - 1 {
             lift += 1
             piece = spawned.moved(dx: 0, dy: -lift)
         }
@@ -167,7 +180,7 @@ final class GameEngine: ObservableObject {
         screen = .gameOver
         // Leave music playing on the game-over screen for continuity.
         haptics.gameOver(enabled: settings.hapticsEnabled)
-        highscoreStore.maybeUpdate(score, for: mode)
+        isNewHighscore = highscoreStore.maybeUpdate(score, for: mode)
     }
 
     // MARK: - Timer
@@ -319,6 +332,12 @@ final class GameEngine: ObservableObject {
         lockResets = 0
         inputLockedUntil = Date().addingTimeInterval(Self.postLockInputLockout)
         board.lock(piece)
+        // Lock-out: the board keeps no rows above 0, so cells locked there would
+        // vanish. The stack has topped out.
+        if piece.cells.contains(where: { $0.y < 0 }) {
+            triggerGameOver()
+            return
+        }
         haptics.medium(enabled: settings.hapticsEnabled)
         let rows = board.fullRows()
         if rows.isEmpty {
@@ -338,10 +357,10 @@ final class GameEngine: ObservableObject {
         phase = .clearing(rows: rows, isFourLine: isFourLine)
 
         if isFourLine {
-            audio.playFourLineChime(enabled: settings.musicEnabled)
+            audio.playFourLineChime(enabled: settings.sfxEnabled)
             haptics.success(enabled: settings.hapticsEnabled)
         } else {
-            audio.playLineClear(enabled: settings.musicEnabled)
+            audio.playLineClear(enabled: settings.sfxEnabled)
             haptics.medium(enabled: settings.hapticsEnabled)
         }
 

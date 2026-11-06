@@ -3,7 +3,6 @@ import SwiftUI
 struct GameOverView: View {
     @EnvironmentObject var engine: GameEngine
     @EnvironmentObject var settings: SettingsStore
-    @ObservedObject private var hs = HighscoreStore.shared
 
     @ScaledMetric(relativeTo: .largeTitle) private var titleSize: CGFloat = 36
     @ScaledMetric(relativeTo: .largeTitle) private var scoreSize: CGFloat = 48
@@ -29,7 +28,7 @@ struct GameOverView: View {
                     Text("\(engine.score)")
                         .font(.system(size: scoreSize, weight: .semibold, design: .rounded))
                         .foregroundStyle(ink)
-                    if engine.score >= hs.highscore(for: engine.mode) && engine.score > 0 {
+                    if engine.isNewHighscore {
                         Text(s.newBest)
                             .font(.system(.callout, design: .rounded).weight(.semibold))
                             .foregroundStyle(theme.accentColor(appearance: appearance))

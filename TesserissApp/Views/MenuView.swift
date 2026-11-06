@@ -143,5 +143,8 @@ struct MenuView: View {
             )
         }
         .buttonStyle(.plain)
+        // `gameMode`, not `mode` — that's the appearance. Selection is otherwise color-only.
+        .accessibilityIdentifier("mode-\(gameMode.rawValue)")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }

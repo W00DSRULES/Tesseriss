@@ -42,8 +42,10 @@ struct SettingsView: View {
                     .foregroundStyle(ink)
 
                 VStack(spacing: 16) {
-                    Toggle(s.musicLabel, isOn: $settings.musicEnabled)
+                    // The emoji are decoration: VoiceOver reads the plain label.
+                    Toggle("🎵 " + s.musicLabel, isOn: $settings.musicEnabled)
                         .toggleStyle(.switch)
+                        .accessibilityLabel(s.musicLabel)
                         .onChange(of: settings.musicEnabled) { _, enabled in
                             // Take effect immediately — don't wait for the next game.
                             if enabled {
@@ -52,20 +54,26 @@ struct SettingsView: View {
                                 engine.audio.pauseMusic()
                             }
                         }
+                    Toggle("🔔 " + s.sfxLabel, isOn: $settings.sfxEnabled)
+                        .toggleStyle(.switch)
+                        .accessibilityLabel(s.sfxLabel)
                     HStack(spacing: 12) {
-                        Text(s.volumeLabel)
+                        Text("🔊 " + s.volumeLabel)
+                            .accessibilityLabel(s.volumeLabel)
                         Slider(value: $settings.musicVolume, in: 0...1)
                             .tint(ink)
                             .onChange(of: settings.musicVolume) { _, _ in
                                 engine.audio.applyVolume()
                             }
                     }
-                    .disabled(!settings.musicEnabled)
-                    .opacity(settings.musicEnabled ? 1.0 : 0.4)
+                    // One slider sets the volume of both music and sound effects.
+                    .disabled(!settings.musicEnabled && !settings.sfxEnabled)
+                    .opacity(settings.musicEnabled || settings.sfxEnabled ? 1.0 : 0.4)
                     // A one-option picker is dead UI — only show it once there's a choice.
                     if MusicPlaylist.all.count > 1 {
                         HStack {
-                            Text(s.playlistLabel)
+                            Text("🎼 " + s.playlistLabel)
+                                .accessibilityLabel(s.playlistLabel)
                             Spacer()
                             Picker(s.playlistLabel, selection: $settings.playlistID) {
                                 ForEach(MusicPlaylist.all) { playlist in
@@ -76,23 +84,27 @@ struct SettingsView: View {
                             .tint(ink)
                         }
                     }
-                    Toggle(s.hapticsLabel, isOn: $settings.hapticsEnabled)
+                    Toggle("📳 " + s.hapticsLabel, isOn: $settings.hapticsEnabled)
                         .toggleStyle(.switch)
-                    Toggle(s.ghostLabel, isOn: $settings.ghostEnabled)
+                        .accessibilityLabel(s.hapticsLabel)
+                    Toggle("📍 " + s.ghostLabel, isOn: $settings.ghostEnabled)
                         .toggleStyle(.switch)
+                        .accessibilityLabel(s.ghostLabel)
                     HStack {
-                        Text(s.appearanceLabel)
+                        Text("☀️ " + s.appearanceLabel)
+                            .accessibilityLabel(s.appearanceLabel)
                         Spacer()
                         Picker(s.appearanceLabel, selection: $settings.appearance) {
-                            Text(s.dayLabel).tag(AppearanceMode.day)
-                            Text(s.nightLabel).tag(AppearanceMode.night)
+                            Text("☀️ " + s.dayLabel).accessibilityLabel(s.dayLabel).tag(AppearanceMode.day)
+                            Text("🌙 " + s.nightLabel).accessibilityLabel(s.nightLabel).tag(AppearanceMode.night)
                         }
                         .pickerStyle(.segmented)
                         .frame(maxWidth: 200)
                         .accessibilityIdentifier("appearance-picker")
                     }
                     HStack {
-                        Text(s.themeStyleLabel)
+                        Text("🌊 " + s.themeStyleLabel)
+                            .accessibilityLabel(s.themeStyleLabel)
                         Spacer()
                         Picker(s.themeStyleLabel, selection: $settings.themeKind) {
                             Text(s.themeClassic).tag(ThemeKind.classic)
@@ -103,7 +115,8 @@ struct SettingsView: View {
                         .accessibilityIdentifier("theme-picker")
                     }
                     HStack {
-                        Text(s.languageLabel)
+                        Text("🌐 " + s.languageLabel)
+                            .accessibilityLabel(s.languageLabel)
                         Spacer()
                         Picker(s.languageLabel, selection: $settings.language) {
                             Text(s.turkishLabel).tag(Language.tr)

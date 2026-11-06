@@ -12,6 +12,13 @@ struct Strings {
     let menu: String
     let resume: String
     let paused: String
+    let pause: String
+    let moveLeft: String
+    let moveRight: String
+    let softDrop: String
+    let hardDrop: String
+    let rotateCW: String
+    let rotateCCW: String
     let score: String
     let level: String
     let lines: String
@@ -21,6 +28,7 @@ struct Strings {
     let playAgain: String
     let back: String
     let musicLabel: String
+    let sfxLabel: String
     let hapticsLabel: String
     let dayLabel: String
     let nightLabel: String
@@ -74,6 +82,13 @@ struct Strings {
         menu: "MENÜ",
         resume: "DEVAM",
         paused: "DURAKLATILDI",
+        pause: "Duraklat",
+        moveLeft: "Sola kaydır",
+        moveRight: "Sağa kaydır",
+        softDrop: "Aşağı indir",
+        hardDrop: "En alta düşür",
+        rotateCW: "Saat yönünde döndür",
+        rotateCCW: "Saat yönünün tersine döndür",
         score: "SKOR",
         level: "SEVİYE",
         lines: "SATIR",
@@ -82,16 +97,17 @@ struct Strings {
         newBest: "YENİ REKOR",
         playAgain: "TEKRAR OYNA",
         back: "GERİ",
-        musicLabel: "🎵 Müzik",
-        hapticsLabel: "📳 Titreşim",
-        dayLabel: "☀️ Gündüz",
-        nightLabel: "🌙 Gece",
-        languageLabel: "🌐 Dil",
+        musicLabel: "Müzik",
+        sfxLabel: "Ses efektleri",
+        hapticsLabel: "Titreşim",
+        dayLabel: "Gündüz",
+        nightLabel: "Gece",
+        languageLabel: "Dil",
         turkishLabel: "Türkçe",
         englishLabel: "English",
-        ghostLabel: "📍 İniş",
-        volumeLabel: "🔊 Ses",
-        playlistLabel: "🎼 Çalma listesi",
+        ghostLabel: "İniş",
+        volumeLabel: "Ses",
+        playlistLabel: "Çalma listesi",
         modeFastName: "Çatlak",
         modeOgName: "Yırtık",
         modeHardName: "Parçalanma",
@@ -102,8 +118,8 @@ struct Strings {
         aboutLine2: "Riss — Almanca, bir yırtık.",
         aboutLine3: "Dizileri yırt — dört sıra birden.",
         ultimateRiss: "ULTIMATE RISS",
-        appearanceLabel: "☀️ Görünüm",
-        themeStyleLabel: "🌊 Tema",
+        appearanceLabel: "Görünüm",
+        themeStyleLabel: "Tema",
         themeClassic: "Klasik",
         themeHokusai: "Hokusai",
         greatWave: "MUHTEŞEM DALGA"
@@ -121,6 +137,13 @@ struct Strings {
         menu: "MENU",
         resume: "RESUME",
         paused: "PAUSED",
+        pause: "Pause",
+        moveLeft: "Move left",
+        moveRight: "Move right",
+        softDrop: "Move down",
+        hardDrop: "Drop to bottom",
+        rotateCW: "Rotate clockwise",
+        rotateCCW: "Rotate counterclockwise",
         score: "SCORE",
         level: "LEVEL",
         lines: "LINES",
@@ -129,28 +152,29 @@ struct Strings {
         newBest: "NEW BEST",
         playAgain: "PLAY AGAIN",
         back: "BACK",
-        musicLabel: "🎵 Music",
-        hapticsLabel: "📳 Haptics",
-        dayLabel: "☀️ Day",
-        nightLabel: "🌙 Night",
-        languageLabel: "🌐 Language",
+        musicLabel: "Music",
+        sfxLabel: "Sound effects",
+        hapticsLabel: "Haptics",
+        dayLabel: "Day",
+        nightLabel: "Night",
+        languageLabel: "Language",
         turkishLabel: "Türkçe",
         englishLabel: "English",
-        ghostLabel: "📍 Landing",
-        volumeLabel: "🔊 Volume",
-        playlistLabel: "🎼 Playlist",
+        ghostLabel: "Landing",
+        volumeLabel: "Volume",
+        playlistLabel: "Playlist",
         modeFastName: "Crack",
         modeOgName: "Tear",
         modeHardName: "Shatter",
         modeFastSubtitle: "fast",
-        modeOgSubtitle: "og",
+        modeOgSubtitle: "classic",
         modeHardSubtitle: "hard",
         aboutLine1: "Tesseris — Greek, four.",
         aboutLine2: "Riss — German, a tear.",
         aboutLine3: "Tear the rows — four at once.",
         ultimateRiss: "ULTIMATE RISS",
-        appearanceLabel: "☀️ Appearance",
-        themeStyleLabel: "🌊 Theme",
+        appearanceLabel: "Appearance",
+        themeStyleLabel: "Theme",
         themeClassic: "Classic",
         themeHokusai: "Hokusai",
         greatWave: "A GREAT WAVE"

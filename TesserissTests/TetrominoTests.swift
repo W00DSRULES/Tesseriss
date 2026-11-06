@@ -75,4 +75,78 @@ final class TetrominoTests: XCTestCase {
             }
         }
     }
+
+    // MARK: - Rotation table geometry
+
+    /// The rotation tables are typed by hand. Turning state 0 by 90° in code and
+    /// comparing shapes catches a wrong entry that reading the table would miss.
+    func test_each_rotation_state_is_state_zero_turned_clockwise() {
+        for kind in PieceKind.allCases {
+            var turned = Tetromino.cells(kind: kind, rotation: 0)
+            // State 4 wraps to state 0, so the last turn checks that four turns return to the start.
+            for state in 1...4 {
+                turned = turnedClockwise(turned)
+                XCTAssertEqual(normalized(turned), normalized(Tetromino.cells(kind: kind, rotation: state)),
+                               "\(kind) rotation \(state) is not rotation 0 turned \(state) × 90°")
+            }
+        }
+    }
+
+    func test_no_rotation_state_repeats_a_cell() {
+        for kind in PieceKind.allCases {
+            for r in 0..<4 {
+                let cells = Tetromino.cells(kind: kind, rotation: r)
+                XCTAssertEqual(Set(cells).count, cells.count, "\(kind) rotation \(r) repeats a cell")
+            }
+        }
+    }
+
+    func test_every_rotation_state_is_edge_connected() {
+        for kind in PieceKind.allCases {
+            for r in 0..<4 {
+                XCTAssertTrue(isEdgeConnected(Tetromino.cells(kind: kind, rotation: r)),
+                              "\(kind) rotation \(r) has a cell that shares no edge with the rest")
+            }
+        }
+    }
+
+    /// U, P and F have no rotational symmetry, so all four states must differ. Without
+    /// this, a table that repeats one symmetric shape four times (as `plus` does on
+    /// purpose) would still pass the clockwise-turn test above.
+    func test_u_p_f_pentominoes_have_four_distinct_rotation_states() {
+        for kind: PieceKind in [.U, .P, .F] {
+            let shapes = Set((0..<4).map { normalized(Tetromino.cells(kind: kind, rotation: $0)) })
+            XCTAssertEqual(shapes.count, 4, "\(kind) must have four distinct rotation states")
+        }
+    }
+
+    /// Turns cells 90° clockwise on screen (y grows downward): (x, y) -> (maxY - y, x).
+    private func turnedClockwise(_ cells: [GridPoint]) -> [GridPoint] {
+        let maxY = cells.map(\.y).max() ?? 0
+        return cells.map { GridPoint(x: maxY - $0.y, y: $0.x) }
+    }
+
+    /// Shifts cells so their bounding box starts at (0, 0), leaving only the shape.
+    private func normalized(_ cells: [GridPoint]) -> Set<GridPoint> {
+        let minX = cells.map(\.x).min() ?? 0
+        let minY = cells.map(\.y).min() ?? 0
+        return Set(cells.map { GridPoint(x: $0.x - minX, y: $0.y - minY) })
+    }
+
+    /// True when every cell can be reached from the first through shared edges.
+    private func isEdgeConnected(_ cells: [GridPoint]) -> Bool {
+        guard let start = cells.first else { return true }
+        let all = Set(cells)
+        var seen: Set<GridPoint> = [start]
+        var stack = [start]
+        while let cell = stack.popLast() {
+            for (dx, dy) in [(1, 0), (-1, 0), (0, 1), (0, -1)] {
+                let neighbour = GridPoint(x: cell.x + dx, y: cell.y + dy)
+                if all.contains(neighbour), seen.insert(neighbour).inserted {
+                    stack.append(neighbour)
+                }
+            }
+        }
+        return seen.count == all.count
+    }
 }

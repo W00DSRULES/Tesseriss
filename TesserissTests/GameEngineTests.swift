@@ -5,17 +5,45 @@ import XCTest
 /// the post-lock input lockout. The engine had no test coverage at all before this.
 final class GameEngineTests: XCTestCase {
 
-    private func makeEngine() -> GameEngine {
+    private func makeEngine(highscoreStore: HighscoreStore? = nil,
+                            randomizerFactory: @escaping (Double) -> PieceRandomizer = { PieceRandomizer(pentominoChance: $0) })
+        -> GameEngine {
         // Isolated defaults so tests don't read or write the real settings.
         let suite = "tesseriss.tests.\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: suite)!
         let settings = SettingsStore(defaults: defaults)
         settings.hapticsEnabled = false
         settings.musicEnabled = false   // keep the test run silent
+        settings.sfxEnabled = false
 
         return GameEngine(settings: settings,
-                          highscoreStore: HighscoreStore(defaults: defaults),
-                          randomizerFactory: { PieceRandomizer(pentominoChance: $0) })
+                          highscoreStore: highscoreStore ?? HighscoreStore(defaults: defaults),
+                          randomizerFactory: randomizerFactory)
+    }
+
+    /// Starts an og game on the TESSERISS_TETRIS_SETUP board (bottom four rows
+    /// full except the right-hand column, an I dealt first), then stands the I
+    /// up and hard-drops it into that column. Returns with the clear flashing.
+    private func startGameAndDropAFourLineClear(_ engine: GameEngine) {
+        setenv("TESSERISS_TETRIS_SETUP", "1", 1)
+        defer { unsetenv("TESSERISS_TETRIS_SETUP") }
+        engine.startNewGame(mode: .og)
+        engine.rotateCW()
+        for _ in 0..<10 { engine.moveRight(haptic: false) }
+        engine.hardDrop()
+    }
+
+    /// Hard-drops every piece where it spawns until the game ends (at most 40
+    /// drops). Every spawn covers the centre column and none reaches the
+    /// left-hand columns, so no line can clear and the stack has to top out.
+    private func hardDropUntilGameOver(_ engine: GameEngine) {
+        var drops = 0
+        while engine.screen != .gameOver, drops < 40 {
+            engine.hardDrop()
+            drops += 1
+            // Wait out the post-lock lockout so the next hard drop is accepted.
+            RunLoop.current.run(until: Date().addingTimeInterval(GameEngine.postLockInputLockout + 0.02))
+        }
     }
 
     // MARK: - Spawn normalisation
@@ -149,4 +177,178 @@ final class GameEngineTests: XCTestCase {
         XCTAssertEqual(engine.current?.origin, spawned?.origin,
                        "the freshly spawned piece should not move during the lockout")
     }
+
+    // MARK: - Top-out
+
+    func test_stackingToTheTopEndsTheGame() {
+        // Seed 5 deals an I as the first blocked spawn. An I spawns one row tall,
+        // so any lift at all would put it wholly above the board.
+        let engine = makeEngine(randomizerFactory: {
+            PieceRandomizer(pentominoChance: $0, rng: SeededRandomNumberGenerator(seed: 5))
+        })
+        engine.startNewGame(mode: .og)
+        // As in hardDropUntilGameOver, checking each piece as it comes into play.
+        var drops = 0
+        while engine.phase == .playing, drops < 40, let piece = engine.current {
+            // A blocked spawn may be lifted, but never wholly above the board:
+            // up there it can't collide, so the top-out could never fire.
+            XCTAssertTrue(piece.cells.contains(where: { $0.y >= 0 }),
+                          "drop \(drops): the piece in play must show on the board")
+            engine.hardDrop()
+            drops += 1
+            RunLoop.current.run(until: Date().addingTimeInterval(GameEngine.postLockInputLockout + 0.02))
+        }
+        XCTAssertEqual(engine.screen, .gameOver, "a stack that reaches the top must end the game")
+        XCTAssertEqual(engine.phase, .gameOver)
+    }
+
+    func test_lockedPieceKeepsEveryCellWhileTheGameGoesOn() {
+        let engine = makeEngine()
+        engine.startNewGame(mode: .fast)
+        // Stack as in hardDropUntilGameOver, counting the board's cells around
+        // each lock. No line clears, so each lock adds a whole piece.
+        var drops = 0
+        while engine.phase == .playing, drops < 40, let piece = engine.current {
+            let before = engine.board.grid.joined().compactMap { $0 }.count
+            engine.hardDrop()
+            drops += 1
+            if engine.phase == .playing {
+                let after = engine.board.grid.joined().compactMap { $0 }.count
+                XCTAssertEqual(after - before, piece.kind.cellCount,
+                               "drop \(drops): a locked piece must keep every cell")
+            }
+            RunLoop.current.run(until: Date().addingTimeInterval(GameEngine.postLockInputLockout + 0.02))
+        }
+        XCTAssertEqual(engine.phase, .gameOver, "precondition: the stack should have reached the top")
+    }
+
+    func test_pieceLockedAboveTheBoardEndsTheGame() {
+        // Every piece is stood up and pushed against the left wall, so columns
+        // 0-1 fill to the top while the spawn columns stay empty. With seed 2 a
+        // piece then locks partly above row 0 and the next one would still fit:
+        // only the lock-out can end the game there.
+        let engine = makeEngine(randomizerFactory: {
+            PieceRandomizer(pentominoChance: $0, rng: SeededRandomNumberGenerator(seed: 2))
+        })
+        engine.startNewGame(mode: .og)
+        var drops = 0
+        while engine.phase == .playing, drops < 40 {
+            engine.rotateCW()
+            for _ in 0..<10 { engine.moveLeft(haptic: false) }
+            guard var landed = engine.current, let nextKind = engine.nextKind else { break }
+            while !engine.board.collides(landed.moved(dx: 0, dy: 1)) {
+                landed = landed.moved(dx: 0, dy: 1)
+            }
+            var board = engine.board
+            board.lock(landed)
+            engine.hardDrop()
+            drops += 1
+            if landed.cells.contains(where: { $0.y < 0 }) {
+                let next = Tetromino.spawn(kind: nextKind, boardWidth: board.width, boardHeight: board.height)
+                XCTAssertFalse(board.collides(next), "precondition: the next piece would still fit")
+                XCTAssertEqual(engine.phase, .gameOver,
+                               "drop \(drops): a piece locked above the board must end the game")
+                return
+            }
+            // Thread.sleep, not the run loop: a gravity tick would move the next
+            // piece and change the seeded stack.
+            Thread.sleep(forTimeInterval: GameEngine.postLockInputLockout + 0.02)
+        }
+        XCTFail("precondition: no piece locked above the board in \(drops) drops")
+    }
+
+    // MARK: - New best flag
+
+    func test_newHighscoreFlagIsSetOnlyByAStrictBeat() {
+        let engine = makeEngine()
+        startGameAndDropAFourLineClear(engine)
+        RunLoop.current.run(until: Date().addingTimeInterval(0.75))   // past the 0.5 s flash
+        XCTAssertEqual(engine.score, 4000, "precondition: the four-line clear scored")
+        hardDropUntilGameOver(engine)
+        XCTAssertEqual(engine.screen, .gameOver, "precondition: the game ended")
+        XCTAssertTrue(engine.isNewHighscore, "4000 beats the empty best of 0")
+
+        engine.startNewGame(mode: .og)
+        XCTAssertFalse(engine.isNewHighscore, "a new game must start without the flag")
+
+        startGameAndDropAFourLineClear(engine)
+        RunLoop.current.run(until: Date().addingTimeInterval(0.75))
+        XCTAssertEqual(engine.score, 4000, "precondition: the four-line clear scored")
+        hardDropUntilGameOver(engine)
+        XCTAssertEqual(engine.screen, .gameOver, "precondition: the game ended")
+        XCTAssertFalse(engine.isNewHighscore, "matching the best is not a new best")
+    }
+
+    func test_newHighscoreFlagStaysOffBelowTheBestAndAtZero() {
+        let store = HighscoreStore(defaults: UserDefaults(suiteName: "tesseriss.tests.\(UUID().uuidString)")!)
+        store.maybeUpdate(9000, for: .og)
+        let engine = makeEngine(highscoreStore: store)
+        startGameAndDropAFourLineClear(engine)
+        RunLoop.current.run(until: Date().addingTimeInterval(0.75))   // past the 0.5 s flash
+        XCTAssertEqual(engine.score, 4000, "precondition: the four-line clear scored")
+        hardDropUntilGameOver(engine)
+        XCTAssertEqual(engine.screen, .gameOver, "precondition: the game ended")
+        XCTAssertFalse(engine.isNewHighscore, "4000 is below the best of 9000")
+
+        let fresh = makeEngine()
+        fresh.startNewGame(mode: .og)
+        hardDropUntilGameOver(fresh)
+        XCTAssertEqual(fresh.screen, .gameOver, "precondition: the game ended")
+        XCTAssertEqual(fresh.score, 0, "precondition: nothing was cleared")
+        XCTAssertFalse(fresh.isNewHighscore, "a score of 0 is never a new best")
+    }
+
+    // MARK: - Quitting to the menu
+
+    func test_returnToMenuSavesTheBestSoFar() {
+        let defaults = UserDefaults(suiteName: "tesseriss.tests.\(UUID().uuidString)")!
+        let engine = makeEngine(highscoreStore: HighscoreStore(defaults: defaults))
+        startGameAndDropAFourLineClear(engine)
+        RunLoop.current.run(until: Date().addingTimeInterval(0.75))   // past the 0.5 s flash
+        XCTAssertEqual(engine.score, 4000, "precondition: the four-line clear scored")
+
+        engine.returnToMenu()
+        // A fresh store reads what was written to defaults, as on the next launch.
+        XCTAssertEqual(HighscoreStore(defaults: defaults).highscore(for: .og), 4000,
+                       "quitting mid-game must still record the score as a best")
+    }
+
+    // MARK: - Scene-phase auto-pause
+
+    func test_autoPauseDuringALineClearKeepsTheGamePaused() {
+        let engine = makeEngine()
+        startGameAndDropAFourLineClear(engine)
+        guard case .clearing = engine.phase else { return XCTFail("precondition: a clear is in flight") }
+
+        engine.autoPauseFromScenePhase()   // the scene went inactive mid-flash
+        RunLoop.current.run(until: Date().addingTimeInterval(0.75))   // past the 0.5 s flash
+
+        XCTAssertEqual(engine.phase, .paused, "a finishing clear must not resume play behind the user's back")
+        XCTAssertEqual(engine.lines, 4, "the clear is still credited")
+    }
+
+    // MARK: - Sound effects
+
+    func test_fourLineChimeFollowsTheSfxSettingNotMusic() {
+        for sfxOn in [true, false] {
+            let defaults = UserDefaults(suiteName: "tesseriss.tests.\(UUID().uuidString)")!
+            let settings = SettingsStore(defaults: defaults)
+            settings.hapticsEnabled = false
+            settings.musicEnabled = false
+            settings.sfxEnabled = sfxOn
+            let audio = AudioSpy(settings: settings)
+            let engine = GameEngine(settings: settings,
+                                    highscoreStore: HighscoreStore(defaults: defaults),
+                                    audio: audio)
+            startGameAndDropAFourLineClear(engine)
+            XCTAssertEqual(audio.fourLineChimes, [sfxOn],
+                           "with music off, the chime must follow the sound effects setting (sfx \(sfxOn))")
+        }
+    }
+}
+
+/// Records chime requests instead of playing them.
+private final class AudioSpy: AudioController {
+    var fourLineChimes: [Bool] = []
+    override func playFourLineChime(enabled: Bool) { fourLineChimes.append(enabled) }
 }

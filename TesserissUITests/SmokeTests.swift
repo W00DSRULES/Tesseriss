@@ -17,6 +17,17 @@ final class SmokeTests: XCTestCase {
         return app
     }
 
+    /// Picks the in-app language by its picker label ("English" / "Türkçe"),
+    /// which reads the same in both languages, then returns to the menu.
+    private func selectLanguage(_ app: XCUIApplication, _ language: String) {
+        app.buttons["settings-button"].tap()
+        let button = app.buttons[language]
+        XCTAssertTrue(button.waitForExistence(timeout: 3))
+        button.tap()
+        app.buttons["back-button"].tap()
+        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3))
+    }
+
     // MARK: - Menu
 
     func test_launch_shows_menu_with_start_and_settings() {
@@ -35,12 +46,90 @@ final class SmokeTests: XCTestCase {
         XCTAssertTrue(app.buttons["rotate-button"].exists)
         XCTAssertTrue(app.buttons["menu-button"].exists)
 
-        // Pre-localized stat labels: "skor" (tr default) or "score" (en).
-        let scoreLabel = app.staticTexts["stat-skor"].exists
-            ? app.staticTexts["stat-skor"]
-            : app.staticTexts["stat-score"]
+        let scoreLabel = app.staticTexts["stat-score"]
         XCTAssertTrue(scoreLabel.exists, "Score stat label must exist")
         XCTAssertEqual(scoreLabel.label, "0", "Fresh game should start at score 0")
+    }
+
+    func test_mode_buttons_have_stable_ids_and_selected_trait() {
+        let app = launchedApp()
+        let og = app.buttons["mode-og"]
+        let fast = app.buttons["mode-fast"]
+        let hard = app.buttons["mode-hard"]
+        XCTAssertTrue(og.waitForExistence(timeout: 3))
+        XCTAssertTrue(fast.exists)
+        XCTAssertTrue(hard.exists)
+        XCTAssertTrue(og.isSelected, "--ui-test wipes to the default mode og")
+        XCTAssertFalse(fast.isSelected)
+        XCTAssertFalse(hard.isSelected)
+        fast.tap()
+        XCTAssertTrue(fast.isSelected, "Fast should be selected after tap")
+        XCTAssertFalse(og.isSelected, "Only one mode is selected at a time")
+    }
+
+    // MARK: - Game screen
+
+    /// Stat ids must not follow the app language: they used to be built from
+    /// the localized label ("stat-skor" in Turkish).
+    func test_stat_ids_are_language_independent() {
+        for language in ["Türkçe", "English"] {
+            let app = launchedApp()
+            selectLanguage(app, language)
+            app.buttons["start-button"].tap()
+            XCTAssertTrue(app.buttons["hard-drop-button"].waitForExistence(timeout: 3))
+            for id in ["stat-score", "stat-level", "stat-lines"] {
+                XCTAssertTrue(app.staticTexts[id].exists, "\(id) missing in \(language)")
+            }
+            XCTAssertEqual(app.staticTexts["stat-score"].label, "0", language)
+        }
+    }
+
+    /// VoiceOver must read what each control does, in the app's language,
+    /// not a glyph ("◀") or an SF Symbol name ("chevron.down.2").
+    func test_control_buttons_have_spoken_labels() {
+        let app = launchedApp()
+        selectLanguage(app, "English")
+        app.buttons["start-button"].tap()
+        XCTAssertTrue(app.buttons["hard-drop-button"].waitForExistence(timeout: 3))
+        let expected: [(id: String, label: String)] = [
+            ("move-left-button", "Move left"),
+            ("soft-drop-button", "Move down"),
+            ("move-right-button", "Move right"),
+            ("rotate-ccw-button", "Rotate counterclockwise"),
+            ("hard-drop-button", "Drop to bottom"),
+            ("rotate-button", "Rotate clockwise"),
+            ("pause-button", "Pause"),
+        ]
+        for control in expected {
+            XCTAssertEqual(app.buttons[control.id].label, control.label, control.id)
+        }
+    }
+
+    func test_pause_overlay_resume_and_menu() {
+        let app = launchedApp()
+        app.buttons["start-button"].tap()
+        let pause = app.buttons["pause-button"]
+        XCTAssertTrue(pause.waitForExistence(timeout: 3))
+        pause.tap()
+        let resume = app.buttons["resume-button"]
+        XCTAssertTrue(resume.waitForExistence(timeout: 2))
+        XCTAssertTrue(app.buttons["pause-menu-button"].exists)
+        XCTAssertFalse(pause.isEnabled, "Pause is disabled while paused")
+
+        resume.tap()
+        let closed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"),
+                                               object: resume)
+        XCTAssertEqual(XCTWaiter.wait(for: [closed], timeout: 2), .completed,
+                       "Resume should close the pause overlay")
+        // Pause only acts while playing, so pausing again proves play resumed.
+        XCTAssertTrue(pause.isEnabled)
+        pause.tap()
+        XCTAssertTrue(resume.waitForExistence(timeout: 2),
+                      "Game should respond to pause again after resuming")
+
+        app.buttons["pause-menu-button"].tap()
+        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 2),
+                      "Overlay MENU returns to the menu")
     }
 
     // MARK: - Settings
@@ -55,6 +144,29 @@ final class SmokeTests: XCTestCase {
         app.buttons["back-button"].tap()
         XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 2),
                       "Back returns to menu")
+    }
+
+    /// The emoji are drawn, not spoken: each setting must read as its plain
+    /// name ("Music", not "🎵 Music").
+    func test_settings_labels_are_plain_text() {
+        let app = launchedApp()
+        selectLanguage(app, "English")
+        app.buttons["settings-button"].tap()
+        XCTAssertTrue(app.buttons["back-button"].waitForExistence(timeout: 2))
+        for name in ["Music", "Sound effects", "Haptics", "Landing"] {
+            XCTAssertTrue(app.switches[name].exists, "\(name) switch")
+        }
+        for name in ["Volume", "Appearance", "Theme", "Language"] {
+            XCTAssertTrue(app.staticTexts[name].exists, "\(name) label")
+        }
+        for name in ["Day", "Night"] {
+            XCTAssertTrue(app.buttons[name].exists, "\(name) segment")
+        }
+
+        let sfx = app.switches["Sound effects"]
+        let before = sfx.value as? String
+        sfx.tap()
+        XCTAssertNotEqual(sfx.value as? String, before, "Tapping Sound effects should flip it")
     }
 
     func test_theme_picker_switches_to_hokusai() {
@@ -139,10 +251,7 @@ final class SmokeTests: XCTestCase {
             // tap swallowed by a lock/clear frame in one run but not the other
             // would diverge the scores and flake this comparison.
             for _ in 0..<drops { hardDrop.tap(); Thread.sleep(forTimeInterval: 0.15) }
-            let stat = app.staticTexts["stat-skor"].exists
-                ? app.staticTexts["stat-skor"]
-                : app.staticTexts["stat-score"]
-            let value = stat.label
+            let value = app.staticTexts["stat-score"].label
             app.terminate()
             return value
         }
