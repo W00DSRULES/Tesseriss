@@ -54,11 +54,53 @@ struct Tetromino: Equatable {
         return copy
     }
 
+    /// Spawns centred, with the piece's topmost occupied cell on board row 0.
+    ///
+    /// The rotation tables don't all start at local y = 0 (I sits at y = 1, T spans
+    /// y = 1...2), so spawning every piece at origin y = 0 used to place them at
+    /// different heights — and top-out then triggered at a different stack height
+    /// depending on which piece happened to be next. Normalising by the piece's own
+    /// bounding box makes the spawn height identical for every kind.
     static func spawn(kind: PieceKind, boardWidth: Int, boardHeight: Int) -> Tetromino {
         let local = cells(kind: kind, rotation: 0)
-        let pieceWidth = (local.map(\.x).max() ?? 0) + 1
-        let spawnX = (boardWidth - pieceWidth) / 2
-        return Tetromino(kind: kind, rotation: 0, origin: GridPoint(x: spawnX, y: 0))
+        let minX = local.map(\.x).min() ?? 0
+        let maxX = local.map(\.x).max() ?? 0
+        let minY = local.map(\.y).min() ?? 0
+        let spawnX = (boardWidth - (maxX - minX + 1)) / 2 - minX
+        return Tetromino(kind: kind, rotation: 0, origin: GridPoint(x: spawnX, y: -minY))
+    }
+
+    /// Offsets tried, in order, when a rotation lands on something. A negative dy
+    /// lifts the piece, which is what allows rotating while resting on the floor.
+    static let kickOffsets: [GridPoint] = [
+        GridPoint(x:  0, y:  0),
+        GridPoint(x: -1, y:  0),
+        GridPoint(x:  1, y:  0),
+        GridPoint(x: -2, y:  0),
+        GridPoint(x:  2, y:  0),
+        GridPoint(x:  0, y: -1),
+        GridPoint(x: -1, y: -1),
+        GridPoint(x:  1, y: -1),
+        // A flat I needs two rows of clearance to stand up, so a single-row lift
+        // can never rotate it off the floor. Tried last, so it only ever applies
+        // when nothing gentler fits.
+        GridPoint(x:  0, y: -2),
+    ]
+
+    /// Rotates against `board`, nudging the piece by the first of `kickOffsets`
+    /// that fits. Returns the placed piece and the offset used, or nil when no
+    /// offset works. Without this a piece flush to a wall, or resting on the
+    /// floor, simply refuses to turn.
+    static func rotatedWithKick(_ piece: Tetromino, by delta: Int, in board: Board)
+        -> (piece: Tetromino, kick: GridPoint)? {
+        let rotated = piece.rotated(by: delta)
+        for offset in kickOffsets {
+            let candidate = rotated.moved(dx: offset.x, dy: offset.y)
+            if !board.collides(candidate) {
+                return (candidate, offset)
+            }
+        }
+        return nil
     }
 
     static func cells(kind: PieceKind, rotation: Int) -> [GridPoint] {

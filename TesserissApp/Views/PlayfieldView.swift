@@ -81,7 +81,7 @@ struct NextPieceView: View {
         VStack(alignment: .leading, spacing: 6) {
             Text(label)
                 .font(.system(.caption, design: .rounded).weight(.semibold))
-                .foregroundStyle(Color("PaletteInk").opacity(0.7))
+                .foregroundStyle(theme.inkColor(appearance: appearance).opacity(0.7))
             ZStack {
                 theme.playfieldBoardView(appearance: appearance)
                 Rectangle().strokeBorder(theme.gridLineColor(appearance: appearance), lineWidth: 0.5)

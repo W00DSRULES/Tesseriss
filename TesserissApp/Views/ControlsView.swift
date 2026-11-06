@@ -11,6 +11,11 @@ struct ControlsView: View {
     private let initialDelay: UInt64 = 270_000_000
     private let repeatDelay: UInt64 = 50_000_000
 
+    private var theme: Theme { settings.activeTheme }
+    private var appearance: AppearanceMode { settings.appearance }
+    private var ink: Color { theme.inkColor(appearance: appearance) }
+    private var card: Color { theme.cardColor(appearance: appearance) }
+
     var body: some View {
         VStack(spacing: 12) {
             HStack(spacing: 12) {
@@ -31,24 +36,31 @@ struct ControlsView: View {
             }
         }
         .padding(.horizontal, 16)
+        // A hold that is interrupted by the view going away (game over, or
+        // returning to the menu mid-press) would otherwise never get its release,
+        // leaving the repeat task spinning for the life of the process.
+        .onDisappear {
+            stopLeft()
+            stopRight()
+            stopDown()
+        }
     }
 
+    /// No haptic here — the engine fires one for whatever the action actually did,
+    /// so buttons that both tap and land a piece don't double up.
     private func iconButton(systemName: String, action: @escaping () -> Void) -> some View {
-        Button(action: {
-            engine.haptics.light(enabled: settings.hapticsEnabled)
-            action()
-        }) {
+        Button(action: action) {
             Image(systemName: systemName)
                 .font(.system(size: 28, weight: .semibold))
-                .foregroundStyle(Color("PaletteInk"))
+                .foregroundStyle(ink)
                 .frame(maxWidth: .infinity, minHeight: 76)
-                .background(Color("PaletteCard"))
+                .background(card)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
         }
     }
 
     private func pressableButton(_ title: String, onPress: @escaping () -> Void, onRelease: @escaping () -> Void) -> some View {
-        HoldButton(title: title, onPress: onPress, onRelease: onRelease)
+        HoldButton(title: title, ink: ink, card: card, onPress: onPress, onRelease: onRelease)
     }
 
     private func startLeft() {
@@ -57,7 +69,7 @@ struct ControlsView: View {
         leftTask = Task { [initialDelay, repeatDelay] in
             try? await Task.sleep(nanoseconds: initialDelay)
             while !Task.isCancelled {
-                await MainActor.run { engine.moveLeft() }
+                await MainActor.run { engine.moveLeft(haptic: false) }
                 try? await Task.sleep(nanoseconds: repeatDelay)
             }
         }
@@ -70,7 +82,7 @@ struct ControlsView: View {
         rightTask = Task { [initialDelay, repeatDelay] in
             try? await Task.sleep(nanoseconds: initialDelay)
             while !Task.isCancelled {
-                await MainActor.run { engine.moveRight() }
+                await MainActor.run { engine.moveRight(haptic: false) }
                 try? await Task.sleep(nanoseconds: repeatDelay)
             }
         }
@@ -83,7 +95,7 @@ struct ControlsView: View {
         downTask = Task { [initialDelay, repeatDelay] in
             try? await Task.sleep(nanoseconds: initialDelay)
             while !Task.isCancelled {
-                await MainActor.run { engine.softDrop() }
+                await MainActor.run { engine.softDrop(haptic: false) }
                 try? await Task.sleep(nanoseconds: repeatDelay)
             }
         }
@@ -93,6 +105,8 @@ struct ControlsView: View {
 
 private struct HoldButton: View {
     let title: String
+    let ink: Color
+    let card: Color
     let onPress: () -> Void
     let onRelease: () -> Void
     @State private var isHeld: Bool = false
@@ -100,9 +114,9 @@ private struct HoldButton: View {
     var body: some View {
         Text(title)
             .font(.system(.title2, design: .rounded).weight(.semibold))
-            .foregroundStyle(Color("PaletteInk"))
+            .foregroundStyle(ink)
             .frame(maxWidth: .infinity, minHeight: 76)
-            .background(Color("PaletteCard").opacity(isHeld ? 0.7 : 1.0))
+            .background(card.opacity(isHeld ? 0.7 : 1.0))
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .contentShape(Rectangle())
             .accessibilityAddTraits(.isButton)

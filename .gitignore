@@ -24,3 +24,6 @@ Packages/
 scheduled_tasks.lock
 .claude/
 .playwright-mcp/
+
+## Local release credentials (never commit)
+.env.local

@@ -48,22 +48,27 @@ struct TesserissApp: App {
 struct RootView: View {
     @EnvironmentObject private var engine: GameEngine
     @EnvironmentObject private var settings: SettingsStore
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         ZStack {
             settings.activeTheme
                 .backgroundView(appearance: settings.appearance)
                 .ignoresSafeArea()
-            switch engine.screen {
-            case .menu:
-                MenuView()
-            case .game:
-                GameView()
-            case .gameOver:
-                GameOverView()
-            case .settings:
-                SettingsView()
+            // Cross-fade instead of a hard cut, which read as a glitch.
+            ZStack {
+                switch engine.screen {
+                case .menu:
+                    MenuView().transition(.opacity)
+                case .game:
+                    GameView().transition(.opacity)
+                case .gameOver:
+                    GameOverView().transition(.opacity)
+                case .settings:
+                    SettingsView().transition(.opacity)
+                }
             }
+            .animation(reduceMotion ? nil : .easeInOut(duration: 0.22), value: engine.screen)
         }
     }
 }

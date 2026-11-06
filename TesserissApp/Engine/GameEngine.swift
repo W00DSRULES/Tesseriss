@@ -20,6 +20,19 @@ final class GameEngine: ObservableObject {
     private var clearTimer: Timer?
     private var lastTickAt: Date = .distantPast
 
+    /// Lock delay: a piece that has landed gets a moment to be slid or rotated
+    /// before it commits. Bounded resets stop a player stalling forever.
+    private var lockTimer: Timer?
+    private var lockResets: Int = 0
+    static let lockDelay: TimeInterval = 0.5
+    static let maxLockResets = 15
+
+    /// Brief deafness to drop input right after a lock, so holding soft-drop
+    /// through a lock doesn't immediately slam the piece that spawns next.
+    private var inputLockedUntil: Date = .distantPast
+    static let postLockInputLockout: TimeInterval = 0.12
+    private var acceptsDropInput: Bool { Date() >= inputLockedUntil }
+
     let audio: AudioController
     let haptics: HapticController
     private let settings: SettingsStore
@@ -126,14 +139,25 @@ final class GameEngine: ObservableObject {
 
     private func spawnNext() {
         guard let kind = nextKind else { return }
-        let piece = Tetromino.spawn(kind: kind, boardWidth: board.width, boardHeight: board.height)
+        let spawned = Tetromino.spawn(kind: kind, boardWidth: board.width, boardHeight: board.height)
         nextKind = randomizer.next()
-        if board.collides(piece) {
-            current = piece
-            triggerGameOver()
-            return
+        stopLockTimer()
+        lockResets = 0
+
+        // Rows above the board are empty space (Board.collides skips y < 0), so a
+        // blocked spawn gets nudged up into that buffer before we call it a top-out.
+        let local = Tetromino.cells(kind: kind, rotation: 0)
+        let pieceHeight = (local.map(\.y).max() ?? 0) - (local.map(\.y).min() ?? 0) + 1
+        var piece = spawned
+        var lift = 0
+        while board.collides(piece), lift < pieceHeight {
+            lift += 1
+            piece = spawned.moved(dx: 0, dy: -lift)
         }
         current = piece
+        if board.collides(piece) {
+            triggerGameOver()
+        }
     }
 
     private func triggerGameOver() {
@@ -157,9 +181,12 @@ final class GameEngine: ObservableObject {
         lastTickAt = Date()
     }
 
+    /// Also drops any pending lock delay — every caller (pause, menu, game over,
+    /// line clear, level change) wants the landed piece's grace period to end too.
     private func stopTimer() {
         timer?.invalidate()
         timer = nil
+        stopLockTimer()
     }
 
     private func stopClearTimer() {
@@ -171,9 +198,11 @@ final class GameEngine: ObservableObject {
         guard phase == .playing, let piece = current else { return }
         let dropped = piece.moved(dx: 0, dy: 1)
         if board.collides(dropped) {
-            lockPiece()
+            updateLockDelay(playerMoved: false)
         } else {
             current = dropped
+            stopLockTimer()
+            lockResets = 0
         }
     }
 
@@ -184,16 +213,21 @@ final class GameEngine: ObservableObject {
 
     // MARK: - Input
 
-    func moveLeft()  { tryMove(dx: -1, dy: 0) }
-    func moveRight() { tryMove(dx:  1, dy: 0) }
+    /// `haptic: false` is passed by the controls' auto-repeat, so holding a
+    /// direction taps once on press instead of buzzing ~20 times a second.
+    func moveLeft(haptic: Bool = true)  { tryMove(dx: -1, dy: 0, haptic: haptic) }
+    func moveRight(haptic: Bool = true) { tryMove(dx:  1, dy: 0, haptic: haptic) }
 
-    func softDrop() {
-        guard phase == .playing, let piece = current else { return }
+    func softDrop(haptic: Bool = true) {
+        guard phase == .playing, acceptsDropInput, let piece = current else { return }
         let next = piece.moved(dx: 0, dy: 1)
         if board.collides(next) {
-            lockPiece()
+            // Resting: let the lock delay decide, rather than committing here.
+            updateLockDelay(playerMoved: false)
         } else {
             current = next
+            if haptic { haptics.light(enabled: settings.hapticsEnabled) }
+            updateLockDelay(playerMoved: false)
         }
     }
 
@@ -202,15 +236,19 @@ final class GameEngine: ObservableObject {
 
     private func rotate(by delta: Int) {
         guard phase == .playing, let piece = current else { return }
-        let rotated = piece.rotated(by: delta)
-        if !board.collides(rotated) {
-            current = rotated
+        guard let result = Tetromino.rotatedWithKick(piece, by: delta, in: board) else { return }
+        current = result.piece
+        let kicked = result.kick != GridPoint(x: 0, y: 0)
+        if kicked {
+            haptics.soft(enabled: settings.hapticsEnabled)
+        } else {
             haptics.light(enabled: settings.hapticsEnabled)
         }
+        updateLockDelay(playerMoved: true)
     }
 
     func hardDrop() {
-        guard phase == .playing, let piece = current else { return }
+        guard phase == .playing, acceptsDropInput, let piece = current else { return }
         var dropped = piece
         while !board.collides(dropped.moved(dx: 0, dy: 1)) {
             dropped = dropped.moved(dx: 0, dy: 1)
@@ -219,19 +257,67 @@ final class GameEngine: ObservableObject {
         lockPiece()
     }
 
-    private func tryMove(dx: Int, dy: Int) {
+    private func tryMove(dx: Int, dy: Int, haptic: Bool = true) {
         guard phase == .playing, let piece = current else { return }
         let moved = piece.moved(dx: dx, dy: dy)
         if !board.collides(moved) {
             current = moved
-            haptics.light(enabled: settings.hapticsEnabled)
+            if haptic { haptics.light(enabled: settings.hapticsEnabled) }
+            updateLockDelay(playerMoved: true)
         }
+    }
+
+    // MARK: - Lock delay
+
+    /// Keeps the lock timer in step with the piece: arm it once the piece is
+    /// resting, reset it when the player nudges a resting piece (bounded by
+    /// `maxLockResets`), cancel it when the piece is free to fall again.
+    private func updateLockDelay(playerMoved: Bool) {
+        guard phase == .playing, let piece = current else {
+            stopLockTimer()
+            return
+        }
+        guard board.collides(piece.moved(dx: 0, dy: 1)) else {
+            stopLockTimer()
+            lockResets = 0
+            return
+        }
+        if lockTimer == nil {
+            armLockTimer()
+        } else if playerMoved, lockResets < Self.maxLockResets {
+            lockResets += 1
+            armLockTimer()
+        }
+    }
+
+    private func armLockTimer() {
+        lockTimer?.invalidate()
+        lockTimer = Timer.scheduledTimer(withTimeInterval: Self.lockDelay, repeats: false) { [weak self] _ in
+            self?.lockDelayElapsed()
+        }
+    }
+
+    private func lockDelayElapsed() {
+        stopLockTimer()
+        guard phase == .playing, let piece = current else { return }
+        // Still resting? Commit. Otherwise gravity has more work to do.
+        if board.collides(piece.moved(dx: 0, dy: 1)) {
+            lockPiece()
+        }
+    }
+
+    private func stopLockTimer() {
+        lockTimer?.invalidate()
+        lockTimer = nil
     }
 
     // MARK: - Lock + clear
 
     private func lockPiece() {
         guard let piece = current else { return }
+        stopLockTimer()
+        lockResets = 0
+        inputLockedUntil = Date().addingTimeInterval(Self.postLockInputLockout)
         board.lock(piece)
         haptics.medium(enabled: settings.hapticsEnabled)
         let rows = board.fullRows()

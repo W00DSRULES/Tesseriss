@@ -6,6 +6,10 @@ struct GameView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var s: Strings { settings.strings }
+    private var theme: Theme { settings.activeTheme }
+    private var appearance: AppearanceMode { settings.appearance }
+    private var ink: Color { theme.inkColor(appearance: appearance) }
+    private var card: Color { theme.cardColor(appearance: appearance) }
 
     var body: some View {
         ZStack {
@@ -25,7 +29,12 @@ struct GameView: View {
             }
             .padding(.top, 8)
             if engine.phase == .paused {
-                Color.black.opacity(0.25).ignoresSafeArea()
+                // Tapping anywhere on the scrim resumes — the button is still there
+                // for anyone who reaches for it.
+                Color.black.opacity(0.25)
+                    .ignoresSafeArea()
+                    .contentShape(Rectangle())
+                    .onTapGesture { engine.togglePause() }
                 pausedOverlay
             }
             if engine.celebrationActive {
@@ -38,7 +47,7 @@ struct GameView: View {
 
     @ViewBuilder
     private var celebrationBanner: some View {
-        if let custom = settings.activeTheme.fourLineBanner(strings: s) {
+        if let custom = theme.fourLineBanner(strings: s) {
             custom
         } else {
             ultimateRissBanner
@@ -49,14 +58,14 @@ struct GameView: View {
         Text(s.ultimateRiss)
             .font(.system(.largeTitle, design: .rounded).weight(.heavy))
             .tracking(2)
-            .foregroundStyle(Color("PaletteInk"))
+            .foregroundStyle(ink)
             .padding(.vertical, 14)
             .padding(.horizontal, 28)
-            .background(Color("PaletteCard"))
+            .background(card)
             .clipShape(RoundedRectangle(cornerRadius: 14))
             .overlay(
                 RoundedRectangle(cornerRadius: 14)
-                    .stroke(Color("PaletteInk").opacity(0.15), lineWidth: 1)
+                    .stroke(ink.opacity(0.15), lineWidth: 1)
             )
             .shadow(color: Color.black.opacity(0.18), radius: 10, y: 3)
             .allowsHitTesting(false)
@@ -72,11 +81,14 @@ struct GameView: View {
             Button(action: { engine.returnToMenu() }) {
                 Text(s.menu)
                     .font(.system(.caption, design: .rounded).weight(.semibold))
-                    .foregroundStyle(Color("PaletteInk").opacity(0.8))
+                    .foregroundStyle(ink.opacity(0.8))
                     .padding(.vertical, 6)
                     .padding(.horizontal, 12)
-                    .background(Color("PaletteCard"))
+                    .background(card)
                     .clipShape(Capsule())
+                    // Keep the small capsule look, but meet the 44pt touch minimum.
+                    .frame(minHeight: 44)
+                    .contentShape(Rectangle())
             }
             .accessibilityIdentifier("menu-button")
             Spacer()
@@ -85,10 +97,12 @@ struct GameView: View {
             }) {
                 Image(systemName: "pause.fill")
                     .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(Color("PaletteInk").opacity(engine.phase == .paused ? 0.3 : 0.8))
+                    .foregroundStyle(ink.opacity(engine.phase == .paused ? 0.3 : 0.8))
                     .frame(width: 32, height: 32)
-                    .background(Color("PaletteCard"))
+                    .background(card)
                     .clipShape(Capsule())
+                    .frame(width: 44, height: 44)
+                    .contentShape(Rectangle())
             }
             .disabled(engine.phase == .paused)
         }
@@ -98,50 +112,64 @@ struct GameView: View {
     private var sidebar: some View {
         VStack(alignment: .leading, spacing: 16) {
             NextPieceView(kind: engine.nextKind, label: s.next)
-            VStack(alignment: .leading, spacing: 8) {
-                statRow(label: s.score, value: "\(engine.score)")
-                HStack(alignment: .top, spacing: 14) {
-                    statRow(label: s.level, value: "\(engine.level)")
-                    statRow(label: s.lines, value: "\(engine.lines)")
+                .legibilityPanel(theme.backgroundIsArtwork,
+                                 stroke: theme.strokeColor(appearance: appearance))
+            VStack(alignment: .leading, spacing: 10) {
+                statRow(label: s.score, value: engine.score, prominent: true)
+                Divider().overlay(theme.strokeColor(appearance: appearance))
+                HStack(alignment: .top, spacing: 12) {
+                    statRow(label: s.level, value: engine.level)
+                    statRow(label: s.lines, value: engine.lines)
                 }
             }
-            // Sit below the wave crest in the Hokusai theme so the numbers
-            // land on the calmer part of the artwork.
-            .padding(.top, 110)
+            // Replaces a hardcoded 110pt top inset that was hand-tuned to dodge the
+            // wave crest — and therefore only worked on one screen size.
+            .legibilityPanel(theme.backgroundIsArtwork,
+                             stroke: theme.strokeColor(appearance: appearance))
+            Spacer(minLength: 0)
         }
-        .frame(maxWidth: 100, alignment: .leading)
+        .frame(width: 124, alignment: .leading)
     }
 
-    private func statRow(label: String, value: String) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
+    private func statRow(label: String, value: Int, prominent: Bool = false) -> some View {
+        VStack(alignment: .leading, spacing: 1) {
             Text(label)
                 .font(.system(.caption2, design: .rounded).weight(.semibold))
-                .foregroundStyle(Color("PaletteInk").opacity(0.6))
-            Text(value)
-                .font(.system(.title3, design: .rounded).weight(.semibold))
-                .foregroundStyle(Color("PaletteInk"))
+                .foregroundStyle(ink.opacity(0.55))
+                // "LEVEL" is wide enough to hyphenate in the narrow column; shrink
+                // rather than wrap, and never break the word.
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .fixedSize(horizontal: false, vertical: true)
+            // Monospaced digits so the numbers don't jiggle sideways as they tick up.
+            Text("\(value)")
+                .font(.system(prominent ? .title2 : .title3, design: .rounded)
+                    .weight(.semibold)
+                    .monospacedDigit())
+                .foregroundStyle(ink)
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
                 .accessibilityIdentifier("stat-\(label.lowercased())")
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var pausedOverlay: some View {
         VStack(spacing: 16) {
             Text(s.paused)
                 .font(.system(.title, design: .rounded).weight(.semibold))
-                .foregroundStyle(Color("PaletteInk"))
+                .foregroundStyle(ink)
             Button(action: { engine.togglePause() }) {
                 HStack(spacing: 10) {
                     Image(systemName: "play.fill")
                     Text(s.resume)
                 }
                 .font(.system(.title3, design: .rounded).weight(.semibold))
-                .foregroundStyle(Color("PaletteBackground"))
+                .foregroundStyle(theme.onInkColor(appearance: appearance))
                 .padding(.vertical, 14)
                 .padding(.horizontal, 36)
                 .frame(maxWidth: .infinity)
-                .background(Color("PaletteInk"))
+                .background(ink)
                 .clipShape(RoundedRectangle(cornerRadius: 14))
             }
             Button(action: { engine.returnToMenu() }) {
@@ -150,26 +178,26 @@ struct GameView: View {
                     Text(s.menu)
                 }
                 .font(.system(.body, design: .rounded).weight(.medium))
-                .foregroundStyle(Color("PaletteInk"))
+                .foregroundStyle(ink)
                 .padding(.vertical, 12)
                 .padding(.horizontal, 28)
                 .frame(maxWidth: .infinity)
-                .background(Color("PaletteBackground"))
+                .background(theme.onInkColor(appearance: appearance))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color("PaletteGrid"), lineWidth: 1)
+                        .stroke(theme.strokeColor(appearance: appearance), lineWidth: 1)
                 )
             }
         }
         .padding(.vertical, 24)
         .padding(.horizontal, 28)
         .frame(maxWidth: 280)
-        .background(Color("PaletteCard"))
+        .background(card)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(Color("PaletteGrid"), lineWidth: 1)
+                .stroke(theme.strokeColor(appearance: appearance), lineWidth: 1)
         )
         .transition(.opacity)
     }
