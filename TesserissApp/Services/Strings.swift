@@ -73,7 +73,7 @@ struct Strings {
     }
 
     static let tr = Strings(
-        tagline: "Dizileri yırt.",
+        tagline: "sıraları yırt.",
         scoringRow1: "1 sıra · 100",
         scoringRow2: "2 sıra · 300",
         scoringRow3: "3 sıra · 1000",
@@ -120,7 +120,7 @@ struct Strings {
         modeHardSubtitle: "zor",
         aboutLine1: "Tesseris — Yunanca, dört.",
         aboutLine2: "Riss — Almanca, bir yırtık.",
-        aboutLine3: "Dizileri yırt — dört sıra birden.",
+        aboutLine3: "Sıraları yırt — dördünü birden.",
         ultimateRiss: "ULTIMATE RISS",
         appearanceLabel: "Görünüm",
         themeStyleLabel: "Tema",

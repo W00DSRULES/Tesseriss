@@ -34,14 +34,14 @@ CAPTIONS = {
         "02-game":            ("Classic arcade feel,", "modern controls.", DAY),
         "03-settings":        ("Day or night.", "Classic or Hokusai.", DAY),
         "04-game-night":      ("Calm piano. No ads.", "Works fully offline.", NIGHT),
-        "05-four-line-flash": ("Four rows at once.", "4000 points.", DAY),
+        "05-four-line-flash": ("Four rows at once.", "A great wave.", DAY),
     },
     "tr": {
         "01-menu":            ("Sıraları yırt.", "Dörder dörder.", DAY),
         "02-game":            ("Klasik arcade hissi,", "modern kontroller.", DAY),
         "03-settings":        ("Gündüz ya da gece.", "Klasik ya da Hokusai.", DAY),
         "04-game-night":      ("Sakin piyano. Reklamsız.", "Tamamen çevrimdışı.", NIGHT),
-        "05-four-line-flash": ("Tek seferde dört sıra.", "4000 puan.", DAY),
+        "05-four-line-flash": ("Tek seferde dört sıra.", "Muhteşem bir dalga.", DAY),
     },
 }
 

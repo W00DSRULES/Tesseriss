@@ -1,6 +1,6 @@
 # Tesseriss
 
-Minimalist falling-blocks puzzle for iOS. Comforting palette, big-button touch controls, three game modes, and an optional Impressionist piano playlist. Built in SwiftUI for iPhone only (portrait, iOS 17+); on iPad it runs in iPhone compatibility mode.
+Minimalist falling-blocks puzzle for iOS. Comforting palette, big-button touch controls, three game modes, and an optional Impressionist playlist (Satie and Debussy, mostly piano). Built in SwiftUI for iPhone only (portrait, iOS 17+); on iPad it runs in iPhone compatibility mode.
 
 The name is Greek *tesseris* ("four") + German *Riss* ("tear") — tear the rows four at a time.
 

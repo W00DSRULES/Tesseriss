@@ -127,12 +127,16 @@ struct MenuView: View {
                         .font(.system(.caption, design: .rounded).weight(.semibold))
                     Text(s.modeName(gameMode))
                         .font(.system(.callout, design: .rounded).weight(.semibold))
+                        // Long names (TR "Parçalanma") shrink rather than touch the border.
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                 }
                 Text(s.modeSubtitle(gameMode))
                     .font(.system(.caption2, design: .rounded).weight(.medium))
                     .opacity(0.7)
             }
             .foregroundStyle(isSelected ? theme.onInkColor(appearance: mode) : ink)
+            .padding(.horizontal, 6)
             .frame(maxWidth: .infinity, minHeight: 52)
             .background(isSelected ? selectedBg : card)
             .clipShape(RoundedRectangle(cornerRadius: 10))

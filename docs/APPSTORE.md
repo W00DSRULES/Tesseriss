@@ -58,7 +58,7 @@ Classic-arcade feel: a 7-bag piece randomizer, fixed rotation tables, a ghost pi
 
 Made to be looked at: a soft, comforting palette with Day and Night appearances, plus an optional Hokusai "Great Wave" theme.
 
-A quiet soundtrack: classical piano by Satie and Debussy — toggle it on or off.
+A quiet soundtrack of Satie and Debussy, mostly solo piano — toggle it on or off.
 
 Yours, privately: highscores are stored only on your device. No ads, no accounts, no tracking, and it works completely offline.
 
@@ -116,7 +116,7 @@ Klasik arcade hissi: 7'li torba sistemi, sabit dönüş tabloları, parçanın n
 
 Bakması da keyifli: Gündüz ve Gece görünümleriyle yumuşak, göz yormayan bir palet; dileyene Hokusai'nin "Büyük Dalga" teması.
 
-Sessiz bir fon müziği: Satie ve Debussy'den klasik piyano — dilediğinde aç, dilediğinde kapat.
+Sessiz bir fon müziği: Satie ve Debussy, çoğunlukla piyanoda — dilediğinde aç, dilediğinde kapat.
 
 Senin, sana özel: rekorlar yalnızca cihazında saklanır. Reklam yok, hesap yok, takip yok; tamamen çevrimdışı çalışır.
 
