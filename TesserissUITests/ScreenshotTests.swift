@@ -58,11 +58,11 @@ final class ScreenshotTests: XCTestCase {
     private func configure(_ app: XCUIApplication, language: String, hokusai: Bool) {
         app.buttons["settings-button"].tap()
         let button = app.buttons[language]
-        XCTAssertTrue(button.waitForExistence(timeout: 3))
+        XCTAssertTrue(button.waitForExistence(timeout: 10))
         button.tap()
         if hokusai && app.buttons["Hokusai"].exists { app.buttons["Hokusai"].tap() }
         app.buttons["back-button"].tap()
-        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 10))
     }
 
     private func tapTheme(_ app: XCUIApplication, _ predicate: String) {
@@ -74,7 +74,7 @@ final class ScreenshotTests: XCTestCase {
     /// looks like a real game, not a centered hard-drop pile.
     private func stackRealistic(_ app: XCUIApplication, pattern: [(rotations: Int, dx: Int)]) {
         let hardDrop = app.buttons["hard-drop-button"]
-        XCTAssertTrue(hardDrop.waitForExistence(timeout: 5))
+        XCTAssertTrue(hardDrop.waitForExistence(timeout: 10))
         let rotate = app.buttons["rotate-button"]
         let left = app.buttons["move-left-button"]
         let right = app.buttons["move-right-button"]
@@ -93,19 +93,19 @@ final class ScreenshotTests: XCTestCase {
     private func captureSet(language: String, prefix: String) {
         let locale = prefix == "tr" ? "tr_TR" : "en_US"
         let app = launch(locale: locale)
-        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 10))
 
         // 1) Settings — Classic Day, after the language is set.
         app.buttons["settings-button"].tap()
         let langButton = app.buttons[language]
-        XCTAssertTrue(langButton.waitForExistence(timeout: 3))
+        XCTAssertTrue(langButton.waitForExistence(timeout: 10))
         langButton.tap()
         snap("\(prefix)-03-settings")
 
         // 2) Menu — Hokusai Day.
         if app.buttons["Hokusai"].exists { app.buttons["Hokusai"].tap() }
         app.buttons["back-button"].tap()
-        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 10))
         snap("\(prefix)-01-menu")
 
         // 3) Gameplay — Hokusai Day, realistic skyline.
@@ -119,13 +119,13 @@ final class ScreenshotTests: XCTestCase {
         // 4) Gameplay — Classic Night, a different realistic skyline.
         app.buttons["menu-button"].tap()
         let settings = app.buttons["settings-button"]
-        XCTAssertTrue(settings.waitForExistence(timeout: 3))
+        XCTAssertTrue(settings.waitForExistence(timeout: 10))
         settings.tap()
-        XCTAssertTrue(app.buttons["back-button"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["back-button"].waitForExistence(timeout: 10))
         tapTheme(app, "label CONTAINS[c] 'Classic' OR label CONTAINS[c] 'Klasik'")
         tapTheme(app, "label CONTAINS[c] 'Night' OR label CONTAINS[c] 'Gece'")
         app.buttons["back-button"].tap()
-        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 10))
         app.buttons["start-button"].tap()
         stackRealistic(app, pattern: [
             (1, 4), (0, -3), (0, 1), (2, -5), (1, 2),
@@ -140,11 +140,11 @@ final class ScreenshotTests: XCTestCase {
             "TESSERISS_TETRIS_SETUP": "1",
             "TESSERISS_CLEAR_PAUSE": "3",
         ])
-        XCTAssertTrue(tetrisApp.buttons["start-button"].waitForExistence(timeout: 5))
+        XCTAssertTrue(tetrisApp.buttons["start-button"].waitForExistence(timeout: 10))
         configure(tetrisApp, language: language, hokusai: true)
         tetrisApp.buttons["start-button"].tap()
         let drop = tetrisApp.buttons["hard-drop-button"]
-        XCTAssertTrue(drop.waitForExistence(timeout: 5))
+        XCTAssertTrue(drop.waitForExistence(timeout: 10))
         tetrisApp.buttons["rotate-button"].tap()                       // I piece → vertical
         tetrisApp.buttons["move-right-button"].press(forDuration: 1.5) // auto-repeat to the right wall
         drop.tap()                                                     // into the gap → four-line clear

@@ -22,21 +22,19 @@ Character limits noted in parentheses — App Store Connect enforces them.
 **Keywords** (≤100 bytes) — 100/100 bytes, 16 unique single tokens
 `tetromino,brick,tile,stack,drop,line,clear,arcade,retro,classic,minimal,zen,relax,offline,brain,grid`
 
-**What's New** (≤4000) — 1.2.0, written for players updating from 1.0
+**What's New** (≤4000) — 1.2.0, written for players updating from 1.1
 ```
-A short guide on first launch shows the controls, how rows clear and the modes. You can open it again from Settings.
+Fixed: when the stack reaches the top, the game now ends and a new best score is saved. In 1.1 new pieces disappeared above the board instead, so a game never ended.
+
+A short guide on first launch shows the controls, how rows clear and the three modes. You can open it again from Settings → How to play.
 
 Settings now shows your stats: games played, rows cleared, four-row clears and best score per mode.
 
-A colour-blind mode in Settings switches to piece colours that stay apart with red-green colour blindness, draws an outline around every piece and makes the landing preview a clear outline.
+Colorblind mode, in Settings, switches to piece colours that stay apart with red-green colour blindness, draws an outline around every piece and makes the landing preview easier to see.
 
-The Hokusai theme now colours the whole app, not just the board: menus, buttons and the score panel follow it, and text stays readable over the artwork.
+Sound effects have their own switch and volume in Settings, separate from the music.
 
-Pieces can now rotate against a wall and off the floor, and a piece gets a moment to be nudged before it locks. Every piece starts at the same height, so a game no longer ends early because of which piece came next.
-
-Line clears have sound. Sound effects have their own switch and volume in Settings, separate from the music.
-
-A new best score is saved even if you quit to the menu mid-game, and NEW BEST appears only when you beat your previous best.
+Your best score is saved even if you quit to the menu mid-game, and NEW BEST appears only when you beat your previous best.
 
 VoiceOver reads every button and announces cleared rows, level changes and the end of a game. Menus and Settings adapt to larger text sizes.
 ```
@@ -90,19 +88,17 @@ Turkish and English, switchable in Settings.
 **Anahtar kelimeler** (≤100 bayt; ç ğ ı ö ş ü 2 bayt sayılır) — 89 karakter / 95 bayt, 13 benzersiz kelime
 `tetromino,düşen,bloklar,sıra,tuğla,klasik,retro,arcade,minimal,zen,rahatlatıcı,beyin,zeka`
 
-**Yenilikler** (≤4000) — 1.2.0, 1.0'dan güncelleyen oyuncular için
+**Yenilikler** (≤4000) — 1.2.0, 1.1'den güncelleyen oyuncular için
 ```
-İlk açılışta kısa bir rehber kontrolleri, sıraların nasıl yırtıldığını ve modları gösteriyor. Ayarlar'daki "Nasıl oynanır" ile tekrar açabilirsin.
+Düzeltme: yığın tepeye ulaştığında oyun artık bitiyor ve yeni rekorun kaydediliyor. 1.1'de yeni parçalar tahtanın üstünde kayboluyordu, bu yüzden oyun hiç bitmiyordu.
+
+İlk açılışta kısa bir rehber kontrolleri, sıraların nasıl yırtıldığını ve üç modu gösteriyor. Ayarlar'daki "Nasıl oynanır" ile tekrar açabilirsin.
 
 Ayarlar'da artık istatistiklerin var: oynanan oyun, temizlenen sıra, dörtlü yırtma ve her modun rekoru.
 
 Ayarlar'daki renk körlüğü modu, kırmızı-yeşil renk körlüğünde de birbirinden ayrılan parça renklerine geçiyor, her parçanın çevresine bir çizgi çiziyor ve parçanın ineceği yeri gösteren çerçeveyi belirginleştiriyor.
 
-Hokusai teması artık yalnızca tahtayı değil, uygulamanın tamamını kaplıyor: menüler, düğmeler ve skor paneli de aynı paleti kullanıyor. Yazılar da görselin üzerinde rahatça okunuyor.
-
-Parçalar duvara yaslıyken ve yere değmişken de dönebiliyor. Yere oturan parçayı kilitlenmeden önce kaydırmak için kısa bir süre tanınıyor. Ayrıca her parça aynı yükseklikten başlıyor; oyun artık sırf sıradaki parçanın biçimi yüzünden erkenden bitmiyor.
-
-Sıra temizlerken artık ses çıkıyor. Ses efektlerinin Ayarlar'da müzikten ayrı, kendi aç/kapa düğmesi ve ses düzeyi var.
+Ses efektlerinin Ayarlar'da müzikten ayrı, kendi aç/kapa düğmesi ve ses düzeyi var.
 
 Oyunu yarıda bırakıp menüye dönsen bile kırdığın rekor kaydediliyor. YENİ REKOR yazısı da artık yalnızca önceki rekorunu geçtiğinde çıkıyor.
 
