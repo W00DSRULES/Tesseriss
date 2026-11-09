@@ -90,6 +90,183 @@ final class ScreenshotTests: XCTestCase {
     func test_screenshots_english() { captureSet(language: "English", prefix: "en") }
     func test_screenshots_turkish() { captureSet(language: "Türkçe", prefix: "tr") }
 
+    // MARK: - 1.2 store set (10 shots per language)
+    //
+    // Every shot is its own fresh launch. Settings come in through the argument
+    // domain (-tesseriss.settings.<key> <value>), which the --ui-test wipe
+    // leaves alone, so no shot depends on taps made for an earlier one.
+
+    func test_store_english() { captureStoreSet(lang: "en") }
+    func test_store_turkish() { captureStoreSet(lang: "tr") }
+
+    private struct Look {
+        var theme = "kanagawa"      // ThemeKind raw value
+        var appearance = "day"      // AppearanceMode raw value
+        var colorblind = false
+        var mode = "og"             // GameMode raw value
+    }
+
+    private func launchStore(lang: String, look: Look, extraArgs: [String] = [],
+                             extraEnv: [String: String] = [:]) -> XCUIApplication {
+        let app = XCUIApplication()
+        let sample: [(String, String)] = [
+            ("tesseriss.highscore.fast", "21400"), ("tesseriss.highscore.og", "48300"),
+            ("tesseriss.highscore.hard", "15900"), ("tesseriss.stats.gamesPlayed", "64"),
+            ("tesseriss.stats.rowsCleared", "1927"), ("tesseriss.stats.fourRowClears", "83"),
+        ]
+        let prefs: [(String, String)] = [
+            ("tesseriss.settings.language", lang),
+            ("tesseriss.settings.themeKind", look.theme),
+            ("tesseriss.settings.appearance", look.appearance),
+            ("tesseriss.settings.colorblind", look.colorblind ? "YES" : "NO"),
+            ("tesseriss.settings.selectedMode", look.mode),
+        ]
+        app.launchArguments = ["--ui-test", "-AppleLocale", lang == "tr" ? "tr_TR" : "en_US",
+                               "-AppleLanguages", lang == "tr" ? "(tr)" : "(en)"]
+            + (sample + prefs).flatMap { ["-\($0.0)", $0.1] } + extraArgs
+        var env = ["TESSERISS_RNG_SEED": "1337"]
+        for (k, v) in extraEnv { env[k] = v }
+        app.launchEnvironment = env
+        app.launch()
+        return app
+    }
+
+    private func startGame(_ app: XCUIApplication) {
+        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 5))
+        app.buttons["start-button"].tap()
+        XCTAssertTrue(app.buttons["hard-drop-button"].waitForExistence(timeout: 5))
+    }
+
+    // Designed mid-game boards (bottom rows, top to bottom; see
+    // GameEngine.applyShotSetupIfRequested). No full rows, no stray holes.
+    // boardA's bottom four rows are full but for the right-hand well, so an
+    // I piece dropped there makes a four-line clear.
+    private let boardA = ".Z........|ZZ.....TI.|ZLOO..TTI.|ILOOTZZTI.|ILLTTTZZI.|IOOLLLJJJ.|IOOLIIIIJ."
+    private let boardB = ".....S....|..JJ.SS...|OOJOOTS...|OOJOOTTOO.|LIIIITJOO.|LTTTSSJJJ.|LLTSSIIII."
+    private let boardC = "....J...T.|..SSJ..TTT|.SSJJOOSLL|.JJZZOOSSL|.JOOZZLJSL|.JOOLLLJJJ"
+    /// 8 wide, for the Crack board.
+    private let boardSmall = ".T...LL.|TT..JJL.|ITSSJSL.|ISSLJSS.|IOOLZZS.|IOOLLZZ."
+    /// With five-square pieces, for Shatter.
+    private let boardShatter = ".......X..|.PP...XXX.|LPPTS.UXU.|LPTTSSUUU.|LLUTUSFFP.|OOUUUFFPP.|OOIIIIFPP."
+
+    private func shotEnv(board: String, stats: String, pieces: String) -> [String: String] {
+        ["TESSERISS_SHOT_BOARD": board, "TESSERISS_SHOT_STATS": stats,
+         "TESSERISS_SHOT_PIECES": pieces, "TESSERISS_SHOT_FREEZE": "1"]
+    }
+
+    /// Start a frozen game on a designed board, then place the falling piece.
+    @discardableResult
+    private func playShot(lang: String, look: Look, board: String, stats: String, pieces: String,
+                          rotations: Int = 0, dx: Int = 0, down: Int = 0) -> XCUIApplication {
+        let app = launchStore(lang: lang, look: look,
+                              extraEnv: shotEnv(board: board, stats: stats, pieces: pieces))
+        startGame(app)
+        for _ in 0..<rotations { app.buttons["rotate-button"].tap() }
+        let side = app.buttons[dx < 0 ? "move-left-button" : "move-right-button"]
+        for _ in 0..<abs(dx) { side.tap() }
+        for _ in 0..<down { app.buttons["soft-drop-button"].tap() }
+        Thread.sleep(forTimeInterval: 0.4)
+        return app
+    }
+
+    private func captureStoreSet(lang p: String) {
+        let hokusaiDay = Look()
+        let classicDay = Look(theme: "classic")
+
+        // 01 core loop: Hokusai Day, mid-game.
+        for (name, look) in [("hokusai", hokusaiDay), ("classic", classicDay)] {
+            playShot(lang: p, look: look, board: boardA, stats: "12480,36,3", pieces: "TL",
+                     rotations: 2, dx: -1, down: 3)
+            snap("\(p)-s01-game-\(name)")
+        }
+
+        // 02 four-line clear: an I into boardA's well, flash held for the shot.
+        for (name, look) in [("hokusai", hokusaiDay), ("classic", classicDay)] {
+            var env = shotEnv(board: boardA, stats: "12480,36,3", pieces: "IT")
+            env["TESSERISS_CLEAR_PAUSE"] = "4"
+            let app = launchStore(lang: p, look: look, extraEnv: env)
+            startGame(app)
+            app.buttons["rotate-button"].tap()
+            app.buttons["move-right-button"].press(forDuration: 1.5)
+            app.buttons["hard-drop-button"].tap()
+            Thread.sleep(forTimeInterval: 0.35)
+            snap("\(p)-s02-fourline-\(name)")
+        }
+
+        // 03 ghost piece: an upright I over the well, its outline at the bottom.
+        for (name, look) in [("classic", classicDay), ("hokusai", hokusaiDay)] {
+            playShot(lang: p, look: look, board: boardA, stats: "12480,36,3", pieces: "IT",
+                     rotations: 1, dx: 5, down: 2)
+            snap("\(p)-s03-ghost-\(name)")
+        }
+
+        // 04 three modes: one game per mode.
+        let modes: [(String, String, String, String)] = [
+            ("fast", boardSmall, "6240,18,2", "OT"),
+            ("og", boardC, "9860,29,2", "LS"),
+            ("hard", boardShatter, "15200,41,4", "PX"),
+        ]
+        for (mode, board, stats, pieces) in modes {
+            for (name, theme) in [("classic", "classic"), ("hokusai", "kanagawa")] {
+                playShot(lang: p, look: Look(theme: theme, mode: mode), board: board,
+                         stats: stats, pieces: pieces, down: 2)
+                snap("\(p)-s04-mode-\(mode)-\(name)")
+            }
+        }
+
+        // 05 Hokusai theme: the menu over the Great Wave.
+        var app = launchStore(lang: p, look: hokusaiDay)
+        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 5))
+        snap("\(p)-s05-menu-hokusai")
+
+        // 06 Night: Hokusai Night and Classic Night gameplay.
+        playShot(lang: p, look: Look(appearance: "night"), board: boardB, stats: "21730,52,5",
+                 pieces: "ZJ", dx: 1, down: 3)
+        snap("\(p)-s06-night-hokusai")
+        playShot(lang: p, look: Look(theme: "classic", appearance: "night"), board: boardB,
+                 stats: "21730,52,5", pieces: "ZJ", dx: 1, down: 3)
+        snap("\(p)-s06-night-classic")
+
+        // 07 colour-blind palette with outlines.
+        for (name, theme) in [("classic", "classic"), ("hokusai", "kanagawa")] {
+            playShot(lang: p, look: Look(theme: theme, colorblind: true), board: boardC,
+                     stats: "9860,29,2", pieces: "TJ", rotations: 2, dx: -2, down: 3)
+            snap("\(p)-s07-colorblind-\(name)")
+        }
+
+        // 08 stats in Settings (scrolled to the stats card).
+        for (name, look) in [("classic", classicDay), ("hokusai", hokusaiDay)] {
+            app = launchStore(lang: p, look: look)
+            XCTAssertTrue(app.buttons["settings-button"].waitForExistence(timeout: 5))
+            app.buttons["settings-button"].tap()
+            XCTAssertTrue(app.buttons["back-button"].waitForExistence(timeout: 3))
+            app.swipeUp(velocity: .slow)
+            Thread.sleep(forTimeInterval: 0.8)
+            snap("\(p)-s08-stats-\(name)")
+        }
+
+        // 09 first-launch guide, all three steps.
+        app = launchStore(lang: p, look: hokusaiDay, extraArgs: ["--show-onboarding"])
+        XCTAssertTrue(app.buttons["onboarding-next"].waitForExistence(timeout: 5))
+        Thread.sleep(forTimeInterval: 0.6)
+        snap("\(p)-s09-guide-1")
+        app.buttons["onboarding-next"].tap()
+        Thread.sleep(forTimeInterval: 0.6)
+        snap("\(p)-s09-guide-2")
+        app.buttons["onboarding-next"].tap()
+        Thread.sleep(forTimeInterval: 0.6)
+        snap("\(p)-s09-guide-3")
+
+        // 10 no ads, offline: menus.
+        for (name, look) in [("night", Look(theme: "classic", appearance: "night")),
+                             ("hokusai-night", Look(appearance: "night")),
+                             ("classic", classicDay)] {
+            app = launchStore(lang: p, look: look)
+            XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 5))
+            snap("\(p)-s10-menu-\(name)")
+        }
+    }
+
     private func captureSet(language: String, prefix: String) {
         let locale = prefix == "tr" ? "tr_TR" : "en_US"
         let app = launch(locale: locale)
@@ -136,17 +313,17 @@ final class ScreenshotTests: XCTestCase {
         // 5) Four-line clear flash — fresh launch (Hokusai Day) with the
         //    prefilled board and a stretched flash so the screenshot lands
         //    inside the celebration.
-        let tetrisApp = launch(locale: locale, extraEnv: [
+        let clearApp = launch(locale: locale, extraEnv: [
             "TESSERISS_TETRIS_SETUP": "1",
             "TESSERISS_CLEAR_PAUSE": "3",
         ])
-        XCTAssertTrue(tetrisApp.buttons["start-button"].waitForExistence(timeout: 5))
-        configure(tetrisApp, language: language, hokusai: true)
-        tetrisApp.buttons["start-button"].tap()
-        let drop = tetrisApp.buttons["hard-drop-button"]
+        XCTAssertTrue(clearApp.buttons["start-button"].waitForExistence(timeout: 5))
+        configure(clearApp, language: language, hokusai: true)
+        clearApp.buttons["start-button"].tap()
+        let drop = clearApp.buttons["hard-drop-button"]
         XCTAssertTrue(drop.waitForExistence(timeout: 5))
-        tetrisApp.buttons["rotate-button"].tap()                       // I piece → vertical
-        tetrisApp.buttons["move-right-button"].press(forDuration: 1.5) // auto-repeat to the right wall
+        clearApp.buttons["rotate-button"].tap()                       // I piece → vertical
+        clearApp.buttons["move-right-button"].press(forDuration: 1.5) // auto-repeat to the right wall
         drop.tap()                                                     // into the gap → four-line clear
         Thread.sleep(forTimeInterval: 0.4)                             // let the flash render
         snap("\(prefix)-05-four-line-flash")
