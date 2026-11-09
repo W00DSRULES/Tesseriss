@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import Combine
+import UIKit
 
 final class GameEngine: ObservableObject {
     @Published private(set) var board = Board()
@@ -191,6 +192,8 @@ final class GameEngine: ObservableObject {
         // Leave music playing on the game-over screen for continuity.
         haptics.gameOver(enabled: settings.hapticsEnabled)
         isNewHighscore = highscoreStore.maybeUpdate(score, for: mode)
+        // High priority, so VoiceOver reading the game-over screen doesn't cut it off.
+        announce(settings.strings.gameOverAnnouncement(score: score, isNewBest: isNewHighscore), priority: .high)
     }
 
     // MARK: - Timer
@@ -390,6 +393,7 @@ final class GameEngine: ObservableObject {
         spawnNext()
         // spawnNext may have ended the game; gravity must then stay stopped.
         guard phase == .playing else { return }
+        announce(settings.strings.clearAnnouncement(rows: rows.count, newLevel: level != prevLevel ? level : nil))
         if level != prevLevel {
             restartTimerForCurrentLevel()
         } else {
@@ -407,5 +411,15 @@ final class GameEngine: ObservableObject {
         level = lines / 10
         flashingRows = []
         celebrationActive = false
+    }
+
+    // MARK: - VoiceOver
+
+    /// Speaks game events that have no element of their own to focus. Posts only
+    /// while VoiceOver runs, so sighted play and unit tests are unaffected.
+    private func announce(_ text: String, priority: UIAccessibilityPriority = .default) {
+        guard UIAccessibility.isVoiceOverRunning else { return }
+        let message = NSAttributedString(string: text, attributes: [.accessibilitySpeechAnnouncementPriority: priority])
+        UIAccessibility.post(notification: .announcement, argument: message)
     }
 }

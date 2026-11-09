@@ -55,6 +55,10 @@ struct Strings {
     let themeClassic: String
     let themeHokusai: String
     let greatWave: String
+    let announceOneRowCleared: String
+    let announceRowsCleared: String
+    let announceLevel: String
+    let announceGameOver: String
 
     func modeName(_ mode: GameMode) -> String {
         switch mode {
@@ -70,6 +74,19 @@ struct Strings {
         case .og:   return modeOgSubtitle
         case .hard: return modeHardSubtitle
         }
+    }
+
+    /// VoiceOver message after a line clear; `newLevel` is set when the clear raised the level.
+    func clearAnnouncement(rows: Int, newLevel: Int?) -> String {
+        let cleared = rows == 1 ? announceOneRowCleared : String(format: announceRowsCleared, rows)
+        guard let newLevel else { return cleared }
+        return cleared + ", " + String(format: announceLevel, newLevel)
+    }
+
+    /// VoiceOver message when the game ends.
+    func gameOverAnnouncement(score: Int, isNewBest: Bool) -> String {
+        let message = String(format: announceGameOver, score)
+        return isNewBest ? message + " " + newBest : message
     }
 
     static let tr = Strings(
@@ -126,7 +143,11 @@ struct Strings {
         themeStyleLabel: "Tema",
         themeClassic: "Klasik",
         themeHokusai: "Hokusai",
-        greatWave: "MUHTEŞEM DALGA"
+        greatWave: "MUHTEŞEM DALGA",
+        announceOneRowCleared: "1 sıra temizlendi",
+        announceRowsCleared: "%d sıra temizlendi",
+        announceLevel: "Seviye %d",
+        announceGameOver: "Oyun bitti. Skor %d."
     )
 
     static let en = Strings(
@@ -183,7 +204,11 @@ struct Strings {
         themeStyleLabel: "Theme",
         themeClassic: "Classic",
         themeHokusai: "Hokusai",
-        greatWave: "A GREAT WAVE"
+        greatWave: "A GREAT WAVE",
+        announceOneRowCleared: "1 row cleared",
+        announceRowsCleared: "%d rows cleared",
+        announceLevel: "Level %d",
+        announceGameOver: "Game over. Score %d."
     )
 
     static func current(for lang: Language) -> Strings {

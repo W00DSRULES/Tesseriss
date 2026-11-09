@@ -13,21 +13,18 @@ struct GameView: View {
 
     var body: some View {
         ZStack {
-            VStack(spacing: 12) {
-                header
-                HStack(alignment: .top, spacing: 16) {
-                    PlayfieldView()
-                        .aspectRatio(CGFloat(engine.board.width) / CGFloat(engine.board.height), contentMode: .fit)
-                        .scaleEffect(celebrationScale)
-                        .animation(reduceMotion ? nil : .easeInOut(duration: 0.18), value: engine.celebrationActive)
-                    sidebar
-                }
-                .padding(.horizontal, 12)
-                Spacer(minLength: 0)
-                ControlsView()
-                    .padding(.bottom, 12)
+            // Paused, the dimmed HUD leaves the accessibility tree, so VoiceOver
+            // stays on the pause card. accessibilityHidden alone, on the stack or
+            // flipped on views already on screen, left the HUD's elements in the
+            // tree; an empty representation on a freshly built copy removes them.
+            // Rebuilding also ends any held-button repeat (ControlsView's
+            // onDisappear).
+            if engine.phase == .paused {
+                hud.accessibilityRepresentation { EmptyView() }
+                    .accessibilityHidden(true)
+            } else {
+                hud
             }
-            .padding(.top, 8)
             if engine.phase == .paused {
                 // Tapping anywhere on the scrim resumes — the button is still there
                 // for anyone who reaches for it.
@@ -43,6 +40,27 @@ struct GameView: View {
             }
         }
         .animation(reduceMotion ? nil : .easeOut(duration: 0.18), value: engine.celebrationActive)
+        // Fixed arcade layout: text grows up to xxxLarge, and the glyph buttons
+        // offer the Large Content Viewer beyond that.
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
+    }
+
+    private var hud: some View {
+        VStack(spacing: 12) {
+            header
+            HStack(alignment: .top, spacing: 16) {
+                PlayfieldView()
+                    .aspectRatio(CGFloat(engine.board.width) / CGFloat(engine.board.height), contentMode: .fit)
+                    .scaleEffect(celebrationScale)
+                    .animation(reduceMotion ? nil : .easeInOut(duration: 0.18), value: engine.celebrationActive)
+                sidebar
+            }
+            .padding(.horizontal, 12)
+            Spacer(minLength: 0)
+            ControlsView()
+                .padding(.bottom, 12)
+        }
+        .padding(.top, 8)
     }
 
     @ViewBuilder
@@ -90,6 +108,7 @@ struct GameView: View {
                     .frame(minHeight: 44)
                     .contentShape(Rectangle())
             }
+            .accessibilityShowsLargeContentViewer()
             .accessibilityIdentifier("menu-button")
             Spacer()
             Button(action: { engine.togglePause() }) {
@@ -104,6 +123,7 @@ struct GameView: View {
             }
             .disabled(engine.phase == .paused)
             .accessibilityLabel(s.pause)
+            .accessibilityShowsLargeContentViewer()
             .accessibilityIdentifier("pause-button")
         }
         .padding(.horizontal, 16)
@@ -113,11 +133,14 @@ struct GameView: View {
         VStack(alignment: .leading, spacing: 16) {
             NextPieceView(kind: engine.nextKind, label: s.next)
                 .legibilityPanel(theme.backgroundIsArtwork,
-                                 stroke: theme.strokeColor(appearance: appearance))
+                                 stroke: theme.strokeColor(appearance: appearance),
+                                 fill: card)
             VStack(alignment: .leading, spacing: 10) {
                 statRow(id: "score", label: s.score, value: engine.score, prominent: true)
                 Divider().overlay(theme.strokeColor(appearance: appearance))
-                HStack(alignment: .top, spacing: 12) {
+                // Stacked, not side by side: half the narrow sidebar truncates
+                // "LEVEL" / "SEVİYE" at large text sizes.
+                VStack(alignment: .leading, spacing: 10) {
                     statRow(id: "level", label: s.level, value: engine.level)
                     statRow(id: "lines", label: s.lines, value: engine.lines)
                 }
@@ -125,7 +148,8 @@ struct GameView: View {
             // Replaces a hardcoded 110pt top inset that was hand-tuned to dodge the
             // wave crest — and therefore only worked on one screen size.
             .legibilityPanel(theme.backgroundIsArtwork,
-                             stroke: theme.strokeColor(appearance: appearance))
+                             stroke: theme.strokeColor(appearance: appearance),
+                             fill: card)
             Spacer(minLength: 0)
         }
         .frame(width: 124, alignment: .leading)
@@ -136,7 +160,7 @@ struct GameView: View {
         VStack(alignment: .leading, spacing: 1) {
             Text(label)
                 .font(.system(.caption2, design: .rounded).weight(.semibold))
-                .foregroundStyle(ink.opacity(0.55))
+                .foregroundStyle(ink.opacity(0.75))
                 // "LEVEL" is wide enough to hyphenate in the narrow column; shrink
                 // rather than wrap, and never break the word.
                 .lineLimit(1)
@@ -150,9 +174,14 @@ struct GameView: View {
                 .foregroundStyle(ink)
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
-                .accessibilityIdentifier("stat-\(id)")
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        // One element, read as "Score, 4000": the number alone isn't a readable label.
+        .accessibilityElement(children: .ignore)
+        .accessibilityAddTraits(.isStaticText)
+        .accessibilityLabel(label)
+        .accessibilityValue(String(value))
+        .accessibilityIdentifier("stat-\(id)")
     }
 
     private var pausedOverlay: some View {

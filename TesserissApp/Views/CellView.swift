@@ -17,20 +17,22 @@ struct CellView: View {
     var body: some View {
         ZStack {
             if let kind {
-                let color = theme.pieceColor(kind, appearance: appearance)
+                let outline = theme.pieceOutlineColor(kind, appearance: appearance)
                 switch style {
                 case .solid:
                     Rectangle()
-                        .fill(color)
+                        .fill(theme.pieceColor(kind, appearance: appearance))
                         .padding(0.5)
                         .overlay(
                             Rectangle()
-                                .strokeBorder(Color.black.opacity(0.18), lineWidth: 1)
+                                .strokeBorder(outline, lineWidth: 2)
                                 .padding(0.5)
                         )
                 case .ghost:
+                    // Full-strength outline colour: the old 55% fill colour was
+                    // close to invisible on the board.
                     Rectangle()
-                        .strokeBorder(color.opacity(0.55), lineWidth: 2)
+                        .strokeBorder(outline, lineWidth: 2)
                         .padding(2)
                 }
             }

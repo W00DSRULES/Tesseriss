@@ -22,12 +22,23 @@ struct GameOverView: View {
                     .font(.system(size: titleSize, weight: .semibold, design: .rounded))
                     .foregroundStyle(ink)
                 VStack(spacing: 8) {
-                    Text(s.score)
-                        .font(.system(.caption, design: .rounded).weight(.semibold))
-                        .foregroundStyle(ink.opacity(0.6))
-                    Text("\(engine.score)")
-                        .font(.system(size: scoreSize, weight: .semibold, design: .rounded))
-                        .foregroundStyle(ink)
+                    VStack(spacing: 8) {
+                        Text(s.score)
+                            .font(.system(.caption, design: .rounded).weight(.semibold))
+                            .foregroundStyle(ink.opacity(0.75))
+                        Text("\(engine.score)")
+                            .font(.system(size: scoreSize, weight: .semibold, design: .rounded))
+                            .foregroundStyle(ink)
+                            // A big score at large text sizes shrinks rather than wrapping digits.
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.5)
+                    }
+                    // One element, read as "Score, 4000": the number alone isn't a readable label.
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityAddTraits(.isStaticText)
+                    .accessibilityLabel(s.score)
+                    .accessibilityValue(String(engine.score))
+                    .accessibilityIdentifier("gameover-score")
                     if engine.isNewHighscore {
                         Text(s.newBest)
                             .font(.system(.callout, design: .rounded).weight(.semibold))
@@ -40,7 +51,8 @@ struct GameOverView: View {
                 }
                 }
                 .legibilityPanel(theme.backgroundIsArtwork,
-                                 stroke: theme.strokeColor(appearance: appearance))
+                                 stroke: theme.strokeColor(appearance: appearance),
+                                 fill: card)
                 .padding(.horizontal, 20)
                 Spacer(minLength: 24)
                 VStack(spacing: 14) {
@@ -67,6 +79,5 @@ struct GameOverView: View {
             .frame(maxWidth: .infinity, minHeight: 0)
         }
         .scrollBounceBehavior(.basedOnSize)
-        .dynamicTypeSize(...DynamicTypeSize.accessibility2)
     }
 }

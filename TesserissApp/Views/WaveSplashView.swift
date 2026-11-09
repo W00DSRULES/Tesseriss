@@ -14,11 +14,12 @@ struct WaveSplashView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 90.0, paused: false)) { timeline in
+        // Reduce Motion: the timeline is paused and one fixed mid-splash frame is drawn.
+        TimelineView(.animation(minimumInterval: 1.0 / 90.0, paused: reduceMotion)) { timeline in
             // Duration matches engine clear pause + a hair so the tail is just cut off.
             let duration: TimeInterval = isFourLine ? 0.55 : 0.32
             let elapsed = timeline.date.timeIntervalSince(startTime)
-            let progress = max(0, min(1, elapsed / duration))
+            let progress = reduceMotion ? 0.5 : max(0, min(1, elapsed / duration))
             Canvas { ctx, size in
                 guard !rows.isEmpty, cellSize > 0 else { return }
                 draw(ctx: &ctx, size: size, progress: progress)

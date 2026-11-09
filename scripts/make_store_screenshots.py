@@ -14,7 +14,9 @@ it earns its place on conversion, not keywords.
 
     python3 scripts/make_store_screenshots.py raw/ out/
 
-Output is 1320x2868, the 6.9" size App Store Connect expects.
+Output is 1320x2868 for the App Store Connect slot "iPhone with Dynamic Island
+(large display)", plus a 1206x2622 copy of each shot (<name>-1206x2622.png) for
+the "(medium display)" slot, which App Store Connect requires.
 """
 import pathlib
 import sys
@@ -22,6 +24,7 @@ import sys
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 W, H = 1320, 2868
+MEDIUM = (1206, 2622)
 FONT_PATH = "/System/Library/Fonts/SFNSRounded.ttf"
 
 # Palette lifted from Assets.xcassets so the frames match the app exactly.
@@ -100,6 +103,9 @@ def compose(src_path, line1, line2, palette, dest):
     canvas.paste(shot, (dx, dy), rounded_mask((dw, dh), CORNER))
     canvas.save(dest, "PNG")
     print(f"  {dest.name}  ({canvas.width}x{canvas.height})")
+    medium = dest.with_name(dest.stem + "-1206x2622.png")
+    canvas.resize(MEDIUM, Image.LANCZOS).save(medium, "PNG")
+    print(f"  {medium.name}  ({MEDIUM[0]}x{MEDIUM[1]})")
 
 
 def main():
@@ -117,7 +123,7 @@ def main():
                 continue
             compose(src, l1, l2, palette, out / f"{locale}-{key}.png")
             made += 1
-    print(f"{made} screenshots written to {out}")
+    print(f"{made} screenshots (+ {made} 1206x2622 copies) written to {out}")
 
 
 if __name__ == "__main__":

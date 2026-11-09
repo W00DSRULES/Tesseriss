@@ -35,7 +35,7 @@ final class SmokeTests: XCTestCase {
         XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3))
         XCTAssertTrue(app.buttons["settings-button"].exists)
         XCTAssertTrue(app.staticTexts["highscore-value"].exists)
-        XCTAssertEqual(app.staticTexts["highscore-value"].label, "0",
+        XCTAssertEqual(app.staticTexts["highscore-value"].value as? String, "0",
                        "Fresh launch with --ui-test should show highscore 0")
     }
 
@@ -48,7 +48,7 @@ final class SmokeTests: XCTestCase {
 
         let scoreLabel = app.staticTexts["stat-score"]
         XCTAssertTrue(scoreLabel.exists, "Score stat label must exist")
-        XCTAssertEqual(scoreLabel.label, "0", "Fresh game should start at score 0")
+        XCTAssertEqual(scoreLabel.value as? String, "0", "Fresh game should start at score 0")
     }
 
     func test_mode_buttons_have_stable_ids_and_selected_trait() {
@@ -80,7 +80,7 @@ final class SmokeTests: XCTestCase {
             for id in ["stat-score", "stat-level", "stat-lines"] {
                 XCTAssertTrue(app.staticTexts[id].exists, "\(id) missing in \(language)")
             }
-            XCTAssertEqual(app.staticTexts["stat-score"].label, "0", language)
+            XCTAssertEqual(app.staticTexts["stat-score"].value as? String, "0", language)
         }
     }
 
@@ -102,7 +102,10 @@ final class SmokeTests: XCTestCase {
         ]
         for control in expected {
             XCTAssertEqual(app.buttons[control.id].label, control.label, control.id)
+            XCTAssertGreaterThanOrEqual(app.buttons[control.id].frame.height, 44, control.id)
         }
+        XCTAssertGreaterThanOrEqual(app.buttons["pause-button"].frame.width, 44, "pause-button")
+        XCTAssertGreaterThanOrEqual(app.buttons["menu-button"].frame.height, 44, "menu-button")
     }
 
     func test_pause_overlay_resume_and_menu() {
@@ -114,7 +117,8 @@ final class SmokeTests: XCTestCase {
         let resume = app.buttons["resume-button"]
         XCTAssertTrue(resume.waitForExistence(timeout: 2))
         XCTAssertTrue(app.buttons["pause-menu-button"].exists)
-        XCTAssertFalse(pause.isEnabled, "Pause is disabled while paused")
+        // Paused, the game behind the card leaves the accessibility tree.
+        XCTAssertFalse(pause.exists, "The HUD is hidden from VoiceOver while paused")
 
         resume.tap()
         let closed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"),
@@ -230,6 +234,8 @@ final class SmokeTests: XCTestCase {
         app.launch()
         app.buttons["settings-button"].tap()
         app.buttons["Hokusai"].tap()
+        let nightPredicate = NSPredicate(format: "label CONTAINS[c] 'Gece' OR label CONTAINS[c] 'Night'")
+        app.buttons.matching(nightPredicate).firstMatch.tap()
         app.terminate()
 
         // Relaunch without --ui-test: UserDefaults from prior run should persist.
@@ -240,6 +246,8 @@ final class SmokeTests: XCTestCase {
         XCTAssertTrue(app2.buttons["Hokusai"].waitForExistence(timeout: 2))
         XCTAssertTrue(app2.buttons["Hokusai"].isSelected,
                       "Hokusai theme should persist across launches")
+        XCTAssertTrue(app2.buttons.matching(nightPredicate).firstMatch.isSelected,
+                      "Night appearance should persist across launches")
     }
 
     // MARK: - Seeded gameplay
@@ -282,7 +290,7 @@ final class SmokeTests: XCTestCase {
             // tap swallowed by a lock/clear frame in one run but not the other
             // would diverge the scores and flake this comparison.
             for _ in 0..<drops { hardDrop.tap(); Thread.sleep(forTimeInterval: 0.15) }
-            let value = app.staticTexts["stat-score"].label
+            let value = app.staticTexts["stat-score"].value as? String ?? ""
             app.terminate()
             return value
         }

@@ -64,6 +64,9 @@ struct ControlsView: View {
                 .background(card)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
         }
+        // The glyph stays a fixed size; at accessibility text sizes a long press
+        // shows it, with its label, in the Large Content Viewer.
+        .accessibilityShowsLargeContentViewer()
     }
 
     private func pressableButton(_ title: String, onPress: @escaping () -> Void, onRelease: @escaping () -> Void) -> some View {

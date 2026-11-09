@@ -96,7 +96,9 @@ struct Tetromino: Equatable {
         let rotated = piece.rotated(by: delta)
         for offset in kickOffsets {
             let candidate = rotated.moved(dx: offset.x, dy: offset.y)
-            if !board.collides(candidate) {
+            // Board.collides treats rows above the board as empty, so a placement
+            // wholly above row 0 would fit but leave the piece out of sight.
+            if !board.collides(candidate), candidate.cells.contains(where: { $0.y >= 0 }) {
                 return (candidate, offset)
             }
         }

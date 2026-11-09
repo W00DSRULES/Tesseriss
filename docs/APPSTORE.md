@@ -19,7 +19,7 @@ Character limits noted in parentheses — App Store Connect enforces them.
 > Now with real sound, wall kicks and a moment to slide a piece before it locks — plus a Hokusai
 > theme that colours the whole app. No ads, no accounts, fully offline.
 
-**Keywords** (≤100) — 100/100, 16 unique single tokens
+**Keywords** (≤100 bytes) — 100/100 bytes, 16 unique single tokens
 `tetromino,brick,tile,stack,drop,line,clear,arcade,retro,classic,minimal,zen,relax,offline,brain,grid`
 
 **What's New** (≤4000) — 1.1.1, written for players updating from 1.0
@@ -69,7 +69,7 @@ Turkish and English, switchable in Settings.
 **Marketing URL** (optional) — `https://w00dsrules.github.io/Tesseriss/`
 **Privacy Policy URL** — `https://w00dsrules.github.io/Tesseriss/privacy.html`
 **Copyright** — `2026 Vibalyze OÜ`
-**Category** — Primary: Games → Puzzle · Secondary (optional): Games → Arcade
+**Category** — Primary: Games → subcategories Puzzle, Casual (up to two; there is no Arcade subcategory) · Secondary (optional): none
 
 ---
 
@@ -83,8 +83,8 @@ Turkish and English, switchable in Settings.
 > Parçalar artık duvara yaslıyken de dönüyor, yere değince kısa bir an duruyor ve sesler ilk kez
 > gerçekten duyuluyor. Reklamsız, hesapsız, tamamen çevrimdışı.
 
-**Anahtar kelimeler** (≤100) — 99/100, 14 benzersiz kelime
-`tetromino,düşen,bloklar,sıra,temizleme,tuğla,klasik,retro,arcade,minimal,zen,rahatlatıcı,beyin,zeka`
+**Anahtar kelimeler** (≤100 bayt; ç ğ ı ö ş ü 2 bayt sayılır) — 89 karakter / 95 bayt, 13 benzersiz kelime
+`tetromino,düşen,bloklar,sıra,tuğla,klasik,retro,arcade,minimal,zen,rahatlatıcı,beyin,zeka`
 
 **Yenilikler** (≤4000) — 1.1.1, 1.0'dan güncelleyen oyuncular için
 ```

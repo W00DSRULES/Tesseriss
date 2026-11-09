@@ -51,7 +51,7 @@ xcodebuild test \
   -destination 'platform=iOS Simulator,name=iPhone 17'
 ```
 
-`TesserissTests` covers `Board`, `Tetromino`, `Scoring`, `GameMode`, `GameEngine`, `SettingsStore`, and the 7-bag `Randomizer` (73 unit tests); `TesserissUITests` adds 14 XCUITests (menu/game/settings flow + seeded deterministic gameplay). CI runs both suites on every push and pull request (`.github/workflows/tests.yml`, macOS-15 runner).
+`TesserissTests` covers `Board`, `Tetromino`, `Scoring`, `GameMode`, `GameEngine`, `SettingsStore`, the 7-bag `Randomizer` and the piece palettes (82 unit tests); `TesserissUITests` adds 20 XCUITests (menu/game/settings flow + seeded deterministic gameplay + accessibility audits of each screen). CI runs both suites on every push and pull request with code coverage on, and fails if line coverage drops below set floors (`.github/workflows/tests.yml`, macOS-15 runner). CI selects Xcode 26 or later and an iPhone 17 simulator, the setup the accessibility audits were tuned on.
 
 ## Run in Xcode
 

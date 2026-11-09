@@ -112,7 +112,42 @@ final class SettingsStoreTests: XCTestCase {
         defaults.removePersistentDomain(forName: suiteName)
     }
 
+    // MARK: - Corrupt stored values
+
+    func testCorruptStoredValuesFallBackToDefaults() {
+        let suiteName = "test.tesseriss.corrupt"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.removePersistentDomain(forName: suiteName)
+        defaults.set("not-a-mode", forKey: "tesseriss.settings.appearance")
+        defaults.set("xx", forKey: "tesseriss.settings.language")
+        defaults.set("nope", forKey: "tesseriss.settings.themeKind")
+        defaults.set("zzz", forKey: "tesseriss.settings.selectedMode")
+        defaults.set("not-float", forKey: "tesseriss.settings.musicVolume")
+        defaults.set("bogus", forKey: "tesseriss.settings.playlist")
+
+        let store = SettingsStore(defaults: defaults)
+        XCTAssertEqual(store.appearance, .day)
+        XCTAssertEqual(store.language, Language.deviceDefault())
+        XCTAssertEqual(store.themeKind, .classic)
+        XCTAssertEqual(store.selectedMode, .og)
+        XCTAssertEqual(store.musicVolume, 0.5)
+        XCTAssertEqual(store.sfxVolume, 0.5, "Sound effects start at the music volume, which failed to load")
+        XCTAssertEqual(MusicPlaylist.playlist(forID: store.playlistID).id, MusicPlaylist.impressionists.id)
+
+        defaults.removePersistentDomain(forName: suiteName)
+    }
+
     // MARK: - Strings
+
+    func testVoiceOverAnnouncements() {
+        XCTAssertEqual(Strings.en.clearAnnouncement(rows: 1, newLevel: nil), "1 row cleared")
+        XCTAssertEqual(Strings.en.clearAnnouncement(rows: 4, newLevel: 2), "4 rows cleared, Level 2")
+        XCTAssertEqual(Strings.tr.clearAnnouncement(rows: 1, newLevel: nil), "1 sıra temizlendi")
+        XCTAssertEqual(Strings.tr.clearAnnouncement(rows: 3, newLevel: 1), "3 sıra temizlendi, Seviye 1")
+        XCTAssertEqual(Strings.en.gameOverAnnouncement(score: 4000, isNewBest: false), "Game over. Score 4000.")
+        XCTAssertEqual(Strings.en.gameOverAnnouncement(score: 4000, isNewBest: true), "Game over. Score 4000. NEW BEST")
+        XCTAssertEqual(Strings.tr.gameOverAnnouncement(score: 1200, isNewBest: true), "Oyun bitti. Skor 1200. YENİ REKOR")
+    }
 
     func testSettingsLabelsHaveNoEmoji() {
         // SettingsView adds the emoji; the strings stay plain because VoiceOver reads them.

@@ -118,6 +118,29 @@ final class GameEngineTests: XCTestCase {
         }
     }
 
+    func test_rotation_neverLiftsThePieceWhollyAboveTheBoard() {
+        // Near the top: rows 0-2 are full except where a freshly spawned I lies.
+        var board = Board(width: 10, height: 20)
+        let spawned = Tetromino.spawn(kind: .I, boardWidth: 10, boardHeight: 20)
+        for y in 0...2 {
+            for x in 0..<10 where !spawned.cells.contains(GridPoint(x: x, y: y)) {
+                board.grid[y][x] = .O
+            }
+        }
+        // Standing up kicks the I two rows up, leaving its bottom cell on row 0.
+        guard let standing = Tetromino.rotatedWithKick(spawned, by: 1, in: board)?.piece else {
+            return XCTFail("precondition: the I can stand up")
+        }
+        XCTAssertTrue(standing.cells.contains(where: { $0.y >= 0 }), "precondition: the standing I shows on the board")
+
+        // Lying flat again would fit only on row -1, since Board.collides treats
+        // rows above the board as empty. Up there the piece can't be seen.
+        if let flat = Tetromino.rotatedWithKick(standing, by: 1, in: board)?.piece {
+            XCTAssertTrue(flat.cells.contains(where: { $0.y >= 0 }),
+                          "a rotation must leave at least one cell on the board, got \(flat.cells)")
+        }
+    }
+
     // MARK: - Lock delay
 
     func test_landedPieceIsNotLockedImmediately() {
@@ -413,6 +436,66 @@ final class GameEngineTests: XCTestCase {
             }
             XCTAssertEqual(audio.lineClears, [sfxOn],
                            "with music off, the line-clear sound must follow the sound effects setting (sfx \(sfxOn))")
+        }
+    }
+
+    // MARK: - Random input
+
+    /// Plays seeded random input until game over and checks the engine's state
+    /// after every step.
+    func test_randomInputsKeepTheBoardConsistent() {
+        let games: [(GameMode, UInt64)] = [(.og, 0xC0FFEE), (.hard, 0xBADC0DE), (.fast, 99)]
+        for (mode, seed) in games {
+            let engine = makeEngine(randomizerFactory: {
+                PieceRandomizer(pentominoChance: $0, rng: SeededRandomNumberGenerator(seed: seed))
+            })
+            engine.startNewGame(mode: mode)
+            let rng = SeededRandomNumberGenerator(seed: seed &+ 1)
+            var step = 0, locks = 0, lastScore = 0, lastLines = 0
+            while engine.phase != .gameOver, step < 400 {
+                // Settle a flashing clear and resume, so the input reaches a falling piece.
+                if case .clearing = engine.phase { engine.togglePause() }
+                if engine.phase == .paused { engine.togglePause() }
+                let gridBefore = engine.board.grid
+                let input = Int(rng.next() % 7)
+                switch input {
+                case 0: engine.moveLeft(haptic: false)
+                case 1: engine.moveRight(haptic: false)
+                case 2: engine.rotateCW()
+                case 3: engine.rotateCCW()
+                case 4: engine.softDrop(haptic: false)
+                case 5: engine.hardDrop()
+                default: engine.togglePause()
+                }
+                if input == 5 {
+                    // A lock adds cells, or starts a clear or the game over. Comparing
+                    // pieces would miss a respawn of the same kind at the same spot.
+                    if engine.board.grid != gridBefore || engine.phase != .playing { locks += 1 }
+                    // Wait out the post-lock lockout, or every later drop is ignored.
+                    // Thread.sleep, not the run loop: a gravity tick would break the seeded replay.
+                    Thread.sleep(forTimeInterval: GameEngine.postLockInputLockout + 0.02)
+                }
+                step += 1
+
+                let tag = "\(mode) seed \(seed) step \(step)"
+                let board = engine.board
+                XCTAssertEqual(board.grid.count, board.height, tag)
+                XCTAssertTrue(board.grid.allSatisfy { $0.count == board.width }, tag)
+                XCTAssertGreaterThanOrEqual(engine.score, lastScore, "\(tag): score went down")
+                XCTAssertGreaterThanOrEqual(engine.lines, lastLines, "\(tag): lines went down")
+                XCTAssertEqual(engine.level, engine.lines / 10, tag)
+                lastScore = engine.score
+                lastLines = engine.lines
+
+                // The blocked spawn that ends the game overlaps the stack by design.
+                guard engine.phase != .gameOver, let piece = engine.current else { continue }
+                for c in piece.cells {
+                    XCTAssertTrue((0..<board.width).contains(c.x) && c.y < board.height, "\(tag): \(c) is off the board")
+                    XCTAssertNil(board.cell(c), "\(tag): \(c) overlaps the stack")
+                }
+                XCTAssertTrue(piece.cells.contains(where: { $0.y >= 0 }), "\(tag): the piece is wholly above the board")
+            }
+            XCTAssertGreaterThan(locks, 5, "\(mode) seed \(seed): the input must play a real game")
         }
     }
 }

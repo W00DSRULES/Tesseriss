@@ -5,10 +5,13 @@ import XCTest
 /// `.keepAlways` attachment. Extract them from the result bundle with:
 ///   xcrun xcresulttool export attachments --path <Result.xcresult> --output-path <dir>
 ///
-/// Run on a 6.9" device (iPhone 17 Pro Max → 1320×2868, the size App Store
-/// Connect requires) with a fixed RNG seed for a deterministic board:
+/// Run on iPhone 17 Pro Max (1320×2868) with a fixed RNG seed for a
+/// deterministic board:
 ///   xcodebuild test -only-testing:TesserissUITests/ScreenshotTests \
 ///     -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max'
+/// scripts/make_store_screenshots.py then frames each shot at 1320×2868 for the
+/// App Store Connect slot "iPhone with Dynamic Island (large display)" and
+/// writes a 1206×2622 copy for the required "(medium display)" slot.
 final class ScreenshotTests: XCTestCase {
     override func setUp() {
         super.setUp()

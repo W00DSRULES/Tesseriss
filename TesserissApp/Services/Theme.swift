@@ -9,6 +9,10 @@ enum ThemeKind: String, CaseIterable, Identifiable {
 protocol Theme {
     var kind: ThemeKind { get }
     func pieceColor(_ piece: PieceKind, appearance: AppearanceMode) -> Color
+    /// Edge of a solid cell, the ghost piece and the next-piece preview. Each
+    /// value is at least 1.6:1 against its fill (cells stay apart) and, where the
+    /// fill alone is under 3:1, at least 3:1 against the board.
+    func pieceOutlineColor(_ piece: PieceKind, appearance: AppearanceMode) -> Color
     func gridLineColor(appearance: AppearanceMode) -> Color
     func backgroundView(appearance: AppearanceMode) -> AnyView
     /// The view drawn behind the cells in the playfield (and next-piece preview).
@@ -48,15 +52,25 @@ extension Theme {
     func onInkColor(appearance: AppearanceMode) -> Color { Color("PaletteBackground") }
     func cardColor(appearance: AppearanceMode) -> Color { Color("PaletteCard") }
     func strokeColor(appearance: AppearanceMode) -> Color { Color("PaletteGrid") }
-    func accentColor(appearance: AppearanceMode) -> Color { Color("PieceL") }
+    /// Its own colour, not a piece colour, so NEW BEST stays at 4.5:1 on the card
+    /// whatever the piece palette does.
+    func accentColor(appearance: AppearanceMode) -> Color {
+        appearance == .day
+            ? Color(red: 0.58, green: 0.29, blue: 0.18)
+            : Color(red: 0.82, green: 0.53, blue: 0.40)
+    }
     var backgroundIsArtwork: Bool { false }
 }
 
-/// Frosted panel that keeps a block of text readable when it sits over artwork.
-/// A no-op on themes with a flat backdrop, so Classic is untouched.
+/// Card-coloured panel that keeps a block of text readable when it sits over
+/// artwork. A no-op on themes with a flat backdrop, so Classic is untouched.
 struct LegibilityPanel: ViewModifier {
     let active: Bool
     let stroke: Color
+    /// Opaque, not a material: the accessibility audit measured text on the
+    /// frosted panel against the art behind it and failed text that reads
+    /// at 7:1 or better on screen.
+    let fill: Color
 
     @ViewBuilder
     func body(content: Content) -> some View {
@@ -64,7 +78,7 @@ struct LegibilityPanel: ViewModifier {
             content
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
+                .background(fill, in: RoundedRectangle(cornerRadius: 14))
                 .overlay(
                     RoundedRectangle(cornerRadius: 14).stroke(stroke, lineWidth: 1)
                 )
@@ -75,8 +89,8 @@ struct LegibilityPanel: ViewModifier {
 }
 
 extension View {
-    func legibilityPanel(_ active: Bool, stroke: Color) -> some View {
-        modifier(LegibilityPanel(active: active, stroke: stroke))
+    func legibilityPanel(_ active: Bool, stroke: Color, fill: Color) -> some View {
+        modifier(LegibilityPanel(active: active, stroke: stroke, fill: fill))
     }
 }
 
@@ -85,6 +99,27 @@ struct ClassicTheme: Theme {
 
     func pieceColor(_ piece: PieceKind, appearance: AppearanceMode) -> Color {
         Color(piece.colorName)
+    }
+    func pieceOutlineColor(_ piece: PieceKind, appearance: AppearanceMode) -> Color {
+        // Night needs a lighter line where the day one is under 3:1 on the dark board.
+        switch (piece, appearance) {
+        case (.I, .day):      return Color(red: 0.263, green: 0.355, blue: 0.476)
+        case (.I, .night):    return Color(red: 0.555, green: 0.643, blue: 0.779)
+        case (.O, _):         return Color(red: 0.765, green: 0.472, blue: 0.232)
+        case (.T, _):         return Color(red: 0.566, green: 0.518, blue: 0.670)
+        case (.S, _):         return Color(red: 0.475, green: 0.565, blue: 0.476)
+        case (.Z, _):         return Color(red: 0.535, green: 0.421, blue: 0.403)
+        case (.L, .day):      return Color(red: 0.518, green: 0.268, blue: 0.065)
+        case (.L, .night):    return Color(red: 0.850, green: 0.551, blue: 0.339)
+        case (.J, _):         return Color(red: 0.606, green: 0.535, blue: 0.353)
+        case (.U, _):         return Color(red: 0.227, green: 0.497, blue: 0.524)
+        case (.P, .day):      return Color(red: 0.333, green: 0.365, blue: 0.259)
+        case (.P, .night):    return Color(red: 0.622, green: 0.655, blue: 0.537)
+        case (.plus, .day):   return Color(red: 0.355, green: 0.180, blue: 0.318)
+        case (.plus, .night): return Color(red: 0.640, green: 0.445, blue: 0.593)
+        case (.F, .day):      return Color(red: 0.263, green: 0.237, blue: 0.227)
+        case (.F, .night):    return Color(red: 0.531, green: 0.501, blue: 0.490)
+        }
     }
     func gridLineColor(appearance: AppearanceMode) -> Color { Color("PaletteGrid") }
     func backgroundView(appearance: AppearanceMode) -> AnyView {
@@ -104,6 +139,26 @@ struct KanagawaTheme: Theme {
 
     func pieceColor(_ piece: PieceKind, appearance: AppearanceMode) -> Color {
         Self.palette(for: piece, appearance: appearance)
+    }
+
+    func pieceOutlineColor(_ piece: PieceKind, appearance: AppearanceMode) -> Color {
+        // Day: one sumi-indigo key line, as in a woodblock print.
+        if appearance == .day { return Color(red: 0.075, green: 0.098, blue: 0.157) }
+        // Night: a lighter edge per piece. One shared light line merged the cells
+        // of the pale pieces (O, S, U, P).
+        switch piece {
+        case .I:    return Color(red: 0.364, green: 0.504, blue: 0.791)
+        case .O:    return Color(red: 0.745, green: 0.692, blue: 0.572)
+        case .T:    return Color(red: 0.519, green: 0.738, blue: 0.954)
+        case .S:    return Color(red: 0.782, green: 0.936, blue: 0.999)
+        case .Z:    return Color(red: 0.600, green: 0.753, blue: 0.788)
+        case .L:    return Color(red: 1.000, green: 0.486, blue: 0.395)
+        case .J:    return Color(red: 0.406, green: 0.507, blue: 0.738)
+        case .U:    return Color(red: 0.628, green: 0.730, blue: 0.755)
+        case .P:    return Color(red: 0.943, green: 0.891, blue: 0.799)
+        case .plus: return Color(red: 0.996, green: 0.775, blue: 0.698)
+        case .F:    return Color(red: 0.469, green: 0.511, blue: 0.590)
+        }
     }
 
     func gridLineColor(appearance: AppearanceMode) -> Color {
@@ -166,7 +221,7 @@ struct KanagawaTheme: Theme {
 
     func accentColor(appearance: AppearanceMode) -> Color {
         appearance == .day
-            ? Color(red: 0.784, green: 0.255, blue: 0.180)  // Fuji red
+            ? Color(red: 0.70, green: 0.20, blue: 0.14)     // Fuji red, darkened for 4.5:1 on paper
             : Color(red: 0.929, green: 0.522, blue: 0.380)  // Fuji orange
     }
 
@@ -174,31 +229,31 @@ struct KanagawaTheme: Theme {
         switch appearance {
         case .day:
             switch piece {
-            case .I:    return Color(red: 0.106, green: 0.227, blue: 0.420) // Prussian blue
-            case .O:    return Color(red: 0.941, green: 0.902, blue: 0.800) // cream foam
-            case .T:    return Color(red: 0.290, green: 0.482, blue: 0.659) // mid wave
+            case .I:    return Color(red: 0.175, green: 0.296, blue: 0.529) // Prussian blue
+            case .O:    return Color(red: 0.969, green: 0.927, blue: 0.822) // cream foam
+            case .T:    return Color(red: 0.264, green: 0.477, blue: 0.682) // mid wave
             case .S:    return Color(red: 0.533, green: 0.710, blue: 0.773) // pale aqua
-            case .Z:    return Color(red: 0.353, green: 0.545, blue: 0.620) // muted teal
-            case .L:    return Color(red: 0.784, green: 0.255, blue: 0.180) // Fuji red
-            case .J:    return Color(red: 0.075, green: 0.161, blue: 0.294) // deep navy
-            case .U:    return Color(red: 0.659, green: 0.784, blue: 0.835) // light foam blue
-            case .P:    return Color(red: 0.910, green: 0.863, blue: 0.769) // soft ivory
-            case .plus: return Color(red: 0.847, green: 0.435, blue: 0.290) // Fuji orange
-            case .F:    return Color(red: 0.173, green: 0.227, blue: 0.306) // ink slate
+            case .Z:    return Color(red: 0.394, green: 0.547, blue: 0.589) // muted teal
+            case .L:    return Color(red: 0.766, green: 0.251, blue: 0.176) // Fuji red
+            case .J:    return Color(red: 0.045, green: 0.146, blue: 0.291) // deep navy
+            case .U:    return Color(red: 0.791, green: 0.909, blue: 0.941) // light foam blue
+            case .P:    return Color(red: 0.751, green: 0.717, blue: 0.652) // stone paper
+            case .plus: return Color(red: 0.887, green: 0.463, blue: 0.314) // Fuji orange
+            case .F:    return Color(red: 0.249, green: 0.276, blue: 0.335) // ink slate
             }
         case .night:
             switch piece {
-            case .I:    return Color(red: 0.180, green: 0.349, blue: 0.604)
-            case .O:    return Color(red: 0.851, green: 0.804, blue: 0.694)
-            case .T:    return Color(red: 0.376, green: 0.580, blue: 0.749)
-            case .S:    return Color(red: 0.604, green: 0.776, blue: 0.835)
-            case .Z:    return Color(red: 0.412, green: 0.620, blue: 0.694)
-            case .L:    return Color(red: 0.875, green: 0.353, blue: 0.275)
-            case .J:    return Color(red: 0.149, green: 0.275, blue: 0.451)
-            case .U:    return Color(red: 0.722, green: 0.835, blue: 0.882)
-            case .P:    return Color(red: 0.804, green: 0.749, blue: 0.643)
-            case .plus: return Color(red: 0.929, green: 0.522, blue: 0.380)
-            case .F:    return Color(red: 0.255, green: 0.314, blue: 0.404)
+            case .I:    return Color(red: 0.174, green: 0.350, blue: 0.619)
+            case .O:    return Color(red: 0.945, green: 0.888, blue: 0.762)
+            case .T:    return Color(red: 0.340, green: 0.570, blue: 0.776)
+            case .S:    return Color(red: 0.563, green: 0.742, blue: 0.813)
+            case .Z:    return Color(red: 0.435, green: 0.584, blue: 0.618)
+            case .L:    return Color(red: 0.816, green: 0.328, blue: 0.254)
+            case .J:    return Color(red: 0.026, green: 0.209, blue: 0.408)
+            case .U:    return Color(red: 0.822, green: 0.927, blue: 0.954)
+            case .P:    return Color(red: 0.744, green: 0.695, blue: 0.607)
+            case .plus: return Color(red: 0.947, green: 0.529, blue: 0.381)
+            case .F:    return Color(red: 0.268, green: 0.309, blue: 0.381)
             }
         }
     }
@@ -229,9 +284,12 @@ private struct GreatWaveBanner: View {
         Text(text)
             .font(.system(.largeTitle, design: .serif).weight(.heavy).italic())
             .tracking(3)
+            // TR "MUHTEŞEM DALGA" nearly fills a Pro Max width at the default size.
+            .lineLimit(1)
+            .minimumScaleFactor(0.6)
             .foregroundStyle(Color(red: 0.075, green: 0.176, blue: 0.337))
             .padding(.vertical, 16)
-            .padding(.horizontal, 32)
+            .padding(.horizontal, 24)
             .background(
                 Color(red: 0.97, green: 0.94, blue: 0.86)
             )
@@ -241,6 +299,7 @@ private struct GreatWaveBanner: View {
                     .stroke(Color(red: 0.075, green: 0.176, blue: 0.337), lineWidth: 2)
             )
             .shadow(color: Color(red: 0.075, green: 0.176, blue: 0.337).opacity(0.45), radius: 18, y: 6)
+            .padding(.horizontal, 12)
             .allowsHitTesting(false)
     }
 }
