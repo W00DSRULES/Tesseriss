@@ -87,13 +87,16 @@ final class GameEngine: ObservableObject {
         randomizer = randomizerFactory(mode.pentominoChance)
         nextKind = randomizer.next()
         applyTetrisSetupIfRequested()
+        applyShotSetupIfRequested()
         flashingRows = []
         celebrationActive = false
         isNewHighscore = false
         screen = .game
         phase = .playing
         spawnNext()
+        if let queued = shotQueue.first { nextKind = queued }
         startTimer()
+        if ProcessInfo.processInfo.environment["TESSERISS_SHOT_FREEZE"] != nil { stopTimer() }
         audio.ensureMusicPlaying()
     }
 
@@ -109,6 +112,42 @@ final class GameEngine: ObservableObject {
             }
         }
         nextKind = .I
+    }
+
+    /// Screenshot hook (UI tests only), for store shots of a game in progress:
+    /// - TESSERISS_SHOT_BOARD: the bottom rows of the board, top to bottom,
+    ///   separated by "|". One letter per cell (I O T S Z L J U P F, X for the
+    ///   plus pentomino), "." for empty.
+    /// - TESSERISS_SHOT_STATS: "score,lines,level".
+    /// - TESSERISS_SHOT_PIECES: the falling piece then the next one, e.g. "TL".
+    /// - TESSERISS_SHOT_FREEZE: no gravity, so the piece stays where the test puts it.
+    private var shotQueue: [PieceKind] = []
+
+    private func applyShotSetupIfRequested() {
+        let env = ProcessInfo.processInfo.environment
+        let letters: [Character: PieceKind] = [
+            "I": .I, "O": .O, "T": .T, "S": .S, "Z": .Z, "L": .L, "J": .J,
+            "U": .U, "P": .P, "X": .plus, "F": .F,
+        ]
+        if let spec = env["TESSERISS_SHOT_BOARD"] {
+            let rows = spec.split(separator: "|").map(Array.init)
+            for (i, row) in rows.enumerated() {
+                let y = board.height - rows.count + i
+                guard y >= 0 else { continue }
+                for (x, ch) in row.enumerated() where x < board.width {
+                    board.grid[y][x] = letters[ch]
+                }
+            }
+        }
+        if let stats = env["TESSERISS_SHOT_STATS"] {
+            let n = stats.split(separator: ",").compactMap { Int($0) }
+            if n.count == 3 { score = n[0]; lines = n[1]; level = n[2] }
+        }
+        shotQueue = (env["TESSERISS_SHOT_PIECES"] ?? "").compactMap { letters[$0] }
+        if let first = shotQueue.first {
+            nextKind = first
+            shotQueue.removeFirst()
+        }
     }
 
     func returnToMenu() {
