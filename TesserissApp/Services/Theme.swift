@@ -9,9 +9,13 @@ enum ThemeKind: String, CaseIterable, Identifiable {
 protocol Theme {
     var kind: ThemeKind { get }
     func pieceColor(_ piece: PieceKind, appearance: AppearanceMode) -> Color
-    /// Edge of a solid cell, the ghost piece and the next-piece preview. Each
-    /// value is at least 1.6:1 against its fill (cells stay apart) and, where the
-    /// fill alone is under 3:1, at least 3:1 against the board.
+    /// Colour-blind mode (Settings): its own piece palette, and pieces, the ghost
+    /// and the preview are drawn with `pieceOutlineColor`. Off keeps the original look.
+    var colorblind: Bool { get }
+    /// Colour-blind mode only. Edge of a solid cell, the ghost piece and the
+    /// next-piece preview. Each value is at least 1.6:1 against its fill (cells
+    /// stay apart) and, where the fill alone is under 3:1, at least 3:1 against
+    /// the board.
     func pieceOutlineColor(_ piece: PieceKind, appearance: AppearanceMode) -> Color
     func gridLineColor(appearance: AppearanceMode) -> Color
     func backgroundView(appearance: AppearanceMode) -> AnyView
@@ -96,9 +100,28 @@ extension View {
 
 struct ClassicTheme: Theme {
     let kind: ThemeKind = .classic
+    var colorblind = false
 
     func pieceColor(_ piece: PieceKind, appearance: AppearanceMode) -> Color {
-        Color(piece.colorName)
+        colorblind ? Self.colorblindFill(piece) : Color(piece.colorName)
+    }
+
+    /// Colour-blind fills: pairwise CIEDE2000 >= 11 under simulated deutan,
+    /// protan and tritan vision (TetrominoTests checks the floors).
+    static func colorblindFill(_ piece: PieceKind) -> Color {
+        switch piece {
+        case .I:    return Color(red: 0.401, green: 0.490, blue: 0.619)
+        case .O:    return Color(red: 0.960, green: 0.642, blue: 0.393)
+        case .T:    return Color(red: 0.773, green: 0.721, blue: 0.882)
+        case .S:    return Color(red: 0.702, green: 0.798, blue: 0.703)
+        case .Z:    return Color(red: 0.692, green: 0.571, blue: 0.552)
+        case .L:    return Color(red: 0.676, green: 0.401, blue: 0.197)
+        case .J:    return Color(red: 0.999, green: 0.913, blue: 0.715)
+        case .U:    return Color(red: 0.387, green: 0.652, blue: 0.679)
+        case .P:    return Color(red: 0.469, green: 0.501, blue: 0.389)
+        case .plus: return Color(red: 0.494, green: 0.309, blue: 0.452)
+        case .F:    return Color(red: 0.393, green: 0.365, blue: 0.354)
+        }
     }
     func pieceOutlineColor(_ piece: PieceKind, appearance: AppearanceMode) -> Color {
         // Night needs a lighter line where the day one is under 3:1 on the dark board.
@@ -136,9 +159,12 @@ struct ClassicTheme: Theme {
 
 struct KanagawaTheme: Theme {
     let kind: ThemeKind = .kanagawa
+    var colorblind = false
 
     func pieceColor(_ piece: PieceKind, appearance: AppearanceMode) -> Color {
-        Self.palette(for: piece, appearance: appearance)
+        colorblind
+            ? Self.colorblindPalette(for: piece, appearance: appearance)
+            : Self.palette(for: piece, appearance: appearance)
     }
 
     func pieceOutlineColor(_ piece: PieceKind, appearance: AppearanceMode) -> Color {
@@ -226,6 +252,41 @@ struct KanagawaTheme: Theme {
     }
 
     static func palette(for piece: PieceKind, appearance: AppearanceMode) -> Color {
+        switch appearance {
+        case .day:
+            switch piece {
+            case .I:    return Color(red: 0.106, green: 0.227, blue: 0.420) // Prussian blue
+            case .O:    return Color(red: 0.941, green: 0.902, blue: 0.800) // cream foam
+            case .T:    return Color(red: 0.290, green: 0.482, blue: 0.659) // mid wave
+            case .S:    return Color(red: 0.533, green: 0.710, blue: 0.773) // pale aqua
+            case .Z:    return Color(red: 0.353, green: 0.545, blue: 0.620) // muted teal
+            case .L:    return Color(red: 0.784, green: 0.255, blue: 0.180) // Fuji red
+            case .J:    return Color(red: 0.075, green: 0.161, blue: 0.294) // deep navy
+            case .U:    return Color(red: 0.659, green: 0.784, blue: 0.835) // light foam blue
+            case .P:    return Color(red: 0.910, green: 0.863, blue: 0.769) // soft ivory
+            case .plus: return Color(red: 0.847, green: 0.435, blue: 0.290) // Fuji orange
+            case .F:    return Color(red: 0.173, green: 0.227, blue: 0.306) // ink slate
+            }
+        case .night:
+            switch piece {
+            case .I:    return Color(red: 0.180, green: 0.349, blue: 0.604)
+            case .O:    return Color(red: 0.851, green: 0.804, blue: 0.694)
+            case .T:    return Color(red: 0.376, green: 0.580, blue: 0.749)
+            case .S:    return Color(red: 0.604, green: 0.776, blue: 0.835)
+            case .Z:    return Color(red: 0.412, green: 0.620, blue: 0.694)
+            case .L:    return Color(red: 0.875, green: 0.353, blue: 0.275)
+            case .J:    return Color(red: 0.149, green: 0.275, blue: 0.451)
+            case .U:    return Color(red: 0.722, green: 0.835, blue: 0.882)
+            case .P:    return Color(red: 0.804, green: 0.749, blue: 0.643)
+            case .plus: return Color(red: 0.929, green: 0.522, blue: 0.380)
+            case .F:    return Color(red: 0.255, green: 0.314, blue: 0.404)
+            }
+        }
+    }
+
+    /// Colour-blind mode: the original palette nudged apart where pairs looked
+    /// alike (O/P, T/Z), staying within the woodblock colours.
+    static func colorblindPalette(for piece: PieceKind, appearance: AppearanceMode) -> Color {
         switch appearance {
         case .day:
             switch piece {

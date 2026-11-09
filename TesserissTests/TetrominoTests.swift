@@ -219,7 +219,8 @@ final class PiecePaletteTests: XCTestCase {
     private typealias M = PaletteMath
 
     // Classic: one universal colorset per piece; board = PaletteBackground (light / dark).
-    private func classicFill(_ k: PieceKind) -> M.RGB { M.rgb(UIColor(named: k.colorName)!) }
+    // The floors below apply to colour-blind mode; the default keeps the original palette.
+    private func classicFill(_ k: PieceKind) -> M.RGB { M.rgb(ClassicTheme.colorblindFill(k)) }
     private func classicBoard(_ ap: AppearanceMode) -> M.RGB {
         let style: UIUserInterfaceStyle = ap == .day ? .light : .dark
         return M.rgb(UIColor(named: "PaletteBackground")!.resolvedColor(with: UITraitCollection(userInterfaceStyle: style)))
@@ -238,7 +239,7 @@ final class PiecePaletteTests: XCTestCase {
     }
 
     func test_classic_outline_separates_cells_and_ghost_meets_3_to_1() {
-        let theme = ClassicTheme()
+        let theme = ClassicTheme(colorblind: true)
         for ap in AppearanceMode.allCases {
             let board = classicBoard(ap)
             for k in PieceKind.allCases {
@@ -253,7 +254,7 @@ final class PiecePaletteTests: XCTestCase {
 
     func test_hokusai_fills_stay_distinguishable() {
         for ap in AppearanceMode.allCases {
-            let pal = Dictionary(uniqueKeysWithValues: PieceKind.allCases.map { ($0, M.rgb(KanagawaTheme.palette(for: $0, appearance: ap))) })
+            let pal = Dictionary(uniqueKeysWithValues: PieceKind.allCases.map { ($0, M.rgb(KanagawaTheme.colorblindPalette(for: $0, appearance: ap))) })
             // achieved day 12.5 / 13.0 / 13.0 / 7.2, night 12.4 / 12.3 / 12.3 / 7.1
             XCTAssertGreaterThanOrEqual(M.minDE(pal, "norm"), 12.0, "\(ap)")
             XCTAssertGreaterThanOrEqual(M.minDE(pal, "deut"), 12.0, "\(ap)")
@@ -263,16 +264,37 @@ final class PiecePaletteTests: XCTestCase {
     }
 
     func test_hokusai_outline_and_ghost_contrast() {
-        let theme = KanagawaTheme()
+        let theme = KanagawaTheme(colorblind: true)
         for k in PieceKind.allCases {
             // day: shared indigo key line vs the darkest middle wood row; achieved 3.33
             let day = M.rgb(theme.pieceOutlineColor(k, appearance: .day))
             XCTAssertGreaterThanOrEqual(M.contrast(day, Self.woodDayMidDarkest), 3.2, "\(k) day")
             // night: per-piece edge vs the lightest wood row (achieved 3.05) and vs its fill (achieved 1.66)
             let night = M.rgb(theme.pieceOutlineColor(k, appearance: .night))
-            let fill = M.rgb(KanagawaTheme.palette(for: k, appearance: .night))
+            let fill = M.rgb(KanagawaTheme.colorblindPalette(for: k, appearance: .night))
             XCTAssertGreaterThanOrEqual(M.contrast(night, Self.woodNightLightest), 3.0, "\(k) night board")
             XCTAssertGreaterThanOrEqual(M.contrast(night, fill), 1.6, "\(k) night outline:fill")
         }
+    }
+
+    func test_default_mode_keeps_the_original_palette() {
+        for k in PieceKind.allCases {
+            // Classic: the asset-catalogue colours, unchanged since 1.0.
+            XCTAssertEqual(M.rgb(ClassicTheme().pieceColor(k, appearance: .day)).0,
+                           M.rgb(UIColor(named: k.colorName)!).0, accuracy: 0.002, "\(k)")
+            for ap in AppearanceMode.allCases {
+                let original = M.rgb(KanagawaTheme().pieceColor(k, appearance: ap))
+                let expected = M.rgb(KanagawaTheme.palette(for: k, appearance: ap))
+                XCTAssertEqual(original.0, expected.0, accuracy: 0.002, "\(k) \(ap)")
+                XCTAssertEqual(original.2, expected.2, accuracy: 0.002, "\(k) \(ap)")
+            }
+        }
+        XCTAssertFalse(ClassicTheme().colorblind)
+        XCTAssertFalse(KanagawaTheme().colorblind)
+        // Colour-blind mode really switches palette (O changes in both themes).
+        XCTAssertNotEqual(M.rgb(ClassicTheme(colorblind: true).pieceColor(.O, appearance: .day)).2,
+                          M.rgb(ClassicTheme().pieceColor(.O, appearance: .day)).2, accuracy: 0.01)
+        XCTAssertNotEqual(M.rgb(KanagawaTheme(colorblind: true).pieceColor(.P, appearance: .day)).0,
+                          M.rgb(KanagawaTheme().pieceColor(.P, appearance: .day)).0, accuracy: 0.01)
     }
 }

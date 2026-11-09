@@ -195,9 +195,15 @@ final class AccessibilityAuditTests: XCTestCase {
         let playAgain = app.buttons
             .matching(NSPredicate(format: "label IN %@", ["PLAY AGAIN", "TEKRAR OYNA"]))
             .firstMatch
+        // Tap the button's position, not the element: the button leaves when the
+        // game ends, and on a slow runner that can happen between two taps,
+        // which fails an element tap.
+        let frame = hardDrop.frame
+        let dropPoint = app.coordinate(withNormalizedOffset: .zero)
+            .withOffset(CGVector(dx: frame.midX, dy: frame.midY))
         var drops = 0
         while !playAgain.waitForExistence(timeout: 0.3), drops < 60 {
-            hardDrop.tap()
+            dropPoint.tap()
             drops += 1
         }
         XCTAssertTrue(playAgain.exists, "Hard drops should top out the board")

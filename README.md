@@ -13,6 +13,7 @@ The name is Greek *tesseris* ("four") + German *Riss* ("tear") — tear the rows
 - A 3-step **How to play** on first launch (skippable, reopened from Settings) and a **Stats** panel in Settings: games played, rows cleared, four-row clears, best per mode.
 - Four-line clear celebration: 500 ms pause + row flash + chime + success haptic.
 - Two theme styles — **Classic** and **Kanagawa / Hokusai** (wooden board + Great Wave line-clear splash) — each with **Day / Night** appearance.
+- **Colorblind mode** (Settings): a per-theme piece palette tested to stay apart under simulated deutan, protan and tritan vision, with an outline on every piece, the ghost and the next-piece preview. Off keeps the original palette.
 - Turkish + English in-app (first launch follows the device language); all settings persisted in `UserDefaults`.
 - Pause auto-fires on scene background; resume only via the explicit button.
 
@@ -52,7 +53,7 @@ xcodebuild test \
   -destination 'platform=iOS Simulator,name=iPhone 17'
 ```
 
-`TesserissTests` covers `Board`, `Tetromino`, `Scoring`, `GameMode`, `GameEngine`, `SettingsStore`, `HighscoreStore` (stats), the 7-bag `Randomizer` and the piece palettes (93 unit tests); `TesserissUITests` adds 26 XCUITests (menu/game/settings flow, onboarding, stats, seeded deterministic gameplay, and accessibility audits of each screen). `ScreenshotTests` captures the App Store screenshots and is skipped in CI. CI runs both suites on every push and pull request with code coverage on, and fails if line coverage drops below set floors (`.github/workflows/tests.yml`, macOS-15 runner). CI selects Xcode 26 or later and an iPhone 17 simulator, the setup the accessibility audits were tuned on.
+`TesserissTests` covers `Board`, `Tetromino`, `Scoring`, `GameMode`, `GameEngine`, `SettingsStore`, `HighscoreStore` (stats), the 7-bag `Randomizer` and the piece palettes (95 unit tests); `TesserissUITests` adds 27 XCUITests (menu/game/settings flow, onboarding, stats, seeded deterministic gameplay, and accessibility audits of each screen). `ScreenshotTests` captures the App Store screenshots and is skipped in CI. CI runs both suites on every push and pull request with code coverage on, and fails if line coverage drops below set floors (`.github/workflows/tests.yml`, macOS-15 runner). CI selects Xcode 26 or later and an iPhone 17 simulator, the setup the accessibility audits were tuned on.
 
 ## Run in Xcode
 

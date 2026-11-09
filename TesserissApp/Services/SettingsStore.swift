@@ -29,6 +29,7 @@ final class SettingsStore: ObservableObject {
     private let appearanceKey = "tesseriss.settings.appearance"
     private let languageKey = "tesseriss.settings.language"
     private let ghostKey = "tesseriss.settings.ghost"
+    private let colorblindKey = "tesseriss.settings.colorblind"
     private let playlistKey = "tesseriss.settings.playlist"
     private let selectedModeKey = "tesseriss.settings.selectedMode"
     private let themeKindKey = "tesseriss.settings.themeKind"
@@ -66,6 +67,12 @@ final class SettingsStore: ObservableObject {
         didSet { defaults.set(ghostEnabled, forKey: ghostKey) }
     }
 
+    /// Off: the original piece colours. On: a palette built to stay apart under
+    /// colour blindness, with an outline on every piece, the ghost and the preview.
+    @Published var colorblindMode: Bool {
+        didSet { defaults.set(colorblindMode, forKey: colorblindKey) }
+    }
+
     @Published var playlistID: String {
         didSet { defaults.set(playlistID, forKey: playlistKey) }
     }
@@ -86,8 +93,8 @@ final class SettingsStore: ObservableObject {
 
     var activeTheme: Theme {
         switch themeKind {
-        case .classic:  return ClassicTheme()
-        case .kanagawa: return KanagawaTheme()
+        case .classic:  return ClassicTheme(colorblind: colorblindMode)
+        case .kanagawa: return KanagawaTheme(colorblind: colorblindMode)
         }
     }
 
@@ -125,6 +132,7 @@ final class SettingsStore: ObservableObject {
         let lraw = defaults.string(forKey: languageKey) ?? Language.deviceDefault().rawValue
         self.language = Language(rawValue: lraw) ?? Language.deviceDefault()
         self.ghostEnabled = defaults.bool(forKey: ghostKey)
+        self.colorblindMode = defaults.bool(forKey: colorblindKey)
         self.playlistID = defaults.string(forKey: playlistKey) ?? MusicPlaylist.impressionists.id
         let modeRaw = defaults.string(forKey: selectedModeKey) ?? GameMode.og.rawValue
         self.selectedMode = GameMode(rawValue: modeRaw) ?? .og

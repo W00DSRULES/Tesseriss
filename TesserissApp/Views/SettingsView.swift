@@ -109,6 +109,11 @@ struct SettingsView: View {
                         .toggleStyle(.switch)
                     withEmoji("📍") { Toggle(s.ghostLabel, isOn: $settings.ghostEnabled) }
                         .toggleStyle(.switch)
+                    withEmoji("🎨") {
+                        Toggle(s.colorblindLabel, isOn: $settings.colorblindMode)
+                            .accessibilityIdentifier("colorblind-toggle")
+                    }
+                        .toggleStyle(.switch)
                     row {
                         withEmoji("☀️") { Text(s.appearanceLabel) }
                         if !stacked { Spacer() }

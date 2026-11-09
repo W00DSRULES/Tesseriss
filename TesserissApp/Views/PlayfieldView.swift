@@ -104,12 +104,14 @@ struct NextPieceView: View {
                             let c = cells[i]
                             Rectangle()
                                 .fill(theme.pieceColor(kind, appearance: appearance))
-                                .overlay(
-                                    Rectangle().strokeBorder(
-                                        theme.pieceOutlineColor(kind, appearance: appearance),
-                                        lineWidth: max(1, cellSize / 12)
-                                    )
-                                )
+                                .overlay {
+                                    if theme.colorblind {
+                                        Rectangle().strokeBorder(
+                                            theme.pieceOutlineColor(kind, appearance: appearance),
+                                            lineWidth: max(1, cellSize / 12)
+                                        )
+                                    }
+                                }
                                 .frame(width: cellSize, height: cellSize)
                                 .position(
                                     x: originX + (CGFloat(c.x - minX) + 0.5) * cellSize,

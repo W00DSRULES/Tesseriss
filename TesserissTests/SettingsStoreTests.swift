@@ -164,6 +164,23 @@ final class SettingsStoreTests: XCTestCase {
 
     // MARK: - Onboarding flag
 
+    func testColorblindModeDefaultsOffPersistsAndDrivesTheTheme() {
+        let suiteName = "test.tesseriss.colorblind"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.removePersistentDomain(forName: suiteName)
+
+        let store = SettingsStore(defaults: defaults)
+        XCTAssertFalse(store.colorblindMode, "the original palette is the default")
+        XCTAssertFalse(store.activeTheme.colorblind)
+        store.colorblindMode = true
+        XCTAssertTrue(store.activeTheme.colorblind)
+        store.themeKind = .kanagawa
+        XCTAssertTrue(store.activeTheme.colorblind, "applies to both themes")
+        XCTAssertTrue(SettingsStore(defaults: defaults).colorblindMode)
+
+        defaults.removePersistentDomain(forName: suiteName)
+    }
+
     func testOnboardingFlagDefaultsOffAndPersists() {
         let suiteName = "test.tesseriss.onboarding"
         let defaults = UserDefaults(suiteName: suiteName)!

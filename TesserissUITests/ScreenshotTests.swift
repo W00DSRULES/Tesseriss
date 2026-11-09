@@ -41,6 +41,11 @@ final class ScreenshotTests: XCTestCase {
         ]
         app.launchArguments = ["--ui-test", "-AppleLocale", locale]
             + sample.flatMap { ["-\($0.0)", $0.1] }
+        // TEST_RUNNER_TESSERISS_SHOTS_COLORBLIND=1 on the xcodebuild command line
+        // captures the set in colour-blind mode.
+        if ProcessInfo.processInfo.environment["TESSERISS_SHOTS_COLORBLIND"] == "1" {
+            app.launchArguments += ["-tesseriss.settings.colorblind", "YES"]
+        }
         var env = ["TESSERISS_RNG_SEED": "1337"]
         for (k, v) in extraEnv { env[k] = v }
         app.launchEnvironment = env

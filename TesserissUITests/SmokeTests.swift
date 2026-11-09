@@ -157,7 +157,7 @@ final class SmokeTests: XCTestCase {
         selectLanguage(app, "English")
         app.buttons["settings-button"].tap()
         XCTAssertTrue(app.buttons["back-button"].waitForExistence(timeout: 2))
-        for name in ["Music", "Sound effects", "Haptics", "Landing"] {
+        for name in ["Music", "Sound effects", "Haptics", "Landing", "Colorblind mode"] {
             XCTAssertTrue(app.switches[name].exists, "\(name) switch")
         }
         for name in ["Appearance", "Theme", "Language"] {
@@ -171,6 +171,26 @@ final class SmokeTests: XCTestCase {
         let before = sfx.value as? String
         sfx.tap()
         XCTAssertNotEqual(sfx.value as? String, before, "Tapping Sound effects should flip it")
+    }
+
+    /// Colour-blind mode is off by default, flips from Settings, and the game
+    /// still runs with it on (the outlined cells and ghost are drawn).
+    func test_colorblind_mode_toggles_and_game_runs_with_it() {
+        let app = launchedApp(env: ["TESSERISS_RNG_SEED": "1337"])
+        selectLanguage(app, "English")
+        app.buttons["settings-button"].tap()
+        XCTAssertTrue(app.buttons["back-button"].waitForExistence(timeout: 2))
+        let colorblind = app.switches["colorblind-toggle"]
+        XCTAssertTrue(colorblind.waitForExistence(timeout: 2))
+        XCTAssertEqual(colorblind.value as? String, "0", "off by default")
+        colorblind.tap()
+        XCTAssertEqual(colorblind.value as? String, "1")
+        app.buttons["back-button"].tap()
+        app.buttons["start-button"].tap()
+        let hardDrop = app.buttons["hard-drop-button"]
+        XCTAssertTrue(hardDrop.waitForExistence(timeout: 3))
+        hardDrop.tap()
+        XCTAssertTrue(app.buttons["menu-button"].exists, "game keeps running in colour-blind mode")
     }
 
     /// Music and sound effects each have a volume slider, spoken by name,

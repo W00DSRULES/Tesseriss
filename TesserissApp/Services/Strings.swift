@@ -36,6 +36,7 @@ struct Strings {
     let turkishLabel: String
     let englishLabel: String
     let ghostLabel: String
+    let colorblindLabel: String
     let volumeLabel: String
     let musicVolumeLabel: String
     let sfxVolumeLabel: String
@@ -154,6 +155,7 @@ struct Strings {
         turkishLabel: "Türkçe",
         englishLabel: "English",
         ghostLabel: "İniş",
+        colorblindLabel: "Renk körlüğü modu",
         volumeLabel: "Ses düzeyi",
         musicVolumeLabel: "Müzik sesi",
         sfxVolumeLabel: "Efekt sesi",
@@ -232,6 +234,7 @@ struct Strings {
         turkishLabel: "Türkçe",
         englishLabel: "English",
         ghostLabel: "Landing",
+        colorblindLabel: "Colorblind mode",
         volumeLabel: "Volume",
         musicVolumeLabel: "Music volume",
         sfxVolumeLabel: "Sound effects volume",

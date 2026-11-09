@@ -16,7 +16,7 @@ Character limits noted in parentheses — App Store Connect enforces them.
 **Subtitle** (≤30) — `Calm falling blocks puzzle` (26)
 
 **Promotional text** (≤170, editable anytime without review)
-> New: a short guide, your stats in Settings, clearer piece colours and better VoiceOver support.
+> New: a short guide, your stats in Settings, a colour-blind mode and better VoiceOver support.
 > No ads, no accounts, fully offline.
 
 **Keywords** (≤100 bytes) — 100/100 bytes, 16 unique single tokens
@@ -28,7 +28,7 @@ A short guide on first launch shows the controls, how rows clear and the modes. 
 
 Settings now shows your stats: games played, rows cleared, four-row clears and best score per mode.
 
-Pieces have new colours and an outline, so they are easier to tell apart, including with red-green colour blindness. The landing preview is now a clear outline.
+A colour-blind mode in Settings switches to piece colours that stay apart with red-green colour blindness, draws an outline around every piece and makes the landing preview a clear outline.
 
 The Hokusai theme now colours the whole app, not just the board: menus, buttons and the score panel follow it, and text stays readable over the artwork.
 
@@ -84,8 +84,8 @@ Turkish and English, switchable in Settings.
 **Alt başlık** (≤30) — `Sakin blok bulmaca oyunu` (24)
 
 **Tanıtım metni** (≤170)
-> Yeni: kısa bir rehber, Ayarlar'da istatistikler, daha net parça renkleri ve daha iyi VoiceOver
-> desteği. Reklamsız, hesapsız, tamamen çevrimdışı.
+> Yeni: kısa bir rehber, Ayarlar'da istatistikler, renk körlüğü modu ve daha iyi VoiceOver desteği.
+> Reklamsız, hesapsız, tamamen çevrimdışı.
 
 **Anahtar kelimeler** (≤100 bayt; ç ğ ı ö ş ü 2 bayt sayılır) — 89 karakter / 95 bayt, 13 benzersiz kelime
 `tetromino,düşen,bloklar,sıra,tuğla,klasik,retro,arcade,minimal,zen,rahatlatıcı,beyin,zeka`
@@ -96,7 +96,7 @@ Turkish and English, switchable in Settings.
 
 Ayarlar'da artık istatistiklerin var: oynanan oyun, temizlenen sıra, dörtlü yırtma ve her modun rekoru.
 
-Parçaların renkleri yenilendi ve her parçanın bir kenar çizgisi var; parçalar, kırmızı-yeşil renk körlüğünde de daha kolay ayırt ediliyor. Parçanın ineceği yeri gösteren çerçeve de artık daha belirgin.
+Ayarlar'daki renk körlüğü modu, kırmızı-yeşil renk körlüğünde de birbirinden ayrılan parça renklerine geçiyor, her parçanın çevresine bir çizgi çiziyor ve parçanın ineceği yeri gösteren çerçeveyi belirginleştiriyor.
 
 Hokusai teması artık yalnızca tahtayı değil, uygulamanın tamamını kaplıyor: menüler, düğmeler ve skor paneli de aynı paleti kullanıyor. Yazılar da görselin üzerinde rahatça okunuyor.
 
