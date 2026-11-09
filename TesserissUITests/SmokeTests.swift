@@ -22,17 +22,17 @@ final class SmokeTests: XCTestCase {
     private func selectLanguage(_ app: XCUIApplication, _ language: String) {
         app.buttons["settings-button"].tap()
         let button = app.buttons[language]
-        XCTAssertTrue(button.waitForExistence(timeout: 3))
+        XCTAssertTrue(button.waitForExistence(timeout: 10))
         button.tap()
         app.buttons["back-button"].tap()
-        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 10))
     }
 
     // MARK: - Menu
 
     func test_launch_shows_menu_with_start_and_settings() {
         let app = launchedApp()
-        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["settings-button"].exists)
         XCTAssertTrue(app.staticTexts["highscore-value"].exists)
         XCTAssertEqual(app.staticTexts["highscore-value"].value as? String, "0",
@@ -42,7 +42,7 @@ final class SmokeTests: XCTestCase {
     func test_tap_start_opens_game_with_zero_score() {
         let app = launchedApp()
         app.buttons["start-button"].tap()
-        XCTAssertTrue(app.buttons["hard-drop-button"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["hard-drop-button"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["rotate-button"].exists)
         XCTAssertTrue(app.buttons["menu-button"].exists)
 
@@ -56,7 +56,7 @@ final class SmokeTests: XCTestCase {
         let og = app.buttons["mode-og"]
         let fast = app.buttons["mode-fast"]
         let hard = app.buttons["mode-hard"]
-        XCTAssertTrue(og.waitForExistence(timeout: 3))
+        XCTAssertTrue(og.waitForExistence(timeout: 10))
         XCTAssertTrue(fast.exists)
         XCTAssertTrue(hard.exists)
         XCTAssertTrue(og.isSelected, "--ui-test wipes to the default mode og")
@@ -76,7 +76,7 @@ final class SmokeTests: XCTestCase {
             let app = launchedApp()
             selectLanguage(app, language)
             app.buttons["start-button"].tap()
-            XCTAssertTrue(app.buttons["hard-drop-button"].waitForExistence(timeout: 3))
+            XCTAssertTrue(app.buttons["hard-drop-button"].waitForExistence(timeout: 10))
             for id in ["stat-score", "stat-level", "stat-lines"] {
                 XCTAssertTrue(app.staticTexts[id].exists, "\(id) missing in \(language)")
             }
@@ -90,7 +90,7 @@ final class SmokeTests: XCTestCase {
         let app = launchedApp()
         selectLanguage(app, "English")
         app.buttons["start-button"].tap()
-        XCTAssertTrue(app.buttons["hard-drop-button"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["hard-drop-button"].waitForExistence(timeout: 10))
         let expected: [(id: String, label: String)] = [
             ("move-left-button", "Move left"),
             ("soft-drop-button", "Move down"),
@@ -112,10 +112,10 @@ final class SmokeTests: XCTestCase {
         let app = launchedApp()
         app.buttons["start-button"].tap()
         let pause = app.buttons["pause-button"]
-        XCTAssertTrue(pause.waitForExistence(timeout: 3))
+        XCTAssertTrue(pause.waitForExistence(timeout: 10))
         pause.tap()
         let resume = app.buttons["resume-button"]
-        XCTAssertTrue(resume.waitForExistence(timeout: 2))
+        XCTAssertTrue(resume.waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["pause-menu-button"].exists)
         // Paused, the game behind the card leaves the accessibility tree.
         XCTAssertFalse(pause.exists, "The HUD is hidden from VoiceOver while paused")
@@ -123,16 +123,16 @@ final class SmokeTests: XCTestCase {
         resume.tap()
         let closed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"),
                                                object: resume)
-        XCTAssertEqual(XCTWaiter.wait(for: [closed], timeout: 2), .completed,
+        XCTAssertEqual(XCTWaiter.wait(for: [closed], timeout: 10), .completed,
                        "Resume should close the pause overlay")
         // Pause only acts while playing, so pausing again proves play resumed.
         XCTAssertTrue(pause.isEnabled)
         pause.tap()
-        XCTAssertTrue(resume.waitForExistence(timeout: 2),
+        XCTAssertTrue(resume.waitForExistence(timeout: 10),
                       "Game should respond to pause again after resuming")
 
         app.buttons["pause-menu-button"].tap()
-        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 2),
+        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 10),
                       "Overlay MENU returns to the menu")
     }
 
@@ -141,12 +141,12 @@ final class SmokeTests: XCTestCase {
     func test_open_settings_and_return() {
         let app = launchedApp()
         app.buttons["settings-button"].tap()
-        XCTAssertTrue(app.buttons["back-button"].waitForExistence(timeout: 2))
+        XCTAssertTrue(app.buttons["back-button"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.otherElements["theme-picker"].exists
                       || app.segmentedControls.firstMatch.exists,
                       "Settings should show theme picker")
         app.buttons["back-button"].tap()
-        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 2),
+        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 10),
                       "Back returns to menu")
     }
 
@@ -156,7 +156,7 @@ final class SmokeTests: XCTestCase {
         let app = launchedApp()
         selectLanguage(app, "English")
         app.buttons["settings-button"].tap()
-        XCTAssertTrue(app.buttons["back-button"].waitForExistence(timeout: 2))
+        XCTAssertTrue(app.buttons["back-button"].waitForExistence(timeout: 10))
         for name in ["Music", "Sound effects", "Haptics", "Landing", "Colorblind mode"] {
             XCTAssertTrue(app.switches[name].exists, "\(name) switch")
         }
@@ -179,16 +179,16 @@ final class SmokeTests: XCTestCase {
         let app = launchedApp(env: ["TESSERISS_RNG_SEED": "1337"])
         selectLanguage(app, "English")
         app.buttons["settings-button"].tap()
-        XCTAssertTrue(app.buttons["back-button"].waitForExistence(timeout: 2))
+        XCTAssertTrue(app.buttons["back-button"].waitForExistence(timeout: 10))
         let colorblind = app.switches["colorblind-toggle"]
-        XCTAssertTrue(colorblind.waitForExistence(timeout: 2))
+        XCTAssertTrue(colorblind.waitForExistence(timeout: 10))
         XCTAssertEqual(colorblind.value as? String, "0", "off by default")
         colorblind.tap()
         XCTAssertEqual(colorblind.value as? String, "1")
         app.buttons["back-button"].tap()
         app.buttons["start-button"].tap()
         let hardDrop = app.buttons["hard-drop-button"]
-        XCTAssertTrue(hardDrop.waitForExistence(timeout: 3))
+        XCTAssertTrue(hardDrop.waitForExistence(timeout: 10))
         hardDrop.tap()
         XCTAssertTrue(app.buttons["menu-button"].exists, "game keeps running in colour-blind mode")
     }
@@ -199,7 +199,7 @@ final class SmokeTests: XCTestCase {
         let app = launchedApp()
         selectLanguage(app, "English")
         app.buttons["settings-button"].tap()
-        XCTAssertTrue(app.buttons["back-button"].waitForExistence(timeout: 2))
+        XCTAssertTrue(app.buttons["back-button"].waitForExistence(timeout: 10))
         let musicSlider = app.sliders["music-volume-slider"]
         let sfxSlider = app.sliders["sfx-volume-slider"]
         XCTAssertTrue(musicSlider.exists, "Music volume slider")
@@ -229,7 +229,7 @@ final class SmokeTests: XCTestCase {
         app.buttons["settings-button"].tap()
         // Both segments are present; tap Hokusai then re-open settings to verify.
         let hokusai = app.buttons["Hokusai"]
-        XCTAssertTrue(hokusai.waitForExistence(timeout: 2))
+        XCTAssertTrue(hokusai.waitForExistence(timeout: 10))
         hokusai.tap()
         XCTAssertTrue(hokusai.isSelected, "Hokusai segment should be selected after tap")
     }
@@ -239,7 +239,7 @@ final class SmokeTests: XCTestCase {
         app.buttons["settings-button"].tap()
         // Night button label is localized; the underlying text contains "Gece" (tr) or "Night" (en).
         let night = app.buttons.matching(NSPredicate(format: "label CONTAINS[c] 'Gece' OR label CONTAINS[c] 'Night'")).firstMatch
-        XCTAssertTrue(night.waitForExistence(timeout: 2))
+        XCTAssertTrue(night.waitForExistence(timeout: 10))
         night.tap()
         XCTAssertTrue(night.isSelected, "Night should be selected after tap")
     }
@@ -263,7 +263,7 @@ final class SmokeTests: XCTestCase {
         app2.launchArguments = []
         app2.launch()
         app2.buttons["settings-button"].tap()
-        XCTAssertTrue(app2.buttons["Hokusai"].waitForExistence(timeout: 2))
+        XCTAssertTrue(app2.buttons["Hokusai"].waitForExistence(timeout: 10))
         XCTAssertTrue(app2.buttons["Hokusai"].isSelected,
                       "Hokusai theme should persist across launches")
         XCTAssertTrue(app2.buttons.matching(nightPredicate).firstMatch.isSelected,
@@ -280,7 +280,7 @@ final class SmokeTests: XCTestCase {
         let app = launchedApp(env: ["TESSERISS_RNG_SEED": "1337"])
         app.buttons["start-button"].tap()
         let hardDrop = app.buttons["hard-drop-button"]
-        XCTAssertTrue(hardDrop.waitForExistence(timeout: 3))
+        XCTAssertTrue(hardDrop.waitForExistence(timeout: 10))
         // Default mode "og" is 10x20. Five pieces stacked in the spawn column
         // (~2 rows each) can't top out a 20-row board, so the game must stay
         // alive regardless of runner timing. A brief settle between taps lets
@@ -305,7 +305,7 @@ final class SmokeTests: XCTestCase {
             let app = launchedApp(env: ["TESSERISS_RNG_SEED": seed])
             app.buttons["start-button"].tap()
             let hardDrop = app.buttons["hard-drop-button"]
-            _ = hardDrop.waitForExistence(timeout: 3)
+            _ = hardDrop.waitForExistence(timeout: 10)
             // Settle between taps so every drop locks in both runs; otherwise a
             // tap swallowed by a lock/clear frame in one run but not the other
             // would diverge the scores and flake this comparison.
@@ -331,7 +331,7 @@ final class SmokeTests: XCTestCase {
         app.buttons["hard-drop-button"].tap()
         let scored = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == '4000'"),
                                                object: app.staticTexts["stat-score"])
-        XCTAssertEqual(XCTWaiter.wait(for: [scored], timeout: 3), .completed,
+        XCTAssertEqual(XCTWaiter.wait(for: [scored], timeout: 10), .completed,
                        "The four-row clear should score 4000")
     }
 
@@ -362,14 +362,14 @@ final class SmokeTests: XCTestCase {
         let app = launchedApp(env: ["TESSERISS_RNG_SEED": "1337", "TESSERISS_TETRIS_SETUP": "1"])
         selectLanguage(app, "English")
         app.buttons["start-button"].tap()
-        XCTAssertTrue(app.buttons["hard-drop-button"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["hard-drop-button"].waitForExistence(timeout: 10))
         clearFourRows(app)
         topOut(app)
         app.buttons["gameover-menu-button"].tap()
-        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 10))
 
         app.buttons["settings-button"].tap()
-        XCTAssertTrue(app.buttons["back-button"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["back-button"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["how-to-play-button"].exists)
         XCTAssertEqual(app.buttons["how-to-play-button"].label, "How to play")
         let expected: [(id: String, label: String, value: String)] = [
@@ -400,13 +400,13 @@ final class SmokeTests: XCTestCase {
     private func waitUntilGone(_ element: XCUIElement, _ message: String) {
         let gone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"),
                                              object: element)
-        XCTAssertEqual(XCTWaiter.wait(for: [gone], timeout: 3), .completed, message)
+        XCTAssertEqual(XCTWaiter.wait(for: [gone], timeout: 10), .completed, message)
     }
 
     /// Waits for step `n`'s title, lets the cross-fade finish, then attaches
     /// a screenshot named "review-onboarding-<n>".
     private func showsOnboardingStep(_ app: XCUIApplication, _ n: Int) {
-        XCTAssertTrue(app.staticTexts["onboarding-step-\(n)"].waitForExistence(timeout: 3), "step \(n)")
+        XCTAssertTrue(app.staticTexts["onboarding-step-\(n)"].waitForExistence(timeout: 10), "step \(n)")
         XCTAssertEqual(app.staticTexts["onboarding-progress"].label, "Step \(n) of 3")
         Thread.sleep(forTimeInterval: 0.5)
         attachScreenshot(app, "onboarding-\(n)")
@@ -414,20 +414,20 @@ final class SmokeTests: XCTestCase {
 
     func test_onboarding_shows_over_menu_and_skip_dismisses() {
         let app = launchedApp(extraArgs: ["--show-onboarding", "-AppleLanguages", "(en)"])
-        XCTAssertTrue(app.otherElements["onboarding"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.otherElements["onboarding"].waitForExistence(timeout: 10))
         XCTAssertFalse(app.buttons["start-button"].exists, "The menu is not shown under the onboarding")
         XCTAssertTrue(app.staticTexts["onboarding-step-1"].exists)
         XCTAssertEqual(app.buttons["onboarding-skip"].label, "SKIP")
 
         app.buttons["onboarding-skip"].tap()
-        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3), "Skip returns to the menu")
+        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 10), "Skip returns to the menu")
         waitUntilGone(app.otherElements["onboarding"], "Skip closes the onboarding")
         XCTAssertFalse(app.buttons["hard-drop-button"].exists, "Skip doesn't start a game")
     }
 
     func test_onboarding_next_next_done_and_not_shown_on_relaunch() {
         let app = launchedApp(extraArgs: ["--show-onboarding", "-AppleLanguages", "(en)"])
-        XCTAssertTrue(app.otherElements["onboarding"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.otherElements["onboarding"].waitForExistence(timeout: 10))
         showsOnboardingStep(app, 1)
         app.buttons["onboarding-next"].tap()
         showsOnboardingStep(app, 2)
@@ -437,7 +437,7 @@ final class SmokeTests: XCTestCase {
         XCTAssertFalse(app.buttons["onboarding-next"].exists)
 
         app.buttons["onboarding-done"].tap()
-        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3), "Done returns to the menu")
+        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 10), "Done returns to the menu")
         XCTAssertFalse(app.otherElements["onboarding"].exists)
         XCTAssertFalse(app.buttons["hard-drop-button"].exists, "Done doesn't start a game")
         app.terminate()
@@ -446,7 +446,7 @@ final class SmokeTests: XCTestCase {
         let app2 = XCUIApplication()
         app2.launchArguments = []
         app2.launch()
-        XCTAssertTrue(app2.buttons["start-button"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app2.buttons["start-button"].waitForExistence(timeout: 10))
         XCTAssertFalse(app2.otherElements["onboarding"].exists, "The onboarding shows once")
     }
 
@@ -454,18 +454,18 @@ final class SmokeTests: XCTestCase {
         let app = launchedApp()
         app.buttons["settings-button"].tap()
         let back = app.buttons["back-button"]
-        XCTAssertTrue(back.waitForExistence(timeout: 3))
+        XCTAssertTrue(back.waitForExistence(timeout: 10))
         app.buttons["how-to-play-button"].tap()
-        XCTAssertTrue(app.otherElements["onboarding"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.otherElements["onboarding"].waitForExistence(timeout: 10))
         waitUntilGone(back, "Settings is not shown under the onboarding")
         XCTAssertTrue(app.staticTexts["onboarding-step-1"].exists, "It reopens at step 1")
 
         app.buttons["onboarding-next"].tap()
-        XCTAssertTrue(app.staticTexts["onboarding-step-2"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["onboarding-step-2"].waitForExistence(timeout: 10))
         app.buttons["onboarding-next"].tap()
-        XCTAssertTrue(app.staticTexts["onboarding-step-3"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["onboarding-step-3"].waitForExistence(timeout: 10))
         app.buttons["onboarding-done"].tap()
-        XCTAssertTrue(back.waitForExistence(timeout: 3), "Done returns to Settings")
+        XCTAssertTrue(back.waitForExistence(timeout: 10), "Done returns to Settings")
         XCTAssertFalse(app.otherElements["onboarding"].exists)
     }
 }

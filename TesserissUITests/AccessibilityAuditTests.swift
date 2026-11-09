@@ -59,7 +59,7 @@ final class AccessibilityAuditTests: XCTestCase {
         XCTAssertEqual(app.staticTexts["onboarding-progress"].label, "Step 3 of 3")
         // Done reveals the menu; it doesn't start a game.
         app.buttons["onboarding-done"].tap()
-        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 10))
         XCTAssertFalse(app.buttons["hard-drop-button"].exists)
     }
 
@@ -69,16 +69,16 @@ final class AccessibilityAuditTests: XCTestCase {
         let app = launchedApp()
         app.buttons["settings-button"].tap()
         let back = app.buttons["back-button"]
-        XCTAssertTrue(back.waitForExistence(timeout: 3))
+        XCTAssertTrue(back.waitForExistence(timeout: 10))
         for label in ["Türkçe", "Hokusai", "Gece"] {
             let segment = app.buttons[label]
-            XCTAssertTrue(segment.waitForExistence(timeout: 3), label)
+            XCTAssertTrue(segment.waitForExistence(timeout: 10), label)
             segment.tap()
         }
         app.buttons["how-to-play-button"].tap()
         try auditOnboarding(app, steps: 1, over: back)
         app.buttons["onboarding-skip"].tap()
-        XCTAssertTrue(back.waitForExistence(timeout: 3))
+        XCTAssertTrue(back.waitForExistence(timeout: 10))
     }
 
     // MARK: - Helpers
@@ -87,18 +87,26 @@ final class AccessibilityAuditTests: XCTestCase {
     /// `underneath` is an element of the screen the onboarding opened over,
     /// which must be out of the accessibility tree while it shows.
     private func auditOnboarding(_ app: XCUIApplication, steps: Int, over underneath: XCUIElement) throws {
-        XCTAssertTrue(app.otherElements["onboarding"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.otherElements["onboarding"].waitForExistence(timeout: 10))
         waitUntilGone(underneath)
         for step in 1...steps {
             let title = app.staticTexts["onboarding-step-\(step)"]
-            XCTAssertTrue(title.waitForExistence(timeout: 3), "step \(step)")
+            XCTAssertTrue(title.waitForExistence(timeout: 10), "step \(step)")
             try auditEveryPage(app, "onboarding, step \(step)")
             let ids = step < 3 ? ["onboarding-skip", "onboarding-next"] : ["onboarding-done"]
             for id in ids {
                 XCTAssertGreaterThanOrEqual(app.buttons[id].frame.height, 44, "\(id) touch target")
             }
             if step < steps {
-                app.buttons["onboarding-next"].tap()
+                // Right after the text-size audit the layout can still be
+                // settling on a slow runner, so a tap can miss. Tap again only
+                // if the next step hasn't appeared.
+                let nextTitle = app.staticTexts["onboarding-step-\(step + 1)"]
+                for _ in 0..<3 where !nextTitle.exists {
+                    app.buttons["onboarding-next"].tap()
+                    _ = nextTitle.waitForExistence(timeout: 5)
+                }
+                XCTAssertTrue(nextTitle.exists, "step \(step + 1)")
                 waitUntilGone(title)
             }
         }
@@ -122,16 +130,16 @@ final class AccessibilityAuditTests: XCTestCase {
 
     private func auditEveryScreen(_ app: XCUIApplication, tapping segments: [String] = []) throws {
         let start = app.buttons["start-button"]
-        XCTAssertTrue(start.waitForExistence(timeout: 5))
+        XCTAssertTrue(start.waitForExistence(timeout: 10))
 
         // Settings, after applying the picks.
         app.buttons["settings-button"].tap()
         let back = app.buttons["back-button"]
-        XCTAssertTrue(back.waitForExistence(timeout: 3))
+        XCTAssertTrue(back.waitForExistence(timeout: 10))
         waitUntilGone(start)
         for label in segments {
             let segment = app.buttons[label]
-            XCTAssertTrue(segment.waitForExistence(timeout: 3), label)
+            XCTAssertTrue(segment.waitForExistence(timeout: 10), label)
             segment.tap()
         }
         try auditEveryPage(app, "settings")
@@ -139,7 +147,7 @@ final class AccessibilityAuditTests: XCTestCase {
 
         // Menu.
         back.tap()
-        XCTAssertTrue(start.waitForExistence(timeout: 3))
+        XCTAssertTrue(start.waitForExistence(timeout: 10))
         waitUntilGone(back)
         // Text recognition reads the vertical stripes of the Hokusai wave
         // beside the highscore panel as "11" and reports it as text with no
@@ -154,7 +162,7 @@ final class AccessibilityAuditTests: XCTestCase {
         // if Start can't be reached at the largest text size.
         start.tap()
         let hardDrop = app.buttons["hard-drop-button"]
-        XCTAssertTrue(hardDrop.waitForExistence(timeout: 3))
+        XCTAssertTrue(hardDrop.waitForExistence(timeout: 10))
         waitUntilGone(start)
         // The four-line clear first, before gravity lands the I piece flat.
         app.buttons["rotate-button"].tap()
@@ -162,7 +170,7 @@ final class AccessibilityAuditTests: XCTestCase {
         hardDrop.tap()
         let scored = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value != '0'"),
                                                object: app.staticTexts["stat-score"])
-        XCTAssertEqual(XCTWaiter.wait(for: [scored], timeout: 3), .completed,
+        XCTAssertEqual(XCTWaiter.wait(for: [scored], timeout: 10), .completed,
                        "The four-line clear should score")
         for id in ["stat-score", "stat-level", "stat-lines"] {
             XCTAssertTrue(app.staticTexts[id].exists, id)
@@ -179,7 +187,7 @@ final class AccessibilityAuditTests: XCTestCase {
         // Pause card: same fixed layout and reason as the game screen.
         app.buttons["pause-button"].tap()
         let resume = app.buttons["resume-button"]
-        XCTAssertTrue(resume.waitForExistence(timeout: 2))
+        XCTAssertTrue(resume.waitForExistence(timeout: 10))
         // The dimmed game behind the card is hidden from VoiceOver on purpose,
         // so focus stays on the card, but text recognition still reads its
         // labels (NEXT, SCORE, ...) and reports them as text with no element.
@@ -294,7 +302,8 @@ final class AccessibilityAuditTests: XCTestCase {
     private func waitUntilGone(_ element: XCUIElement) {
         let gone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"),
                                              object: element)
-        XCTAssertEqual(XCTWaiter.wait(for: [gone], timeout: 3), .completed,
+        // Generous: on the GitHub runner a cross-fade has taken over 3 s.
+        XCTAssertEqual(XCTWaiter.wait(for: [gone], timeout: 10), .completed,
                        "The previous screen should leave")
     }
 }
