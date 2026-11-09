@@ -34,19 +34,10 @@ final class ScreenshotTests: XCTestCase {
         // zeros. Launch arguments land in the argument domain, which the
         // --ui-test wipe leaves alone. -AppleLocale sets the number format
         // ("48,300" for en_US, "48.300" for tr_TR).
-        let today = DateFormatter()
-        today.calendar = Calendar(identifier: .gregorian)
-        today.locale = Locale(identifier: "en_US_POSIX")
-        today.timeZone = TimeZone(identifier: "UTC")
-        today.dateFormat = "yyyyMMdd"
-        let day = today.string(from: Date())
         let sample: [(String, String)] = [
             ("tesseriss.highscore.fast", "21400"), ("tesseriss.highscore.og", "48300"),
             ("tesseriss.highscore.hard", "15900"), ("tesseriss.stats.gamesPlayed", "64"),
             ("tesseriss.stats.rowsCleared", "1927"), ("tesseriss.stats.fourRowClears", "83"),
-            ("tesseriss.daily.bestScore", "12800"), ("tesseriss.daily.bestDay", day),
-            ("tesseriss.daily.streak", "5"), ("tesseriss.daily.longestStreak", "12"),
-            ("tesseriss.daily.lastDay", day),
         ]
         app.launchArguments = ["--ui-test", "-AppleLocale", locale]
             + sample.flatMap { ["-\($0.0)", $0.1] }

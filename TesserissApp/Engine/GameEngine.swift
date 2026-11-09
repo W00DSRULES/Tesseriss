@@ -16,15 +16,6 @@ final class GameEngine: ObservableObject {
     @Published private(set) var celebrationActive: Bool = false
     @Published private(set) var mode: GameMode = .og
     @Published private(set) var isNewHighscore = false
-    @Published private(set) var isDaily = false
-    /// The UTC day a daily run counts for, fixed when it starts: a run that
-    /// crosses 00:00 UTC still counts for the day it began. Nil outside a daily run.
-    @Published private(set) var dailyKey: String?
-    /// Today's UTC day, for the screens that show today's daily result. Nothing
-    /// else redraws them at 00:00 UTC, so the app refreshes it on becoming
-    /// active and a timer refreshes it at each 00:00 UTC.
-    @Published private(set) var todayKey = DailyChallenge.todayKey()
-    private var dayTimer: Timer?
 
     /// Per-run counters for the lifetime stats.
     private(set) var piecesLocked = 0
@@ -68,11 +59,7 @@ final class GameEngine: ObservableObject {
         self.randomizerFactory = randomizerFactory
     }
 
-    /// The best to beat: today's daily best during a daily run, else the mode's.
-    var highscore: Int {
-        if isDaily, let dailyKey { return highscoreStore.dailyBest(for: dailyKey) }
-        return highscoreStore.highscore(for: mode)
-    }
+    var highscore: Int { highscoreStore.highscore(for: mode) }
 
     var ghostPiece: Tetromino? {
         guard phase == .playing, let piece = current else { return nil }
@@ -87,44 +74,9 @@ final class GameEngine: ObservableObject {
     // MARK: - Lifecycle
 
     func startNewGame(mode: GameMode = .og) {
-        beginRun(mode: mode, randomizer: randomizerFactory(mode.pentominoChance), dailyKey: nil)
-    }
-
-    /// A daily run for the UTC day of `now`, on Tear rules. Its pieces come from
-    /// the day's seed alone, never from the injected factory or TESSERISS_RNG_SEED.
-    func startDailyChallenge(now: Date = DailyChallenge.now()) {
-        let key = DailyChallenge.dayKey(for: now)
-        beginRun(mode: .og, randomizer: DailyChallenge.makeRandomizer(dayKey: key), dailyKey: key)
-    }
-
-    /// Updates todayKey to the day of `now` and re-arms the timer for the next 00:00 UTC.
-    func refreshToday(now: Date = DailyChallenge.now()) {
-        let key = DailyChallenge.dayKey(for: now)
-        if key != todayKey { todayKey = key }
-        dayTimer?.invalidate()
-        // One second past midnight, so the new key is read even if the wall clock lags the timer.
-        let wait = DailyChallenge.nextDayStart(after: now).timeIntervalSince(now) + 1
-        dayTimer = Timer.scheduledTimer(withTimeInterval: wait, repeats: false) { [weak self] _ in
-            self?.refreshToday()
-        }
-    }
-
-    /// PLAY AGAIN: another run of the same kind. A daily run restarts on the
-    /// current UTC day, which may be later than the run that just ended.
-    func playAgain() {
-        if isDaily {
-            startDailyChallenge()
-        } else {
-            startNewGame(mode: mode)
-        }
-    }
-
-    private func beginRun(mode: GameMode, randomizer: PieceRandomizer, dailyKey: String?) {
         stopTimer()
         stopClearTimer()
         self.mode = mode
-        isDaily = dailyKey != nil
-        self.dailyKey = dailyKey
         piecesLocked = 0
         fourRowClears = 0
         runRecorded = false
@@ -132,8 +84,8 @@ final class GameEngine: ObservableObject {
         score = 0
         lines = 0
         level = 0
-        self.randomizer = randomizer
-        nextKind = self.randomizer.next()
+        randomizer = randomizerFactory(mode.pentominoChance)
+        nextKind = randomizer.next()
         applyTetrisSetupIfRequested()
         flashingRows = []
         celebrationActive = false
@@ -253,17 +205,13 @@ final class GameEngine: ObservableObject {
         announce(settings.strings.gameOverAnnouncement(score: score, isNewBest: isNewHighscore), priority: .high)
     }
 
-    /// Saves the finished run once: the lifetime stats, then the daily result or
-    /// the mode's best. A run with no locked piece isn't a game. Returns true
-    /// for a new best.
+    /// Saves the finished run once: the lifetime stats, then the mode's best.
+    /// A run with no locked piece isn't a game. Returns true for a new best.
     @discardableResult
     private func recordRunIfNeeded() -> Bool {
         guard !runRecorded, piecesLocked > 0 else { return false }
         runRecorded = true
         highscoreStore.recordGame(rowsCleared: lines, fourRowClears: fourRowClears)
-        if isDaily, let dailyKey {
-            return highscoreStore.recordDaily(score: score, dayKey: dailyKey)
-        }
         return highscoreStore.maybeUpdate(score, for: mode)
     }
 

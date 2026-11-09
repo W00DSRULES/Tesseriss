@@ -10,8 +10,7 @@ The name is Greek *tesseris* ("four") + German *Riss* ("tear") — tear the rows
 - 7 tetrominoes + 4 pentominoes (U, P, +, F — Shatter only), fixed-table rotation, 7-bag randomizer, ghost piece.
 - Table-based gravity (levels 0–19) → smooth saturation curve afterwards, scaled per mode.
 - Scoring 100 / 300 / 1000 / 4000 × (level + 1) per cleared lines. Per-mode highscores.
-- **Daily challenge**: one Tear run per UTC day with the same pieces for every player (seeded from the date). Unlimited attempts; today's best and a day streak are kept apart from the mode highscores. Resets at 00:00 UTC.
-- A 3-step **How to play** on first launch (skippable, reopened from Settings) and a **Stats** panel in Settings: games played, rows cleared, four-row clears, best per mode, current and longest daily streak.
+- A 3-step **How to play** on first launch (skippable, reopened from Settings) and a **Stats** panel in Settings: games played, rows cleared, four-row clears, best per mode.
 - Four-line clear celebration: 500 ms pause + row flash + chime + success haptic.
 - Two theme styles — **Classic** and **Kanagawa / Hokusai** (wooden board + Great Wave line-clear splash) — each with **Day / Night** appearance.
 - Turkish + English in-app (first launch follows the device language); all settings persisted in `UserDefaults`.
@@ -53,7 +52,7 @@ xcodebuild test \
   -destination 'platform=iOS Simulator,name=iPhone 17'
 ```
 
-`TesserissTests` covers `Board`, `Tetromino`, `Scoring`, `GameMode`, `GameEngine`, `SettingsStore`, `HighscoreStore` (stats, daily best and streak), the 7-bag `Randomizer`, the daily seed and the piece palettes (113 unit tests); `TesserissUITests` adds 29 XCUITests (menu/game/settings flow, onboarding, daily challenge, stats, seeded deterministic gameplay, and accessibility audits of each screen). `ScreenshotTests` captures the App Store screenshots and is skipped in CI. CI runs both suites on every push and pull request with code coverage on, and fails if line coverage drops below set floors (`.github/workflows/tests.yml`, macOS-15 runner). CI selects Xcode 26 or later and an iPhone 17 simulator, the setup the accessibility audits were tuned on.
+`TesserissTests` covers `Board`, `Tetromino`, `Scoring`, `GameMode`, `GameEngine`, `SettingsStore`, `HighscoreStore` (stats), the 7-bag `Randomizer` and the piece palettes (93 unit tests); `TesserissUITests` adds 26 XCUITests (menu/game/settings flow, onboarding, stats, seeded deterministic gameplay, and accessibility audits of each screen). `ScreenshotTests` captures the App Store screenshots and is skipped in CI. CI runs both suites on every push and pull request with code coverage on, and fails if line coverage drops below set floors (`.github/workflows/tests.yml`, macOS-15 runner). CI selects Xcode 26 or later and an iPhone 17 simulator, the setup the accessibility audits were tuned on.
 
 ## Run in Xcode
 
@@ -70,7 +69,7 @@ Pick any iPhone simulator and ⌘R.
 TesserissApp/
   TesserissApp.swift              // @main entry
   Models/                         // Tetromino (+ pentominoes), Board
-  Engine/                         // GameEngine, GameState, GameMode, Scoring, Randomizer (+ DailyChallenge)
+  Engine/                         // GameEngine, GameState, GameMode, Scoring, Randomizer
   Services/                       // SettingsStore, HighscoreStore, AudioController,
                                   // HapticController, Strings (TR + EN), MusicPlaylist, Theme
   Views/                          // MenuView, GameView, ControlsView, CellView, PlayfieldView,
@@ -79,7 +78,7 @@ TesserissApp/
   Resources/                      // Assets.xcassets (incl. AppIcon), PrivacyInfo.xcprivacy,
                                   // line-clear .wav SFX (scripts/make_sfx.py)
 TesserissTests/                   // XCTest unit tests (Board, Tetromino, Scoring, GameMode, GameEngine,
-                                  // SettingsStore + HighscoreStore, Randomizer + DailyChallenge)
+                                  // SettingsStore + HighscoreStore, Randomizer)
 TesserissUITests/                 // XCUITest UI tests
 project.yml                       // XcodeGen source of truth (the .xcodeproj is generated, not committed)
 .github/workflows/tests.yml       // CI

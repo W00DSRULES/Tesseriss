@@ -170,14 +170,13 @@ struct OnboardingView: View {
         .accessibilityHidden(true)
     }
 
-    // MARK: Step 3: the three modes and the daily, with the menu's symbols
+    // MARK: Step 3: the three modes, with the menu's symbols
 
     private var modeList: some View {
         VStack(alignment: .leading, spacing: 8) {
             modeRow("bolt.fill", s.modeName(.fast))
             modeRow("square.grid.3x3.fill", s.modeName(.og))
             modeRow("flame.fill", s.modeName(.hard))
-            modeRow("calendar", s.dailyTitle)
         }
         .frame(maxWidth: 280)
     }

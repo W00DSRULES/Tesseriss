@@ -300,13 +300,11 @@ final class SmokeTests: XCTestCase {
         XCTAssertEqual(runA, runB,
                        "Same seed must yield same score after the same input sequence")
     }
-    // MARK: - Daily challenge and stats
-
-    /// TESSERISS_NOW fixes the UTC day; TESSERISS_TETRIS_SETUP prefills a
-    /// four-row well and deals an I piece first, so one drop scores 4000.
-    private let dailyEnv = ["TESSERISS_NOW": "2026-11-09T12:00:00Z", "TESSERISS_TETRIS_SETUP": "1"]
+    // MARK: - Stats
 
     /// Drops the first I piece into the right-hand well for a four-row clear.
+    /// Needs TESSERISS_TETRIS_SETUP, which prefills a four-row well and deals
+    /// an I piece first, so one drop scores 4000.
     private func clearFourRows(_ app: XCUIApplication) {
         app.buttons["rotate-button"].tap()
         app.buttons["move-right-button"].press(forDuration: 1.5)
@@ -340,99 +338,13 @@ final class SmokeTests: XCTestCase {
         add(attachment)
     }
 
-    func test_daily_button_starts_daily_run_and_menu_shows_todays_best() {
-        let app = launchedApp(env: dailyEnv)
-        selectLanguage(app, "English")
-        let daily = app.buttons["daily-button"]
-        XCTAssertTrue(daily.exists)
-        XCTAssertEqual(daily.value as? String, "Same pieces for everyone today.")
-        XCTAssertGreaterThanOrEqual(daily.frame.height, 44, "daily-button touch target")
-        attachScreenshot(app, "menu-daily-unplayed")
-
-        daily.tap()
-        XCTAssertTrue(app.buttons["hard-drop-button"].waitForExistence(timeout: 3))
-        XCTAssertTrue(app.staticTexts["daily-marker"].exists, "The HUD marks the daily run")
-        clearFourRows(app)
-        attachScreenshot(app, "game-daily")
-
-        app.buttons["menu-button"].tap()
-        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3))
-        XCTAssertEqual(daily.value as? String, "Today's best: 4000, Streak: 1 day")
-        XCTAssertEqual(app.staticTexts["highscore-value"].value as? String, "0",
-                       "A daily score is not a Tear highscore")
-        attachScreenshot(app, "menu-daily-played")
-    }
-
-    func test_daily_game_over_shows_daily_variant() throws {
-        let app = launchedApp(env: dailyEnv)
-        selectLanguage(app, "English")
-        app.buttons["daily-button"].tap()
-        XCTAssertTrue(app.buttons["hard-drop-button"].waitForExistence(timeout: 3))
-        clearFourRows(app)
-        // The game screen is a fixed layout that caps text at xxxLarge, so
-        // AccessibilityAuditTests leaves out .dynamicType there too.
-        try app.performAccessibilityAudit(for: XCUIAccessibilityAuditType.all.subtracting(.dynamicType))
-        topOut(app)
-
-        XCTAssertEqual(app.staticTexts["gameover-daily-title"].label, "Daily challenge")
-        XCTAssertEqual(app.staticTexts["gameover-score"].value as? String, "4000")
-        XCTAssertTrue(app.staticTexts["new-best-badge"].exists, "First run of the day is a new best")
-        XCTAssertEqual(app.staticTexts["gameover-daily-best"].value as? String, "4000")
-        XCTAssertEqual(app.staticTexts["gameover-streak"].value as? String, "1 day")
-        XCTAssertEqual(app.staticTexts["daily-resets"].label, "Resets 00:00 UTC")
-        XCTAssertTrue(app.buttons["gameover-menu-button"].exists)
-        attachScreenshot(app, "gameover-daily-new-best")
-        // Let the cross-fade finish before measuring contrast.
-        Thread.sleep(forTimeInterval: 1)
-        try app.performAccessibilityAudit()
-
-        // PLAY AGAIN starts another daily attempt; scoring 0 doesn't beat 4000.
-        app.buttons["play-again-button"].tap()
-        XCTAssertTrue(app.buttons["hard-drop-button"].waitForExistence(timeout: 3))
-        XCTAssertTrue(app.staticTexts["daily-marker"].exists, "PLAY AGAIN stays on the daily")
-        topOut(app)
-        XCTAssertEqual(app.staticTexts["gameover-score"].value as? String, "0")
-        XCTAssertFalse(app.staticTexts["new-best-badge"].exists, "No NEW BEST below today's best")
-        XCTAssertEqual(app.staticTexts["gameover-daily-best"].value as? String, "4000")
-        XCTAssertEqual(app.staticTexts["gameover-streak"].value as? String, "1 day")
-        attachScreenshot(app, "gameover-daily-no-best")
-    }
-
-    /// The daily Game Over at the largest text size, page by page, for review.
-    func test_daily_game_over_largest_text_screenshots() {
-        let app = launchedApp(extraArgs: ["-AppleLanguages", "(tr)",
-                                          "-UIPreferredContentSizeCategoryName",
-                                          "UICTContentSizeCategoryAccessibilityXXXL"],
-                              env: dailyEnv)
-        let daily = app.buttons["daily-button"]
-        XCTAssertTrue(daily.waitForExistence(timeout: 5))
-        daily.tap()
-        XCTAssertTrue(app.buttons["hard-drop-button"].waitForExistence(timeout: 3))
-        clearFourRows(app)
-        topOut(app)
-        Thread.sleep(forTimeInterval: 1)
-        let menu = app.buttons["gameover-menu-button"]
-        var page = 1
-        attachScreenshot(app, "gameover-daily-largest-\(page)")
-        while !menu.isHittable, page < 6 {
-            app.scrollViews.firstMatch.swipeUp()
-            Thread.sleep(forTimeInterval: 1)
-            page += 1
-            attachScreenshot(app, "gameover-daily-largest-\(page)")
-        }
-        XCTAssertTrue(menu.isHittable, "MENU is reachable at the largest text size")
-    }
-
     func test_settings_shows_stats_after_a_run() {
         let app = launchedApp(env: ["TESSERISS_RNG_SEED": "1337", "TESSERISS_TETRIS_SETUP": "1"])
         selectLanguage(app, "English")
         app.buttons["start-button"].tap()
         XCTAssertTrue(app.buttons["hard-drop-button"].waitForExistence(timeout: 3))
-        XCTAssertFalse(app.staticTexts["daily-marker"].exists, "No daily marker in a Tear run")
         clearFourRows(app)
         topOut(app)
-        XCTAssertFalse(app.staticTexts["gameover-daily-title"].exists, "Tear Game Over has no daily part")
-        XCTAssertFalse(app.staticTexts["gameover-streak"].exists)
         app.buttons["gameover-menu-button"].tap()
         XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3))
 
@@ -447,8 +359,6 @@ final class SmokeTests: XCTestCase {
             ("stat-best-fast", "Crack", "0"),
             ("stat-best-og", "Tear", "4000"),
             ("stat-best-hard", "Shatter", "0"),
-            ("stat-current-streak", "Current streak", "0 days"),
-            ("stat-longest-streak", "Longest streak", "0 days"),
         ]
         for stat in expected {
             let element = app.staticTexts[stat.id]
@@ -456,7 +366,7 @@ final class SmokeTests: XCTestCase {
             XCTAssertEqual(element.label, stat.label, stat.id)
             XCTAssertEqual(element.value as? String, stat.value, stat.id)
         }
-        let last = app.staticTexts["stat-longest-streak"]
+        let last = app.staticTexts["stat-best-hard"]
         var swipes = 0
         while !last.isHittable, swipes < 5 {
             app.scrollViews.firstMatch.swipeUp()

@@ -16,19 +16,17 @@ Character limits noted in parentheses — App Store Connect enforces them.
 **Subtitle** (≤30) — `Calm falling blocks puzzle` (26)
 
 **Promotional text** (≤170, editable anytime without review)
-> New: a Daily Challenge with the same pieces for every player, a short guide, your stats, and
-> clearer piece colours. No ads, no accounts, fully offline.
+> New: a short guide, your stats in Settings, clearer piece colours and better VoiceOver support.
+> No ads, no accounts, fully offline.
 
 **Keywords** (≤100 bytes) — 100/100 bytes, 16 unique single tokens
 `tetromino,brick,tile,stack,drop,line,clear,arcade,retro,classic,minimal,zen,relax,offline,brain,grid`
 
 **What's New** (≤4000) — 1.2.0, written for players updating from 1.0
 ```
-A Daily Challenge: each day has one fixed order of pieces, the same for every player. Play it as often as you like; your best score of the day and your streak are kept. It resets at 00:00 UTC.
-
 A short guide on first launch shows the controls, how rows clear and the modes. You can open it again from Settings.
 
-Settings now shows your stats: games played, rows cleared, four-row clears, best score per mode and your daily streak.
+Settings now shows your stats: games played, rows cleared, four-row clears and best score per mode.
 
 Pieces have new colours and an outline, so they are easier to tell apart, including with red-green colour blindness. The landing preview is now a clear outline.
 
@@ -60,8 +58,6 @@ Three modes, one tap apart:
 – Tear (classic) — the standard board at the standard pace.
 – Shatter (hard) — the same board, but five-square pieces sneak into the mix.
 
-A Daily Challenge: one fixed order of pieces each day, the same for every player, with your best of the day and a streak.
-
 Classic-arcade feel: a 7-bag piece randomizer, fixed rotation tables, a ghost piece showing where the block will land, and a four-line clear worth 4000 points — with a satisfying flash and chime.
 
 Made to be looked at: a soft, comforting palette with Day and Night appearances, plus an optional Hokusai "Great Wave" theme.
@@ -88,19 +84,17 @@ Turkish and English, switchable in Settings.
 **Alt başlık** (≤30) — `Sakin blok bulmaca oyunu` (24)
 
 **Tanıtım metni** (≤170)
-> Yeni: herkese aynı parçaları veren günlük meydan okuma, kısa bir rehber, istatistikler ve daha
-> net parça renkleri. Reklamsız, hesapsız, tamamen çevrimdışı.
+> Yeni: kısa bir rehber, Ayarlar'da istatistikler, daha net parça renkleri ve daha iyi VoiceOver
+> desteği. Reklamsız, hesapsız, tamamen çevrimdışı.
 
 **Anahtar kelimeler** (≤100 bayt; ç ğ ı ö ş ü 2 bayt sayılır) — 89 karakter / 95 bayt, 13 benzersiz kelime
 `tetromino,düşen,bloklar,sıra,tuğla,klasik,retro,arcade,minimal,zen,rahatlatıcı,beyin,zeka`
 
 **Yenilikler** (≤4000) — 1.2.0, 1.0'dan güncelleyen oyuncular için
 ```
-Günlük meydan okuma: her gün tüm oyuncular aynı parçaları aynı düzende alır. İstediğin kadar dene; günün rekoru ve serin saklanır. Her gün 00:00 UTC'de sıfırlanır.
-
 İlk açılışta kısa bir rehber kontrolleri, sıraların nasıl yırtıldığını ve modları gösteriyor. Ayarlar'daki "Nasıl oynanır" ile tekrar açabilirsin.
 
-Ayarlar'da artık istatistiklerin var: oynanan oyun, temizlenen sıra, dörtlü yırtma, her modun rekoru ve günlük serin.
+Ayarlar'da artık istatistiklerin var: oynanan oyun, temizlenen sıra, dörtlü yırtma ve her modun rekoru.
 
 Parçaların renkleri yenilendi ve her parçanın bir kenar çizgisi var; parçalar, kırmızı-yeşil renk körlüğünde de daha kolay ayırt ediliyor. Parçanın ineceği yeri gösteren çerçeve de artık daha belirgin.
 
@@ -125,8 +119,6 @@ Tesseriss, sakin ve odaklanmış oyun için tasarlanmış minimalist bir düşen
 – Çatlak (hızlı) — daha küçük tahta, daha hızlı düşüş; kısa ve keskin oyunlar için.
 – Yırtık (klasik) — bildiğin tahta, bildiğin tempo.
 – Parçalanma (zor) — klasik tahtaya beş kareli parçalar karışıyor.
-
-Günlük meydan okuma: her gün tüm oyuncular için aynı parçalar; günün rekoru ve serin saklanır.
 
 Klasik arcade hissi: 7'li torba sistemi, sabit dönüş tabloları, parçanın nereye oturacağını gösteren gölge parça ve tek seferde dört sıra silmenin 4000 puanlık ödülü — parlamasıyla, çınlamasıyla.
 

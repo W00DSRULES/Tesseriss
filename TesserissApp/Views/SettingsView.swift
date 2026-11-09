@@ -195,8 +195,7 @@ struct SettingsView: View {
     }
 
     private var stats: some View {
-        let today = engine.todayKey
-        return VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 12) {
             Text(s.statsTitle)
                 .font(.system(.title2, design: .rounded).weight(.semibold))
                 .frame(maxWidth: .infinity)
@@ -212,11 +211,6 @@ struct SettingsView: View {
                 statRow(id: "best-\(mode.rawValue)", label: s.modeName(mode),
                         count: hs.highscore(for: mode))
             }
-            Divider().overlay(stroke)
-            statRow(id: "current-streak", label: s.statsCurrentStreak,
-                    value: s.streakDays(hs.currentStreak(today: today)))
-            statRow(id: "longest-streak", label: s.statsLongestStreak,
-                    value: s.streakDays(hs.longestDailyStreak))
         }
         .font(.system(.body, design: .rounded))
         .foregroundStyle(ink)
@@ -225,10 +219,6 @@ struct SettingsView: View {
     /// Counts are grouped like the menu highscore ("4.000" in Turkish).
     private func statRow(id: String, label: String, count: Int) -> some View {
         statRow(id: id, label: label, shown: Text("\(count)"), value: String(count))
-    }
-
-    private func statRow(id: String, label: String, value: String) -> some View {
-        statRow(id: id, label: label, shown: Text(value), value: value)
     }
 
     /// One element per stat, read as "Rows cleared, 120".

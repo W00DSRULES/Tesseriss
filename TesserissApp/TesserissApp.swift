@@ -40,10 +40,8 @@ struct TesserissApp: App {
                 .environmentObject(highscore)
                 .preferredColorScheme(appearance.colorScheme)
         }
-        .onChange(of: scenePhase, initial: true) { _, phase in
-            if phase == .active {
-                engine.refreshToday()
-            } else {
+        .onChange(of: scenePhase) { _, phase in
+            if phase != .active {
                 engine.autoPauseFromScenePhase()
             }
         }

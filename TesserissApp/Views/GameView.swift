@@ -111,18 +111,6 @@ struct GameView: View {
             .accessibilityShowsLargeContentViewer()
             .accessibilityIdentifier("menu-button")
             Spacer()
-            if engine.isDaily {
-                Text(s.dailyButton)
-                    .font(.system(.caption, design: .rounded).weight(.semibold))
-                    .foregroundStyle(ink.opacity(0.8))
-                    .padding(.vertical, 6)
-                    .padding(.horizontal, 12)
-                    .background(card)
-                    .clipShape(Capsule())
-                    .accessibilityLabel(s.dailyTitle)
-                    .accessibilityIdentifier("daily-marker")
-                Spacer()
-            }
             Button(action: { engine.togglePause() }) {
                 Image(systemName: "pause.fill")
                     .font(.system(size: 14, weight: .bold))
