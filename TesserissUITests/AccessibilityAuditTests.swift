@@ -271,8 +271,20 @@ final class AccessibilityAuditTests: XCTestCase {
         continueAfterFailure = true
         defer { continueAfterFailure = false }
         try XCTContext.runActivity(named: "Audit \(screen)") { _ in
-            try app.performAccessibilityAudit(for: XCUIAccessibilityAuditType.all.subtracting(excluded)) {
-                known($0)
+            // On a slow CI runner the audit itself can run out of time (error
+            // -56 "Audit failed to complete in time"). That says nothing about
+            // the screen, so retry it; any other error still fails the test.
+            for attempt in 1...3 {
+                do {
+                    try app.performAccessibilityAudit(for: XCUIAccessibilityAuditType.all.subtracting(excluded)) {
+                        known($0)
+                    }
+                    return
+                } catch let error as NSError
+                            where error.domain == "com.apple.xcode.xctest.accessibilityAudit"
+                            && error.code == -56 && attempt < 3 {
+                    Thread.sleep(forTimeInterval: 2)
+                }
             }
         }
     }
