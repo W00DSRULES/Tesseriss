@@ -5,10 +5,13 @@ import XCTest
 /// `.keepAlways` attachment. Extract them from the result bundle with:
 ///   xcrun xcresulttool export attachments --path <Result.xcresult> --output-path <dir>
 ///
-/// Run on a 6.9" device (iPhone 17 Pro Max → 1320×2868, the size App Store
-/// Connect requires) with a fixed RNG seed for a deterministic board:
+/// Run on iPhone 17 Pro Max (1320×2868) with a fixed RNG seed for a
+/// deterministic board:
 ///   xcodebuild test -only-testing:TesserissUITests/ScreenshotTests \
 ///     -destination 'platform=iOS Simulator,name=iPhone 17 Pro Max'
+/// scripts/make_store_screenshots.py then frames each shot at 1320×2868 for the
+/// App Store Connect slot "iPhone with Dynamic Island (large display)" and
+/// writes a 1206×2622 copy for the required "(medium display)" slot.
 final class ScreenshotTests: XCTestCase {
     override func setUp() {
         super.setUp()
@@ -25,9 +28,24 @@ final class ScreenshotTests: XCTestCase {
 
     /// Launch fresh (wipes UserDefaults; language then follows the simulator's
     /// device language) with a fixed seed so the board is reproducible.
-    private func launch(extraEnv: [String: String] = [:]) -> XCUIApplication {
+    private func launch(locale: String, extraEnv: [String: String] = [:]) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["--ui-test"]
+        // Sample scores and stats so the menu and Settings don't show a row of
+        // zeros. Launch arguments land in the argument domain, which the
+        // --ui-test wipe leaves alone. -AppleLocale sets the number format
+        // ("48,300" for en_US, "48.300" for tr_TR).
+        let sample: [(String, String)] = [
+            ("tesseriss.highscore.fast", "21400"), ("tesseriss.highscore.og", "48300"),
+            ("tesseriss.highscore.hard", "15900"), ("tesseriss.stats.gamesPlayed", "64"),
+            ("tesseriss.stats.rowsCleared", "1927"), ("tesseriss.stats.fourRowClears", "83"),
+        ]
+        app.launchArguments = ["--ui-test", "-AppleLocale", locale]
+            + sample.flatMap { ["-\($0.0)", $0.1] }
+        // TEST_RUNNER_TESSERISS_SHOTS_COLORBLIND=1 on the xcodebuild command line
+        // captures the set in colour-blind mode.
+        if ProcessInfo.processInfo.environment["TESSERISS_SHOTS_COLORBLIND"] == "1" {
+            app.launchArguments += ["-tesseriss.settings.colorblind", "YES"]
+        }
         var env = ["TESSERISS_RNG_SEED": "1337"]
         for (k, v) in extraEnv { env[k] = v }
         app.launchEnvironment = env
@@ -73,7 +91,8 @@ final class ScreenshotTests: XCTestCase {
     func test_screenshots_turkish() { captureSet(language: "Türkçe", prefix: "tr") }
 
     private func captureSet(language: String, prefix: String) {
-        let app = launch()
+        let locale = prefix == "tr" ? "tr_TR" : "en_US"
+        let app = launch(locale: locale)
         XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 5))
 
         // 1) Settings — Classic Day, after the language is set.
@@ -117,7 +136,7 @@ final class ScreenshotTests: XCTestCase {
         // 5) Four-line clear flash — fresh launch (Hokusai Day) with the
         //    prefilled board and a stretched flash so the screenshot lands
         //    inside the celebration.
-        let tetrisApp = launch(extraEnv: [
+        let tetrisApp = launch(locale: locale, extraEnv: [
             "TESSERISS_TETRIS_SETUP": "1",
             "TESSERISS_CLEAR_PAUSE": "3",
         ])

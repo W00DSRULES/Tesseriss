@@ -12,7 +12,8 @@ jobs:
   test:
     name: unit + UI tests
     runs-on: macos-15
-    timeout-minutes: 30
+    # AccessibilityAuditTests adds about 6 minutes locally (48–78 s per test).
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
@@ -22,36 +23,98 @@ jobs:
       - name: Generate Xcode project
         run: xcodegen generate
 
-      - name: Pick simulator
+      # The accessibility audit exclusions (Hokusai wave OCR'd as "11", the
+      # scroll-edge fade) were tuned on iPhone 17 / iOS 26 built with Xcode 26+.
+      # The runner's default Xcode is older, so pin that setup here.
+      - name: Select Xcode 26 or later
+        run: |
+          set -euo pipefail
+          XCODE=$(ls -d /Applications/Xcode_2[6-9]*.app 2>/dev/null | sort -V | tail -1 || true)
+          if [ -z "$XCODE" ]; then echo "::error::no Xcode 26+ on this runner"; exit 1; fi
+          sudo xcode-select -s "$XCODE"
+          xcodebuild -version
+
+      - name: Pick iPhone 17 simulator
         id: sim
         run: |
           set -euo pipefail
-          # Prefer any modern iPhone simulator that's available on this runner.
-          DEVICE=$(xcrun simctl list devices available -j \
-            | python3 -c 'import json, sys; data = json.load(sys.stdin)["devices"]; \
-                          best = next((d["name"] for runtime, devs in data.items() if "iOS" in runtime \
-                                     for d in devs if d.get("isAvailable") and "iPhone" in d["name"]), None); \
-                          print(best or "iPhone 16")')
-          echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
-          echo "Picked simulator: $DEVICE"
+          # iPhone 17 on the newest iOS runtime.
+          UDID=$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          devs = json.load(sys.stdin)["devices"]
+          ver = lambda k: [int(x) for x in k.rsplit("iOS-", 1)[1].split("-")]
+          for k in sorted((k for k in devs if ".iOS-" in k), key=ver, reverse=True):
+              ids = [d["udid"] for d in devs[k] if d["name"] == "iPhone 17"]
+              if ids:
+                  print(f"Picked iPhone 17 on {k}", file=sys.stderr)
+                  print(ids[0])
+                  break
+          ')
+          if [ -z "$UDID" ]; then echo "::error::no iPhone 17 simulator on this runner"; exit 1; fi
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
 
       - name: Boot simulator
         run: |
           set -euo pipefail
           # Pre-boot so the first UI test doesn't hit a cold simulator
           # ("Failed to get background assertion" flake at app launch).
-          xcrun simctl boot "${{ steps.sim.outputs.device }}" || true
-          xcrun simctl bootstatus "${{ steps.sim.outputs.device }}" -b
+          xcrun simctl boot "${{ steps.sim.outputs.udid }}" || true
+          xcrun simctl bootstatus "${{ steps.sim.outputs.udid }}" -b
 
       - name: Run unit + UI tests
         run: |
           set -o pipefail
           # ScreenshotTests captures App Store marketing shots — not a
           # correctness test (see its doc comment); run it manually instead.
+          # -enableCodeCoverage overrides the scheme's gatherCoverageData: false.
           xcodebuild test \
             -project Tesseriss.xcodeproj \
             -scheme Tesseriss \
-            -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }},OS=latest" \
+            -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}" \
             -skip-testing:TesserissUITests/ScreenshotTests \
+            -enableCodeCoverage YES \
+            -resultBundlePath TestResults.xcresult \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
+
+      - name: Coverage gate
+        env:
+          # Line-coverage floors in percent. Set them a few points below the
+          # measured numbers: animation and gravity timing move the app figure
+          # slightly between runs. Unit + UI tests feed one result bundle.
+          # Without AccessibilityAuditTests the app figure drops to about 66%.
+          APP_MIN: "80"   # whole Tesseriss.app; measured 85.0%
+          CORE_MIN: "94"  # TesserissApp/Engine + TesserissApp/Models; measured 96.9%
+        run: |
+          set -euo pipefail
+          xcrun xccov view --report --json TestResults.xcresult > coverage.json
+          python3 - coverage.json <<'EOF'
+          import json, os, sys
+
+          report = json.load(open(sys.argv[1]))
+          targets = report["targets"] if isinstance(report, dict) else report
+          apps = [t for t in targets if t.get("name") == "Tesseriss.app"]
+          if len(apps) != 1:
+              sys.exit("coverage gate: no Tesseriss.app target in report; targets: "
+                       + ", ".join(t.get("name", "?") for t in targets))
+          app = apps[0]
+
+          def pct(files):
+              total = sum(f["executableLines"] for f in files)
+              covered = sum(f["coveredLines"] for f in files)
+              return (100.0 * covered / total if total else 0.0), covered, total
+
+          core = [f for f in app["files"]
+                  if any(d in "/" + f["path"] for d in ("/TesserissApp/Engine/", "/TesserissApp/Models/"))]
+          if not core:
+              sys.exit("coverage gate: no Engine/Models files found in Tesseriss.app")
+
+          app_pct, app_cov, app_tot = pct(app["files"])
+          core_pct, core_cov, core_tot = pct(core)
+          app_min, core_min = float(os.environ["APP_MIN"]), float(os.environ["CORE_MIN"])
+          print(f"Tesseriss.app   {app_pct:5.1f}% ({app_cov}/{app_tot})   min {app_min:g}%")
+          print(f"Engine + Models {core_pct:5.1f}% ({core_cov}/{core_tot})   min {core_min:g}%")
+          failed = [n for n, v, m in (("app", app_pct, app_min), ("core", core_pct, core_min)) if v < m]
+          if failed:
+              sys.exit("coverage gate: below threshold: " + ", ".join(failed))
+          EOF

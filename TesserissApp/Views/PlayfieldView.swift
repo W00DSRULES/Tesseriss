@@ -5,10 +5,13 @@ struct PlayfieldView: View {
     @EnvironmentObject var settings: SettingsStore
 
     var body: some View {
-        let bw = engine.board.width
-        let bh = engine.board.height
+        let board = engine.board
+        let bw = board.width
+        let bh = board.height
         let theme = settings.activeTheme
         let appearance = settings.appearance
+        let flashingRows = engine.flashingRows
+        let overlay = pieceOverlay()
         return GeometryReader { geo in
             let cell = min(geo.size.width / CGFloat(bw),
                            geo.size.height / CGFloat(bh))
@@ -20,8 +23,8 @@ struct PlayfieldView: View {
 
                 ForEach(0..<bh, id: \.self) { y in
                     ForEach(0..<bw, id: \.self) { x in
-                        let flashing = engine.flashingRows.contains(y)
-                        let content = cellContent(x: x, y: y)
+                        let flashing = flashingRows.contains(y)
+                        let content = overlay[GridPoint(x: x, y: y)] ?? (board.grid[y][x], .solid)
                         CellView(
                             kind: content.0,
                             style: content.1,
@@ -54,19 +57,17 @@ struct PlayfieldView: View {
         }
     }
 
-    private func cellContent(x: Int, y: Int) -> (PieceKind?, CellStyle) {
-        if let piece = engine.current {
-            for c in piece.cells where c.x == x && c.y == y {
-                return (piece.kind, .solid)
-            }
-        }
+    /// Active-piece and ghost cells by position, built once per body instead of once
+    /// per cell (`ghostPiece` runs a drop loop). The piece is written last so it wins.
+    private func pieceOverlay() -> [GridPoint: (PieceKind?, CellStyle)] {
+        var overlay: [GridPoint: (PieceKind?, CellStyle)] = [:]
         if settings.ghostEnabled, let ghost = engine.ghostPiece {
-            for c in ghost.cells where c.x == x && c.y == y {
-                return (ghost.kind, .ghost)
-            }
+            for c in ghost.cells { overlay[c] = (ghost.kind, .ghost) }
         }
-        if y < 0 || y >= engine.board.height { return (nil, .solid) }
-        return (engine.board.grid[y][x], .solid)
+        if let piece = engine.current {
+            for c in piece.cells { overlay[c] = (piece.kind, .solid) }
+        }
+        return overlay
     }
 }
 
@@ -81,7 +82,7 @@ struct NextPieceView: View {
         VStack(alignment: .leading, spacing: 6) {
             Text(label)
                 .font(.system(.caption, design: .rounded).weight(.semibold))
-                .foregroundStyle(theme.inkColor(appearance: appearance).opacity(0.7))
+                .foregroundStyle(theme.inkColor(appearance: appearance).opacity(0.75))
             ZStack {
                 theme.playfieldBoardView(appearance: appearance)
                 Rectangle().strokeBorder(theme.gridLineColor(appearance: appearance), lineWidth: 0.5)
@@ -103,6 +104,14 @@ struct NextPieceView: View {
                             let c = cells[i]
                             Rectangle()
                                 .fill(theme.pieceColor(kind, appearance: appearance))
+                                .overlay {
+                                    if theme.colorblind {
+                                        Rectangle().strokeBorder(
+                                            theme.pieceOutlineColor(kind, appearance: appearance),
+                                            lineWidth: max(1, cellSize / 12)
+                                        )
+                                    }
+                                }
                                 .frame(width: cellSize, height: cellSize)
                                 .position(
                                     x: originX + (CGFloat(c.x - minX) + 0.5) * cellSize,

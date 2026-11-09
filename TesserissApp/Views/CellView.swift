@@ -18,6 +18,9 @@ struct CellView: View {
         ZStack {
             if let kind {
                 let color = theme.pieceColor(kind, appearance: appearance)
+                // Colour-blind mode draws every edge in the piece's outline colour;
+                // otherwise the original faint edge and 55% ghost.
+                let outline = theme.colorblind ? theme.pieceOutlineColor(kind, appearance: appearance) : nil
                 switch style {
                 case .solid:
                     Rectangle()
@@ -25,12 +28,12 @@ struct CellView: View {
                         .padding(0.5)
                         .overlay(
                             Rectangle()
-                                .strokeBorder(Color.black.opacity(0.18), lineWidth: 1)
+                                .strokeBorder(outline ?? Color.black.opacity(0.18), lineWidth: outline == nil ? 1 : 2)
                                 .padding(0.5)
                         )
                 case .ghost:
                     Rectangle()
-                        .strokeBorder(color.opacity(0.55), lineWidth: 2)
+                        .strokeBorder(outline ?? color.opacity(0.55), lineWidth: 2)
                         .padding(2)
                 }
             }

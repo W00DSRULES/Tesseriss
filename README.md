@@ -1,6 +1,6 @@
 # Tesseriss
 
-Minimalist falling-blocks puzzle for iOS. Comforting palette, big-button touch controls, three game modes, and an optional Impressionist piano playlist. Built in SwiftUI for iOS 17+.
+Minimalist falling-blocks puzzle for iOS. Comforting palette, big-button touch controls, three game modes, and an optional Impressionist playlist (Satie and Debussy, mostly piano). Built in SwiftUI for iPhone only (portrait, iOS 17+); on iPad it runs in iPhone compatibility mode.
 
 The name is Greek *tesseris* ("four") + German *Riss* ("tear") — tear the rows four at a time.
 
@@ -10,14 +10,16 @@ The name is Greek *tesseris* ("four") + German *Riss* ("tear") — tear the rows
 - 7 tetrominoes + 4 pentominoes (U, P, +, F — Shatter only), fixed-table rotation, 7-bag randomizer, ghost piece.
 - Table-based gravity (levels 0–19) → smooth saturation curve afterwards, scaled per mode.
 - Scoring 100 / 300 / 1000 / 4000 × (level + 1) per cleared lines. Per-mode highscores.
+- A 3-step **How to play** on first launch (skippable, reopened from Settings) and a **Stats** panel in Settings: games played, rows cleared, four-row clears, best per mode.
 - Four-line clear celebration: 500 ms pause + row flash + chime + success haptic.
 - Two theme styles — **Classic** and **Kanagawa / Hokusai** (wooden board + Great Wave line-clear splash) — each with **Day / Night** appearance.
+- **Colorblind mode** (Settings): a per-theme piece palette tested to stay apart under simulated deutan, protan and tritan vision, with an outline on every piece, the ghost and the next-piece preview. Off keeps the original palette.
 - Turkish + English in-app (first launch follows the device language); all settings persisted in `UserDefaults`.
 - Pause auto-fires on scene background; resume only via the explicit button.
 
 ## Audio
 
-The Music toggle plays a 6-track Impressionist playlist (`MusicPlaylist.impressionists`), bundled in `TesserissApp/Resources/`. **Every track is Public Domain, CC0, or Pixabay Content License — none requires attribution.** (The two bundled sound effects, `line_clear.wav` / `four_line.wav`, are still silent placeholders — swap them for CC0 SFX when you have them.)
+The Music toggle plays a 6-track Impressionist playlist (`MusicPlaylist.impressionists`), bundled in `TesserissApp/Resources/`. **Every track is Public Domain, CC0, or Pixabay Content License — none requires attribution.** (The two sound effects, `line_clear.wav` and `four_line.wav`, are synthesised by `scripts/make_sfx.py`; re-run it to retune them. They have their own Sound effects toggle and volume slider in Settings, separate from Music's.)
 
 | File | Piece | Instrument | Source / licence |
 |---|---|---|---|
@@ -51,7 +53,7 @@ xcodebuild test \
   -destination 'platform=iOS Simulator,name=iPhone 17'
 ```
 
-`TesserissTests` covers `Board`, `Tetromino`, `Scoring`, `GameMode`, and the 7-bag `Randomizer` (38 unit tests); `TesserissUITests` adds 8 XCUITests (menu/game/settings flow + seeded deterministic gameplay). CI runs both suites on every push and pull request (`.github/workflows/tests.yml`, macOS-15 runner).
+`TesserissTests` covers `Board`, `Tetromino`, `Scoring`, `GameMode`, `GameEngine`, `SettingsStore`, `HighscoreStore` (stats), the 7-bag `Randomizer` and the piece palettes (95 unit tests); `TesserissUITests` adds 27 XCUITests (menu/game/settings flow, onboarding, stats, seeded deterministic gameplay, and accessibility audits of each screen). `ScreenshotTests` captures the App Store screenshots and is skipped in CI. CI runs both suites on every push and pull request with code coverage on, and fails if line coverage drops below set floors (`.github/workflows/tests.yml`, macOS-15 runner). CI selects Xcode 26 or later and an iPhone 17 simulator, the setup the accessibility audits were tuned on.
 
 ## Run in Xcode
 
@@ -73,10 +75,11 @@ TesserissApp/
                                   // HapticController, Strings (TR + EN), MusicPlaylist, Theme
   Views/                          // MenuView, GameView, ControlsView, CellView, PlayfieldView,
                                   // SettingsView, GameOverView, WoodenBoardView,
-                                  // KanagawaBackgroundView, WaveSplashView
+                                  // KanagawaBackgroundView, WaveSplashView, OnboardingView
   Resources/                      // Assets.xcassets (incl. AppIcon), PrivacyInfo.xcprivacy,
-                                  // placeholder .wav SFX
-TesserissTests/                   // XCTest unit tests (Board, Tetromino, Scoring, GameMode, Randomizer)
+                                  // line-clear .wav SFX (scripts/make_sfx.py)
+TesserissTests/                   // XCTest unit tests (Board, Tetromino, Scoring, GameMode, GameEngine,
+                                  // SettingsStore + HighscoreStore, Randomizer)
 TesserissUITests/                 // XCUITest UI tests
 project.yml                       // XcodeGen source of truth (the .xcodeproj is generated, not committed)
 .github/workflows/tests.yml       // CI

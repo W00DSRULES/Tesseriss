@@ -6,7 +6,6 @@ enum AppearanceMode: String, CaseIterable, Identifiable {
     case day, night
     var id: String { rawValue }
     var colorScheme: ColorScheme { self == .day ? .light : .dark }
-    var label: String { self == .day ? "Day" : "Night" }
 }
 
 enum Language: String, CaseIterable, Identifiable {
@@ -23,21 +22,33 @@ final class SettingsStore: ObservableObject {
     static let shared = SettingsStore()
 
     private let musicKey = "tesseriss.settings.music"
+    private let sfxKey = "tesseriss.settings.sfx"
     private let musicVolumeKey = "tesseriss.settings.musicVolume"
+    private let sfxVolumeKey = "tesseriss.settings.sfxVolume"
     private let hapticsKey = "tesseriss.settings.haptics"
     private let appearanceKey = "tesseriss.settings.appearance"
     private let languageKey = "tesseriss.settings.language"
     private let ghostKey = "tesseriss.settings.ghost"
+    private let colorblindKey = "tesseriss.settings.colorblind"
     private let playlistKey = "tesseriss.settings.playlist"
     private let selectedModeKey = "tesseriss.settings.selectedMode"
     private let themeKindKey = "tesseriss.settings.themeKind"
+    private let onboardingSeenKey = "tesseriss.onboarding.seen"
 
     @Published var musicEnabled: Bool {
         didSet { defaults.set(musicEnabled, forKey: musicKey) }
     }
 
+    @Published var sfxEnabled: Bool {
+        didSet { defaults.set(sfxEnabled, forKey: sfxKey) }
+    }
+
     @Published var musicVolume: Float {
         didSet { defaults.set(musicVolume, forKey: musicVolumeKey) }
+    }
+
+    @Published var sfxVolume: Float {
+        didSet { defaults.set(sfxVolume, forKey: sfxVolumeKey) }
     }
 
     @Published var hapticsEnabled: Bool {
@@ -56,6 +67,12 @@ final class SettingsStore: ObservableObject {
         didSet { defaults.set(ghostEnabled, forKey: ghostKey) }
     }
 
+    /// Off: the original piece colours. On: a palette built to stay apart under
+    /// colour blindness, with an outline on every piece, the ghost and the preview.
+    @Published var colorblindMode: Bool {
+        didSet { defaults.set(colorblindMode, forKey: colorblindKey) }
+    }
+
     @Published var playlistID: String {
         didSet { defaults.set(playlistID, forKey: playlistKey) }
     }
@@ -68,12 +85,16 @@ final class SettingsStore: ObservableObject {
         didSet { defaults.set(themeKind.rawValue, forKey: themeKindKey) }
     }
 
+    @Published var hasSeenOnboarding: Bool {
+        didSet { defaults.set(hasSeenOnboarding, forKey: onboardingSeenKey) }
+    }
+
     var activePlaylist: MusicPlaylist { MusicPlaylist.playlist(forID: playlistID) }
 
     var activeTheme: Theme {
         switch themeKind {
-        case .classic:  return ClassicTheme()
-        case .kanagawa: return KanagawaTheme()
+        case .classic:  return ClassicTheme(colorblind: colorblindMode)
+        case .kanagawa: return KanagawaTheme(colorblind: colorblindMode)
         }
     }
 
@@ -83,8 +104,17 @@ final class SettingsStore: ObservableObject {
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
+        // Every version writes the music key on first launch, so its presence
+        // means the app ran before: players updating from 1.x skip the onboarding.
+        let launchedBefore = defaults.object(forKey: musicKey) != nil
+        if defaults.object(forKey: onboardingSeenKey) == nil && launchedBefore {
+            defaults.set(true, forKey: onboardingSeenKey)
+        }
         if defaults.object(forKey: musicKey) == nil { defaults.set(true, forKey: musicKey) }
+        if defaults.object(forKey: sfxKey) == nil { defaults.set(true, forKey: sfxKey) }
         if defaults.object(forKey: musicVolumeKey) == nil { defaults.set(Float(0.5), forKey: musicVolumeKey) }
+        // Sound effects start at the music volume, the only volume setting before 1.1.1.
+        if defaults.object(forKey: sfxVolumeKey) == nil { defaults.set(defaults.object(forKey: musicVolumeKey) as? Float ?? Float(0.5), forKey: sfxVolumeKey) }
         if defaults.object(forKey: hapticsKey) == nil { defaults.set(true, forKey: hapticsKey) }
         if defaults.object(forKey: appearanceKey) == nil { defaults.set(AppearanceMode.day.rawValue, forKey: appearanceKey) }
         if defaults.object(forKey: languageKey) == nil { defaults.set(Language.deviceDefault().rawValue, forKey: languageKey) }
@@ -93,17 +123,21 @@ final class SettingsStore: ObservableObject {
         if defaults.object(forKey: selectedModeKey) == nil { defaults.set(GameMode.og.rawValue, forKey: selectedModeKey) }
         if defaults.object(forKey: themeKindKey) == nil { defaults.set(ThemeKind.classic.rawValue, forKey: themeKindKey) }
         self.musicEnabled = defaults.bool(forKey: musicKey)
+        self.sfxEnabled = defaults.bool(forKey: sfxKey)
         self.musicVolume = defaults.object(forKey: musicVolumeKey) as? Float ?? 0.5
+        self.sfxVolume = defaults.object(forKey: sfxVolumeKey) as? Float ?? 0.5
         self.hapticsEnabled = defaults.bool(forKey: hapticsKey)
         let araw = defaults.string(forKey: appearanceKey) ?? AppearanceMode.day.rawValue
         self.appearance = AppearanceMode(rawValue: araw) ?? .day
         let lraw = defaults.string(forKey: languageKey) ?? Language.deviceDefault().rawValue
         self.language = Language(rawValue: lraw) ?? Language.deviceDefault()
         self.ghostEnabled = defaults.bool(forKey: ghostKey)
+        self.colorblindMode = defaults.bool(forKey: colorblindKey)
         self.playlistID = defaults.string(forKey: playlistKey) ?? MusicPlaylist.impressionists.id
         let modeRaw = defaults.string(forKey: selectedModeKey) ?? GameMode.og.rawValue
         self.selectedMode = GameMode(rawValue: modeRaw) ?? .og
         let themeRaw = defaults.string(forKey: themeKindKey) ?? ThemeKind.classic.rawValue
         self.themeKind = ThemeKind(rawValue: themeRaw) ?? .classic
+        self.hasSeenOnboarding = defaults.bool(forKey: onboardingSeenKey)
     }
 }

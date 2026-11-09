@@ -11,6 +11,7 @@ struct ControlsView: View {
     private let initialDelay: UInt64 = 270_000_000
     private let repeatDelay: UInt64 = 50_000_000
 
+    private var s: Strings { settings.strings }
     private var theme: Theme { settings.activeTheme }
     private var appearance: AppearanceMode { settings.appearance }
     private var ink: Color { theme.inkColor(appearance: appearance) }
@@ -20,18 +21,24 @@ struct ControlsView: View {
         VStack(spacing: 12) {
             HStack(spacing: 12) {
                 pressableButton("◀", onPress: startLeft, onRelease: stopLeft)
+                    .accessibilityLabel(s.moveLeft)
                     .accessibilityIdentifier("move-left-button")
                 pressableButton("▼", onPress: startDown, onRelease: stopDown)
+                    .accessibilityLabel(s.softDrop)
                     .accessibilityIdentifier("soft-drop-button")
                 pressableButton("▶", onPress: startRight, onRelease: stopRight)
+                    .accessibilityLabel(s.moveRight)
                     .accessibilityIdentifier("move-right-button")
             }
             HStack(spacing: 12) {
                 iconButton(systemName: "arrow.counterclockwise") { engine.rotateCCW() }
+                    .accessibilityLabel(s.rotateCCW)
                     .accessibilityIdentifier("rotate-ccw-button")
                 iconButton(systemName: "chevron.down.2") { engine.hardDrop() }
+                    .accessibilityLabel(s.hardDrop)
                     .accessibilityIdentifier("hard-drop-button")
                 iconButton(systemName: "arrow.clockwise") { engine.rotateCW() }
+                    .accessibilityLabel(s.rotateCW)
                     .accessibilityIdentifier("rotate-button")
             }
         }
@@ -57,6 +64,9 @@ struct ControlsView: View {
                 .background(card)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
         }
+        // The glyph stays a fixed size; at accessibility text sizes a long press
+        // shows it, with its label, in the Large Content Viewer.
+        .accessibilityShowsLargeContentViewer()
     }
 
     private func pressableButton(_ title: String, onPress: @escaping () -> Void, onRelease: @escaping () -> Void) -> some View {
@@ -120,6 +130,10 @@ private struct HoldButton: View {
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .contentShape(Rectangle())
             .accessibilityAddTraits(.isButton)
+            // VoiceOver double-tap and Switch Control get one declared step instead
+            // of a synthesized touch on the drag gesture. Releasing at once cancels
+            // the repeat task before its first auto-repeat.
+            .accessibilityAction { onPress(); onRelease() }
             .gesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { _ in

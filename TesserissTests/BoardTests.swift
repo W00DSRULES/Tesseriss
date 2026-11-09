@@ -38,6 +38,22 @@ final class BoardTests: XCTestCase {
         XCTAssertTrue(board.collides(piece))
     }
 
+    func test_lock_ignores_cells_above_the_board() {
+        // The board stores no rows above 0, so those cells are dropped without a
+        // crash. GameEngine ends the game on such a lock-out.
+        var board = Board()
+        let piece = Tetromino(kind: .T, rotation: 0, origin: GridPoint(x: 3, y: -2))
+        let onBoard = piece.cells.filter { $0.y >= 0 }
+        XCTAssertFalse(onBoard.isEmpty, "precondition: part of the piece is on the board")
+        XCTAssertLessThan(onBoard.count, piece.cells.count, "precondition: part of the piece is above it")
+
+        board.lock(piece)
+        for c in onBoard {
+            XCTAssertEqual(board.grid[c.y][c.x], .T)
+        }
+        XCTAssertEqual(board.grid.joined().compactMap { $0 }.count, onBoard.count)
+    }
+
     func test_full_row_detected() {
         var board = Board()
         for x in 0..<board.width { board.grid[board.height - 1][x] = .I }

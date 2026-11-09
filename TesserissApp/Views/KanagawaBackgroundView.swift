@@ -14,7 +14,8 @@ struct KanagawaBackgroundView: View {
     var body: some View {
         ZStack {
             if UIImage(named: Self.backdropAssetName) != nil {
-                Image(Self.backdropAssetName)
+                // Decorative: otherwise VoiceOver reads the asset name on every screen.
+                Image(decorative: Self.backdropAssetName)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)

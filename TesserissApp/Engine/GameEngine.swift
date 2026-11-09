@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import Combine
+import UIKit
 
 final class GameEngine: ObservableObject {
     @Published private(set) var board = Board()
@@ -14,6 +15,13 @@ final class GameEngine: ObservableObject {
     @Published private(set) var flashingRows: [Int] = []
     @Published private(set) var celebrationActive: Bool = false
     @Published private(set) var mode: GameMode = .og
+    @Published private(set) var isNewHighscore = false
+
+    /// Per-run counters for the lifetime stats.
+    private(set) var piecesLocked = 0
+    private(set) var fourRowClears = 0
+    /// Set once the run's stats are saved, so game over followed by MENU counts one game.
+    private var runRecorded = false
 
     private var randomizer = PieceRandomizer()
     private var timer: Timer?
@@ -69,6 +77,9 @@ final class GameEngine: ObservableObject {
         stopTimer()
         stopClearTimer()
         self.mode = mode
+        piecesLocked = 0
+        fourRowClears = 0
+        runRecorded = false
         board = Board(width: mode.boardWidth, height: mode.boardHeight)
         score = 0
         lines = 0
@@ -78,6 +89,7 @@ final class GameEngine: ObservableObject {
         applyTetrisSetupIfRequested()
         flashingRows = []
         celebrationActive = false
+        isNewHighscore = false
         screen = .game
         phase = .playing
         spawnNext()
@@ -102,6 +114,12 @@ final class GameEngine: ObservableObject {
     func returnToMenu() {
         stopTimer()
         stopClearTimer()
+        // A clear still flashing counts toward the run, but no next piece is dealt.
+        if case let .clearing(rows, _) = phase {
+            creditClear(rows: rows)
+        }
+        // Quitting counts as finishing the run, so its score can still be a best.
+        recordRunIfNeeded()
         // Music keeps playing across the menu (resumes if it was paused), so it
         // stays continuous when bouncing between the menu and a game.
         audio.resumeMusicIfEnabled()
@@ -114,6 +132,12 @@ final class GameEngine: ObservableObject {
 
     func togglePause() {
         guard screen == .game else { return }
+        // Pausing mid-flash settles the clear first, as autoPauseFromScenePhase
+        // does, so the pause below applies to the next piece.
+        if case let .clearing(rows, _) = phase {
+            stopClearTimer()
+            completeClearAnimation(rows: rows)
+        }
         switch phase {
         case .playing:
             phase = .paused
@@ -129,7 +153,14 @@ final class GameEngine: ObservableObject {
     }
 
     func autoPauseFromScenePhase() {
-        guard screen == .game, phase == .playing else { return }
+        guard screen == .game else { return }
+        // A clear still flashing would finish on its timer and resume play
+        // while the app is inactive; settle it now so the pause below sticks.
+        if case let .clearing(rows, _) = phase {
+            stopClearTimer()
+            completeClearAnimation(rows: rows)
+        }
+        guard phase == .playing else { return }
         phase = .paused
         stopTimer()
         audio.pauseMusic()
@@ -144,13 +175,15 @@ final class GameEngine: ObservableObject {
         stopLockTimer()
         lockResets = 0
 
-        // Rows above the board are empty space (Board.collides skips y < 0), so a
-        // blocked spawn gets nudged up into that buffer before we call it a top-out.
+        // A blocked spawn may be nudged up, but only until its bottom row sits on
+        // row 0. Board.collides treats rows above the board as empty, so a piece
+        // lifted any higher always fits and the top-out below could never fire.
+        // Those rows aren't stored either: lockPiece ends the game if cells lock there.
         let local = Tetromino.cells(kind: kind, rotation: 0)
         let pieceHeight = (local.map(\.y).max() ?? 0) - (local.map(\.y).min() ?? 0) + 1
         var piece = spawned
         var lift = 0
-        while board.collides(piece), lift < pieceHeight {
+        while board.collides(piece), lift < pieceHeight - 1 {
             lift += 1
             piece = spawned.moved(dx: 0, dy: -lift)
         }
@@ -167,7 +200,19 @@ final class GameEngine: ObservableObject {
         screen = .gameOver
         // Leave music playing on the game-over screen for continuity.
         haptics.gameOver(enabled: settings.hapticsEnabled)
-        highscoreStore.maybeUpdate(score, for: mode)
+        isNewHighscore = recordRunIfNeeded()
+        // High priority, so VoiceOver reading the game-over screen doesn't cut it off.
+        announce(settings.strings.gameOverAnnouncement(score: score, isNewBest: isNewHighscore), priority: .high)
+    }
+
+    /// Saves the finished run once: the lifetime stats, then the mode's best.
+    /// A run with no locked piece isn't a game. Returns true for a new best.
+    @discardableResult
+    private func recordRunIfNeeded() -> Bool {
+        guard !runRecorded, piecesLocked > 0 else { return false }
+        runRecorded = true
+        highscoreStore.recordGame(rowsCleared: lines, fourRowClears: fourRowClears)
+        return highscoreStore.maybeUpdate(score, for: mode)
     }
 
     // MARK: - Timer
@@ -319,6 +364,13 @@ final class GameEngine: ObservableObject {
         lockResets = 0
         inputLockedUntil = Date().addingTimeInterval(Self.postLockInputLockout)
         board.lock(piece)
+        piecesLocked += 1
+        // Lock-out: the board keeps no rows above 0, so cells locked there would
+        // vanish. The stack has topped out.
+        if piece.cells.contains(where: { $0.y < 0 }) {
+            triggerGameOver()
+            return
+        }
         haptics.medium(enabled: settings.hapticsEnabled)
         let rows = board.fullRows()
         if rows.isEmpty {
@@ -338,10 +390,10 @@ final class GameEngine: ObservableObject {
         phase = .clearing(rows: rows, isFourLine: isFourLine)
 
         if isFourLine {
-            audio.playFourLineChime(enabled: settings.musicEnabled)
+            audio.playFourLineChime(enabled: settings.sfxEnabled)
             haptics.success(enabled: settings.hapticsEnabled)
         } else {
-            audio.playLineClear(enabled: settings.musicEnabled)
+            audio.playLineClear(enabled: settings.sfxEnabled)
             haptics.medium(enabled: settings.hapticsEnabled)
         }
 
@@ -355,20 +407,40 @@ final class GameEngine: ObservableObject {
     }
 
     private func completeClearAnimation(rows: [Int]) {
-        let count = rows.count
-        board.clearRows(rows)
-        score += Scoring.points(linesCleared: count, level: level)
         let prevLevel = level
-        lines += count
-        level = lines / 10
-        flashingRows = []
-        celebrationActive = false
+        creditClear(rows: rows)
         phase = .playing
         spawnNext()
+        // spawnNext may have ended the game; gravity must then stay stopped.
+        guard phase == .playing else { return }
+        announce(settings.strings.clearAnnouncement(rows: rows.count, newLevel: level != prevLevel ? level : nil))
         if level != prevLevel {
             restartTimerForCurrentLevel()
         } else {
             startTimer()
         }
+    }
+
+    /// Removes the cleared rows and credits their points and lines. Quitting
+    /// mid-flash uses this alone, without dealing the next piece.
+    private func creditClear(rows: [Int]) {
+        let count = rows.count
+        board.clearRows(rows)
+        if count == 4 { fourRowClears += 1 }
+        score += Scoring.points(linesCleared: count, level: level)
+        lines += count
+        level = lines / 10
+        flashingRows = []
+        celebrationActive = false
+    }
+
+    // MARK: - VoiceOver
+
+    /// Speaks game events that have no element of their own to focus. Posts only
+    /// while VoiceOver runs, so sighted play and unit tests are unaffected.
+    private func announce(_ text: String, priority: UIAccessibilityPriority = .default) {
+        guard UIAccessibility.isVoiceOverRunning else { return }
+        let message = NSAttributedString(string: text, attributes: [.accessibilitySpeechAnnouncementPriority: priority])
+        UIAccessibility.post(notification: .announcement, argument: message)
     }
 }

@@ -16,25 +16,29 @@ Character limits noted in parentheses — App Store Connect enforces them.
 **Subtitle** (≤30) — `Calm falling blocks puzzle` (26)
 
 **Promotional text** (≤170, editable anytime without review)
-> Now with real sound, wall kicks and a moment to slide a piece before it locks — plus a Hokusai
-> theme that colours the whole app. No ads, no accounts, fully offline.
+> New: a short guide, your stats in Settings, a colour-blind mode and better VoiceOver support.
+> No ads, no accounts, fully offline.
 
-**Keywords** (≤100) — 100/100, 16 unique single tokens
+**Keywords** (≤100 bytes) — 100/100 bytes, 16 unique single tokens
 `tetromino,brick,tile,stack,drop,line,clear,arcade,retro,classic,minimal,zen,relax,offline,brain,grid`
 
-**What's New** (≤4000)
+**What's New** (≤4000) — 1.2.0, written for players updating from 1.0
 ```
-The Hokusai theme now colours the whole app, not just the board — menus, buttons and the score
-panel all follow it, and the numbers finally stay readable over the artwork.
+A short guide on first launch shows the controls, how rows clear and the modes. You can open it again from Settings.
 
-Pieces can now rotate against a wall and off the floor, and a piece gets a moment to be nudged
-before it locks. Every piece also starts at the same height, so a game no longer ends early just
-because of which piece came next.
+Settings now shows your stats: games played, rows cleared, four-row clears and best score per mode.
 
-Line clears have real sound for the first time, and follow the volume slider.
+A colour-blind mode in Settings switches to piece colours that stay apart with red-green colour blindness, draws an outline around every piece and makes the landing preview a clear outline.
 
-Also: bigger buttons, a score readout that stops jittering as it counts, and menus that no longer
-clip on smaller iPhones.
+The Hokusai theme now colours the whole app, not just the board: menus, buttons and the score panel follow it, and text stays readable over the artwork.
+
+Pieces can now rotate against a wall and off the floor, and a piece gets a moment to be nudged before it locks. Every piece starts at the same height, so a game no longer ends early because of which piece came next.
+
+Line clears have sound. Sound effects have their own switch and volume in Settings, separate from the music.
+
+A new best score is saved even if you quit to the menu mid-game, and NEW BEST appears only when you beat your previous best.
+
+VoiceOver reads every button and announces cleared rows, level changes and the end of a game. Menus and Settings adapt to larger text sizes.
 ```
 
 > **Why these keywords.** Apple indexes the app name, subtitle and keyword field as one pool, splits
@@ -51,16 +55,16 @@ The name says what you do: tesseris (Greek, "four") + Riss (German, "tear") — 
 
 Three modes, one tap apart:
 – Crack (fast) — a smaller board and a quicker fall, for short, sharp sessions.
-– Tear (og) — the classic board, the classic pace.
-– Shatter (hard) — the classic board, but five-square pieces sneak into the mix.
+– Tear (classic) — the standard board at the standard pace.
+– Shatter (hard) — the same board, but five-square pieces sneak into the mix.
 
 Classic-arcade feel: a 7-bag piece randomizer, fixed rotation tables, a ghost piece showing where the block will land, and a four-line clear worth 4000 points — with a satisfying flash and chime.
 
 Made to be looked at: a soft, comforting palette with Day and Night appearances, plus an optional Hokusai "Great Wave" theme.
 
-A quiet soundtrack: classical piano by Satie and Debussy — toggle it on or off.
+A quiet soundtrack of Satie and Debussy, mostly solo piano — toggle it on or off.
 
-Yours, privately: highscores are stored only on your device. No ads, no accounts, no tracking, and it works completely offline.
+Yours, privately: highscores and stats are stored only on your device. No ads, no accounts, no tracking, and it works completely offline.
 
 Turkish and English, switchable in Settings.
 ```
@@ -69,7 +73,7 @@ Turkish and English, switchable in Settings.
 **Marketing URL** (optional) — `https://w00dsrules.github.io/Tesseriss/`
 **Privacy Policy URL** — `https://w00dsrules.github.io/Tesseriss/privacy.html`
 **Copyright** — `2026 Vibalyze OÜ`
-**Category** — Primary: Games → Puzzle · Secondary (optional): Games → Arcade
+**Category** — Primary: Games → subcategories Puzzle, Casual (up to two; there is no Arcade subcategory) · Secondary (optional): none
 
 ---
 
@@ -80,25 +84,29 @@ Turkish and English, switchable in Settings.
 **Alt başlık** (≤30) — `Sakin blok bulmaca oyunu` (24)
 
 **Tanıtım metni** (≤170)
-> Parçalar artık duvara yaslıyken de dönüyor, yere değince kısa bir an duruyor ve sesler ilk kez
-> gerçekten duyuluyor. Reklamsız, hesapsız, tamamen çevrimdışı.
+> Yeni: kısa bir rehber, Ayarlar'da istatistikler, renk körlüğü modu ve daha iyi VoiceOver desteği.
+> Reklamsız, hesapsız, tamamen çevrimdışı.
 
-**Anahtar kelimeler** (≤100) — 99/100, 14 benzersiz kelime
-`tetromino,düşen,bloklar,sıra,temizleme,tuğla,klasik,retro,arcade,minimal,zen,rahatlatıcı,beyin,zeka`
+**Anahtar kelimeler** (≤100 bayt; ç ğ ı ö ş ü 2 bayt sayılır) — 89 karakter / 95 bayt, 13 benzersiz kelime
+`tetromino,düşen,bloklar,sıra,tuğla,klasik,retro,arcade,minimal,zen,rahatlatıcı,beyin,zeka`
 
-**Yenilikler** (≤4000)
+**Yenilikler** (≤4000) — 1.2.0, 1.0'dan güncelleyen oyuncular için
 ```
-Hokusai teması artık yalnızca tahtayı değil, uygulamanın tamamını kaplıyor: menüler, düğmeler ve
-skor paneli de aynı paleti kullanıyor. Sayılar da görselin üzerinde artık rahatça okunuyor.
+İlk açılışta kısa bir rehber kontrolleri, sıraların nasıl yırtıldığını ve modları gösteriyor. Ayarlar'daki "Nasıl oynanır" ile tekrar açabilirsin.
 
-Parçalar duvara yaslıyken ve yere değmişken de dönebiliyor. Yere oturan parçayı kilitlenmeden önce
-kaydırmak için kısa bir süre tanınıyor. Ayrıca her parça aynı yükseklikten başlıyor; oyun artık
-sırf sıradaki parçanın biçimi yüzünden erkenden bitmiyor.
+Ayarlar'da artık istatistiklerin var: oynanan oyun, temizlenen sıra, dörtlü yırtma ve her modun rekoru.
 
-Sıra temizleme sesleri ilk kez gerçekten duyuluyor ve ses seviyesi ayarına uyuyor.
+Ayarlar'daki renk körlüğü modu, kırmızı-yeşil renk körlüğünde de birbirinden ayrılan parça renklerine geçiyor, her parçanın çevresine bir çizgi çiziyor ve parçanın ineceği yeri gösteren çerçeveyi belirginleştiriyor.
 
-Bunların yanında: daha büyük düğmeler, sayarken yerinden oynamayan bir skor göstergesi ve küçük
-ekranlı iPhone'larda taşmayan menüler.
+Hokusai teması artık yalnızca tahtayı değil, uygulamanın tamamını kaplıyor: menüler, düğmeler ve skor paneli de aynı paleti kullanıyor. Yazılar da görselin üzerinde rahatça okunuyor.
+
+Parçalar duvara yaslıyken ve yere değmişken de dönebiliyor. Yere oturan parçayı kilitlenmeden önce kaydırmak için kısa bir süre tanınıyor. Ayrıca her parça aynı yükseklikten başlıyor; oyun artık sırf sıradaki parçanın biçimi yüzünden erkenden bitmiyor.
+
+Sıra temizlerken artık ses çıkıyor. Ses efektlerinin Ayarlar'da müzikten ayrı, kendi aç/kapa düğmesi ve ses düzeyi var.
+
+Oyunu yarıda bırakıp menüye dönsen bile kırdığın rekor kaydediliyor. YENİ REKOR yazısı da artık yalnızca önceki rekorunu geçtiğinde çıkıyor.
+
+VoiceOver her düğmenin adını okuyor; temizlenen sıraları, seviye atlamayı ve oyunun bitişini bildiriyor. Menüler ve Ayarlar büyük yazı boyutlarına uyum sağlıyor.
 ```
 
 **Açıklama** (≤4000)
@@ -116,9 +124,9 @@ Klasik arcade hissi: 7'li torba sistemi, sabit dönüş tabloları, parçanın n
 
 Bakması da keyifli: Gündüz ve Gece görünümleriyle yumuşak, göz yormayan bir palet; dileyene Hokusai'nin "Büyük Dalga" teması.
 
-Sessiz bir fon müziği: Satie ve Debussy'den klasik piyano — dilediğinde aç, dilediğinde kapat.
+Sessiz bir fon müziği: Satie ve Debussy, çoğunlukla piyanoda — dilediğinde aç, dilediğinde kapat.
 
-Senin, sana özel: rekorlar yalnızca cihazında saklanır. Reklam yok, hesap yok, takip yok; tamamen çevrimdışı çalışır.
+Senin, sana özel: rekorlar ve istatistikler yalnızca cihazında saklanır. Reklam yok, hesap yok, takip yok; tamamen çevrimdışı çalışır.
 
 Türkçe ve İngilizce — Ayarlar'dan tek dokunuşla.
 ```
