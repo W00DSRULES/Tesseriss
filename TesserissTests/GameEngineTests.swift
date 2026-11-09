@@ -353,6 +353,193 @@ final class GameEngineTests: XCTestCase {
         XCTAssertEqual(engine.lines, 4, "the clear is credited once")
     }
 
+    // MARK: - Daily challenge and stats
+
+    private let nov9 = ISO8601DateFormatter().date(from: "2026-11-09T12:00:00Z")!
+
+    private func makeStore() -> HighscoreStore {
+        HighscoreStore(defaults: UserDefaults(suiteName: "tesseriss.tests.\(UUID().uuidString)")!)
+    }
+
+    /// As startGameAndDropAFourLineClear, on the 9 November 2026 daily.
+    private func startDailyAndDropAFourLineClear(_ engine: GameEngine, now: Date? = nil) {
+        setenv("TESSERISS_TETRIS_SETUP", "1", 1)
+        defer { unsetenv("TESSERISS_TETRIS_SETUP") }
+        engine.startDailyChallenge(now: now ?? nov9)
+        engine.rotateCW()
+        for _ in 0..<10 { engine.moveRight(haptic: false) }
+        engine.hardDrop()
+    }
+
+    func test_dailyStartsATearRunFromTheDaySeed() {
+        // The injected factory deals pentominoes only; the daily must ignore it.
+        let engine = makeEngine(randomizerFactory: { _ in PieceRandomizer(pentominoChance: 1) })
+        engine.startNewGame(mode: .fast)
+        engine.startDailyChallenge(now: nov9)
+
+        XCTAssertTrue(engine.isDaily)
+        XCTAssertEqual(engine.dailyKey, "20261109")
+        XCTAssertEqual(engine.mode, .og)
+        XCTAssertEqual(engine.board.width, 10)
+        XCTAssertEqual(engine.board.height, 20)
+        var expected = DailyChallenge.makeRandomizer(dayKey: "20261109")
+        XCTAssertEqual(engine.current?.kind, expected.next())
+        XCTAssertEqual(engine.nextKind, expected.next())
+    }
+
+    func test_dailyResultIsKeptApartFromTheTearBest() {
+        let store = makeStore()
+        store.maybeUpdate(9000, for: .og)
+        let engine = makeEngine(highscoreStore: store)
+        startDailyAndDropAFourLineClear(engine)
+        XCTAssertEqual(engine.highscore, 0, "during a daily run the best to beat is today's daily best")
+        RunLoop.current.run(until: Date().addingTimeInterval(0.75))   // past the 0.5 s flash
+        hardDropUntilGameOver(engine)
+        XCTAssertEqual(engine.screen, .gameOver, "precondition: the game ended")
+
+        XCTAssertTrue(engine.isNewHighscore, "4000 beats today's empty daily best, though not the Tear best")
+        XCTAssertEqual(store.dailyBest(for: "20261109"), 4000)
+        XCTAssertEqual(engine.highscore, 4000)
+        XCTAssertEqual(store.highscore(for: .og), 9000, "a daily score never touches the Tear best")
+        XCTAssertEqual(store.currentStreak(today: "20261109"), 1)
+    }
+
+    func test_dailyBestIsSavedOnQuit() {
+        let store = makeStore()
+        let engine = makeEngine(highscoreStore: store)
+        startDailyAndDropAFourLineClear(engine)
+        engine.returnToMenu()   // quit mid-flash: the clear still counts
+        XCTAssertEqual(store.dailyBest(for: "20261109"), 4000)
+        XCTAssertEqual(store.highscore(for: .og), 0)
+        XCTAssertEqual(store.lastDailyDay, "20261109")
+        XCTAssertEqual([store.gamesPlayed, store.rowsCleared, store.fourRowClears], [1, 4, 1])
+    }
+
+    func test_dailyRunCountsForTheDayItStarted() {
+        let store = makeStore()
+        let engine = makeEngine(highscoreStore: store)
+        engine.startDailyChallenge(now: ISO8601DateFormatter().date(from: "2026-11-09T23:59:59Z")!)
+        engine.hardDrop()
+        engine.returnToMenu()   // the real clock is long past that second
+        XCTAssertEqual(store.lastDailyDay, "20261109")
+    }
+
+    func test_gameOverThenMenuCountsOneGame() {
+        for daily in [false, true] {
+            let store = makeStore()
+            let engine = makeEngine(highscoreStore: store)
+            if daily {
+                startDailyAndDropAFourLineClear(engine)
+            } else {
+                startGameAndDropAFourLineClear(engine)
+            }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.75))   // past the 0.5 s flash
+            XCTAssertEqual(engine.fourRowClears, 1)
+            hardDropUntilGameOver(engine)
+            XCTAssertEqual(engine.screen, .gameOver, "precondition: the game ended (daily \(daily))")
+            XCTAssertGreaterThan(engine.piecesLocked, 1)
+            engine.returnToMenu()   // GameOverView's MENU button
+
+            XCTAssertEqual(store.gamesPlayed, 1, "daily \(daily)")
+            XCTAssertEqual(store.rowsCleared, 4, "daily \(daily)")
+            XCTAssertEqual(store.fourRowClears, 1, "daily \(daily)")
+            XCTAssertEqual(store.highscore(for: .og), daily ? 0 : 4000)
+            XCTAssertEqual(store.dailyBest(for: "20261109"), daily ? 4000 : 0)
+            XCTAssertEqual(store.dailyStreak, daily ? 1 : 0, "a daily run that ends twice is one day played")
+        }
+    }
+
+    func test_runWithNoLockedPieceIsNotCounted() {
+        let store = makeStore()
+        let engine = makeEngine(highscoreStore: store)
+        engine.startNewGame(mode: .og)
+        engine.returnToMenu()
+        engine.startDailyChallenge(now: nov9)
+        engine.returnToMenu()
+        XCTAssertEqual(store.gamesPlayed, 0)
+        XCTAssertNil(store.lastDailyDay, "opening the daily and leaving isn't a day played")
+    }
+
+    func test_newGameAfterADailyRunIsNotDaily() {
+        let store = makeStore()
+        store.maybeUpdate(9000, for: .og)
+        store.recordDaily(score: 700, dayKey: "20261109")
+        let engine = makeEngine(highscoreStore: store)
+        engine.startDailyChallenge(now: nov9)
+        XCTAssertEqual(engine.highscore, 700)
+
+        engine.startNewGame(mode: .og)
+        XCTAssertFalse(engine.isDaily)
+        XCTAssertNil(engine.dailyKey)
+        XCTAssertEqual(engine.highscore, 9000)
+    }
+
+    func test_playAgainRepeatsTheKindOfRun() {
+        let engine = makeEngine()
+        engine.startNewGame(mode: .fast)
+        engine.playAgain()
+        XCTAssertEqual(engine.mode, .fast)
+        XCTAssertFalse(engine.isDaily)
+
+        engine.startDailyChallenge(now: nov9)
+        let before = DailyChallenge.todayKey()
+        engine.playAgain()
+        let after = DailyChallenge.todayKey()
+        XCTAssertTrue(engine.isDaily)
+        // Either key, in case 00:00 UTC passes during the call.
+        XCTAssertTrue([before, after].contains(engine.dailyKey ?? ""), "a new attempt is on the current UTC day")
+        XCTAssertEqual(engine.screen, .game)
+    }
+
+    func test_backgroundingPausesWithoutRecordingAndMenuRecordsOnce() {
+        let store = makeStore()
+        let engine = makeEngine(highscoreStore: store)
+        startGameAndDropAFourLineClear(engine)
+        RunLoop.current.run(until: Date().addingTimeInterval(0.75))   // past the 0.5 s flash
+        engine.autoPauseFromScenePhase()
+        XCTAssertEqual(engine.phase, .paused)
+        XCTAssertEqual(store.gamesPlayed, 0, "backgrounding alone records nothing")
+        engine.returnToMenu()
+        engine.returnToMenu()
+        XCTAssertEqual([store.gamesPlayed, store.rowsCleared, store.fourRowClears], [1, 4, 1])
+    }
+
+    func test_playAgainThenQuittingBeforeALockCountsOneGame() {
+        let store = makeStore()
+        let engine = makeEngine(highscoreStore: store)
+        startGameAndDropAFourLineClear(engine)
+        RunLoop.current.run(until: Date().addingTimeInterval(0.75))
+        hardDropUntilGameOver(engine)
+        XCTAssertEqual(engine.screen, .gameOver, "precondition: the game ended")
+        engine.playAgain()
+        engine.returnToMenu()   // the new run locked no piece
+        XCTAssertEqual(store.gamesPlayed, 1)
+    }
+
+    func test_dailyPlayAgainOnTheSameDayKeepsTheStreak() {
+        let store = makeStore()
+        let engine = makeEngine(highscoreStore: store)
+        engine.startDailyChallenge()
+        let firstDay = engine.dailyKey
+        hardDropUntilGameOver(engine)
+        engine.playAgain()
+        let secondDay = engine.dailyKey
+        hardDropUntilGameOver(engine)
+        XCTAssertEqual(engine.screen, .gameOver, "precondition: the second run ended")
+        XCTAssertEqual(store.gamesPlayed, 2)
+        // 2 only if 00:00 UTC passed between the runs.
+        XCTAssertEqual(store.dailyStreak, firstDay == secondDay ? 1 : 2)
+    }
+
+    func test_refreshTodayFollowsTheUTCDay() {
+        let engine = makeEngine()
+        let iso = ISO8601DateFormatter()
+        engine.refreshToday(now: iso.date(from: "2026-11-09T23:59:59Z")!)
+        XCTAssertEqual(engine.todayKey, "20261109")
+        engine.refreshToday(now: iso.date(from: "2026-11-10T00:00:00Z")!)
+        XCTAssertEqual(engine.todayKey, "20261110", "the menu and Stats redraw for the new day")
+    }
+
     // MARK: - Pausing mid-clear
 
     func test_pauseDuringALineClearCreditsItAndStaysPaused() {

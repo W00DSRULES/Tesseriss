@@ -161,4 +161,171 @@ final class SettingsStoreTests: XCTestCase {
             }
         }
     }
+
+    // MARK: - Onboarding flag
+
+    func testOnboardingFlagDefaultsOffAndPersists() {
+        let suiteName = "test.tesseriss.onboarding"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.removePersistentDomain(forName: suiteName)
+
+        let store = SettingsStore(defaults: defaults)
+        XCTAssertFalse(store.hasSeenOnboarding, "a fresh install shows the onboarding")
+        store.hasSeenOnboarding = true
+        XCTAssertTrue(SettingsStore(defaults: defaults).hasSeenOnboarding)
+        XCTAssertTrue(defaults.bool(forKey: "tesseriss.onboarding.seen"))
+
+        defaults.removePersistentDomain(forName: suiteName)
+    }
+
+    func testOnboardingSkippedForPlayersUpdatingFromAnEarlierVersion() {
+        let suiteName = "test.tesseriss.onboarding.upgrade"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.removePersistentDomain(forName: suiteName)
+        defaults.set(true, forKey: "tesseriss.settings.music")  // written by every earlier launch
+
+        let store = SettingsStore(defaults: defaults)
+        XCTAssertTrue(store.hasSeenOnboarding, "an existing player does not get the first-launch guide")
+        // Reopening it from Settings must still work after the migration.
+        store.hasSeenOnboarding = false
+        XCTAssertFalse(SettingsStore(defaults: defaults).hasSeenOnboarding)
+
+        defaults.removePersistentDomain(forName: suiteName)
+    }
+
+    // MARK: - Stats and daily results
+
+    private func freshHighscoreStore(_ suiteName: String) -> (HighscoreStore, UserDefaults) {
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.removePersistentDomain(forName: suiteName)
+        return (HighscoreStore(defaults: defaults), defaults)
+    }
+
+    func testLifetimeStatsAccumulateAndPersist() {
+        let (store, defaults) = freshHighscoreStore("test.tesseriss.stats")
+        XCTAssertEqual([store.gamesPlayed, store.rowsCleared, store.fourRowClears], [0, 0, 0])
+        store.recordGame(rowsCleared: 6, fourRowClears: 1)
+        store.recordGame(rowsCleared: 4, fourRowClears: 0)
+        let reloaded = HighscoreStore(defaults: defaults)
+        XCTAssertEqual([reloaded.gamesPlayed, reloaded.rowsCleared, reloaded.fourRowClears], [2, 10, 1])
+        defaults.removePersistentDomain(forName: "test.tesseriss.stats")
+    }
+
+    func testDailyBestKeepsOnlyTodaysBest() {
+        let (store, defaults) = freshHighscoreStore("test.tesseriss.dailybest")
+        XCTAssertFalse(store.recordDaily(score: 0, dayKey: "20261109"), "0 never beats the empty best")
+        XCTAssertTrue(store.recordDaily(score: 500, dayKey: "20261109"))
+        XCTAssertFalse(store.recordDaily(score: 500, dayKey: "20261109"), "matching the best is not a new best")
+        XCTAssertFalse(store.recordDaily(score: 400, dayKey: "20261109"))
+        XCTAssertEqual(HighscoreStore(defaults: defaults).dailyBest(for: "20261109"), 500)
+
+        XCTAssertEqual(store.dailyBest(for: "20261110"), 0, "yesterday's best doesn't carry over")
+        XCTAssertTrue(store.recordDaily(score: 100, dayKey: "20261110"), "any score beats a new day's empty best")
+        XCTAssertEqual(store.dailyBest(for: "20261110"), 100)
+        XCTAssertEqual(store.dailyBest(for: "20261109"), 0, "only today's best is kept")
+        for mode in GameMode.allCases {
+            XCTAssertEqual(store.highscore(for: mode), 0, "daily runs leave the \(mode) best alone")
+        }
+        defaults.removePersistentDomain(forName: "test.tesseriss.dailybest")
+    }
+
+    func testDailyStreakSameDayNextDayGapAndLongest() {
+        let (store, defaults) = freshHighscoreStore("test.tesseriss.streak")
+        XCTAssertEqual(store.currentStreak(today: "20261128"), 0)
+        store.recordDaily(score: 0, dayKey: "20261128")
+        XCTAssertEqual(store.dailyStreak, 1)
+        store.recordDaily(score: 0, dayKey: "20261128")
+        XCTAssertEqual(store.dailyStreak, 1, "a second run the same day doesn't add to the streak")
+        store.recordDaily(score: 0, dayKey: "20261129")
+        store.recordDaily(score: 0, dayKey: "20261130")
+        store.recordDaily(score: 0, dayKey: "20261201")
+        XCTAssertEqual(store.dailyStreak, 4, "the next day adds one, across a month end")
+        XCTAssertEqual(store.longestDailyStreak, 4)
+
+        XCTAssertEqual(store.currentStreak(today: "20261201"), 4)
+        XCTAssertEqual(store.currentStreak(today: "20261202"), 4, "still alive until the next day is missed")
+        XCTAssertEqual(store.currentStreak(today: "20261203"), 0, "a whole missed day ends it")
+
+        store.recordDaily(score: 0, dayKey: "20261203")
+        XCTAssertEqual(store.dailyStreak, 1, "a gap starts over")
+        XCTAssertEqual(store.longestDailyStreak, 4, "the longest streak is kept")
+
+        let reloaded = HighscoreStore(defaults: defaults)
+        XCTAssertEqual(reloaded.dailyStreak, 1)
+        XCTAssertEqual(reloaded.longestDailyStreak, 4)
+        XCTAssertEqual(reloaded.lastDailyDay, "20261203")
+        defaults.removePersistentDomain(forName: "test.tesseriss.streak")
+    }
+
+    func testDailyRunForAnEarlierDayIsIgnored() {
+        let (store, defaults) = freshHighscoreStore("test.tesseriss.clockback")
+        store.recordDaily(score: 0, dayKey: "20261109")
+        store.recordDaily(score: 5000, dayKey: "20261110")
+        XCTAssertFalse(store.recordDaily(score: 10, dayKey: "20261109"), "the clock was set back a day")
+        XCTAssertEqual(store.lastDailyDay, "20261110")
+        XCTAssertEqual(store.dailyBest(for: "20261110"), 5000, "the later best is kept")
+        XCTAssertEqual([store.dailyStreak, store.longestDailyStreak], [2, 2])
+        defaults.removePersistentDomain(forName: "test.tesseriss.clockback")
+    }
+
+    func testCorruptStatsAndDailyValuesReadAsZero() {
+        let (_, defaults) = freshHighscoreStore("test.tesseriss.corruptstats")
+        defaults.set("lots", forKey: "tesseriss.stats.gamesPlayed")
+        defaults.set(-3, forKey: "tesseriss.stats.rowsCleared")
+        defaults.set(Data([1, 2]), forKey: "tesseriss.stats.fourRowClears")
+        defaults.set("high", forKey: "tesseriss.daily.bestScore")
+        defaults.set(Data([3]), forKey: "tesseriss.daily.bestDay")
+        defaults.set(-1, forKey: "tesseriss.daily.streak")
+        defaults.set("long", forKey: "tesseriss.daily.longestStreak")
+        defaults.set("someday", forKey: "tesseriss.daily.lastDay")
+
+        let store = HighscoreStore(defaults: defaults)
+        XCTAssertEqual([store.gamesPlayed, store.rowsCleared, store.fourRowClears], [0, 0, 0])
+        XCTAssertEqual(store.dailyBest(for: "20261109"), 0)
+        XCTAssertEqual(store.currentStreak(today: "20261109"), 0)
+        XCTAssertEqual(store.longestDailyStreak, 0)
+        store.recordDaily(score: 10, dayKey: "20261109")
+        XCTAssertEqual(store.dailyStreak, 1, "a corrupt last day starts a new streak")
+        defaults.removePersistentDomain(forName: "test.tesseriss.corruptstats")
+    }
+
+    func testResetForTestingClearsStatsAndDaily() {
+        let (store, defaults) = freshHighscoreStore("test.tesseriss.reset")
+        store.maybeUpdate(900, for: .og)
+        store.recordGame(rowsCleared: 4, fourRowClears: 1)
+        store.recordDaily(score: 300, dayKey: "20261109")
+        store.resetForTesting()
+        for reloaded in [store, HighscoreStore(defaults: defaults)] {
+            XCTAssertEqual(reloaded.highscore(for: .og), 0)
+            XCTAssertEqual([reloaded.gamesPlayed, reloaded.rowsCleared, reloaded.fourRowClears], [0, 0, 0])
+            XCTAssertEqual(reloaded.dailyBest(for: "20261109"), 0)
+            XCTAssertEqual([reloaded.dailyStreak, reloaded.longestDailyStreak], [0, 0])
+            XCTAssertNil(reloaded.lastDailyDay)
+        }
+        defaults.removePersistentDomain(forName: "test.tesseriss.reset")
+    }
+
+    // MARK: - Round 3 strings
+
+    func testDailyAndOnboardingFormats() {
+        XCTAssertEqual(Strings.en.streakDays(1), "1 day")
+        XCTAssertEqual(Strings.en.streakDays(5), "5 days")
+        XCTAssertEqual(Strings.en.dailyStreak(0), "Streak: 0 days")
+        XCTAssertEqual(Strings.tr.streakDays(1), "1 gün")
+        XCTAssertEqual(Strings.tr.dailyStreak(5), "Seri: 5 gün")
+        XCTAssertEqual(Strings.en.dailyBest("4000"), "Today's best: 4000")
+        XCTAssertEqual(Strings.tr.dailyBest("4000"), "Bugünün rekoru: 4000")
+        XCTAssertEqual(Strings.en.onboardingStep(1, of: 3), "1 of 3")
+        XCTAssertEqual(Strings.tr.onboardingStep(2, of: 3), "2 / 3")
+        XCTAssertEqual(Strings.en.onboardingStepAccessibility(3, of: 3), "Step 3 of 3")
+        XCTAssertEqual(Strings.tr.onboardingStepAccessibility(1, of: 3), "Adım 1, toplam 3")
+    }
+
+    func testNoStringIsEmpty() {
+        for s in [Strings.tr, Strings.en] {
+            for child in Mirror(reflecting: s).children {
+                XCTAssertFalse((child.value as? String)?.isEmpty ?? true, "\(child.label ?? "?") is empty")
+            }
+        }
+    }
 }

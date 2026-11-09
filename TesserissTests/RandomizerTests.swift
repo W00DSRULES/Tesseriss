@@ -87,4 +87,96 @@ final class RandomizerTests: XCTestCase {
         let bSeq = (0..<50).map { _ in b.next() }
         XCTAssertNotEqual(aSeq, bSeq, "Different seeds should diverge within 50 draws")
     }
+
+    // MARK: - Daily challenge
+
+    private func date(_ iso: String) -> Date { ISO8601DateFormatter().date(from: iso)! }
+
+    /// The first bag of `dayKey`, in the order the pieces are dealt.
+    private func firstBag(_ dayKey: String) -> [PieceKind] {
+        var r = DailyChallenge.makeRandomizer(dayKey: dayKey)
+        return (0..<7).map { _ in r.next() }
+    }
+
+    /// Every day key from `first` to `last`, inclusive.
+    private func days(from first: String, to last: String) -> [String] {
+        var keys = [last]
+        while keys[0] != first { keys.insert(DailyChallenge.previousDayKey(keys[0])!, at: 0) }
+        return keys
+    }
+
+    func test_dailyDayKey_turnsOverAtMidnightUTC() {
+        XCTAssertEqual(DailyChallenge.dayKey(for: date("2026-11-09T23:59:59Z")), "20261109")
+        XCTAssertEqual(DailyChallenge.dayKey(for: date("2026-11-10T00:00:00Z")), "20261110")
+    }
+
+    func test_dailyDayKey_ignoresTheDeviceTimeZone() {
+        let saved = ProcessInfo.processInfo.environment["TZ"]
+        defer {
+            if let saved { setenv("TZ", saved, 1) } else { unsetenv("TZ") }
+            NSTimeZone.resetSystemTimeZone()
+        }
+        for zone in ["Pacific/Kiritimati", "Pacific/Pago_Pago", "Europe/Istanbul"] {
+            setenv("TZ", zone, 1)
+            NSTimeZone.resetSystemTimeZone()
+            XCTAssertEqual(TimeZone.current.identifier, zone, "precondition: the device zone changed")
+            XCTAssertEqual(DailyChallenge.dayKey(for: date("2026-11-09T23:59:59Z")), "20261109", zone)
+            XCTAssertEqual(DailyChallenge.dayKey(for: date("2026-11-10T00:00:00Z")), "20261110", zone)
+        }
+    }
+
+    func test_dailyPreviousDayKey_crossesMonthsYearsAndLeapDays() {
+        XCTAssertEqual(DailyChallenge.previousDayKey("20261110"), "20261109")
+        XCTAssertEqual(DailyChallenge.previousDayKey("20261201"), "20261130")
+        XCTAssertEqual(DailyChallenge.previousDayKey("20270101"), "20261231")
+        XCTAssertEqual(DailyChallenge.previousDayKey("20280301"), "20280229")
+        for bad in ["", "2026110", "202611090", "abcdefgh", "20261340", "20260230"] {
+            XCTAssertNil(DailyChallenge.previousDayKey(bad), "\"\(bad)\" is not a day")
+        }
+    }
+
+    func test_dailyNextDayStartIsTheNextUTCMidnight() {
+        XCTAssertEqual(DailyChallenge.nextDayStart(after: date("2026-11-09T12:00:00Z")), date("2026-11-10T00:00:00Z"))
+        XCTAssertEqual(DailyChallenge.nextDayStart(after: date("2026-11-09T00:00:00Z")), date("2026-11-10T00:00:00Z"))
+        XCTAssertEqual(DailyChallenge.nextDayStart(after: date("2026-12-31T23:59:59Z")), date("2027-01-01T00:00:00Z"))
+    }
+
+    func test_dailyNow_readsTESSERISS_NOW() {
+        XCTAssertEqual(DailyChallenge.now(environment: ["TESSERISS_NOW": "2026-11-09T12:00:00Z"]),
+                       date("2026-11-09T12:00:00Z"))
+        XCTAssertEqual(DailyChallenge.todayKey(environment: ["TESSERISS_NOW": "2026-11-10T00:00:00Z"]), "20261110")
+        let envs: [[String: String]] = [[:], ["TESSERISS_NOW": "tomorrow"]]
+        for env in envs {
+            XCTAssertEqual(DailyChallenge.now(environment: env).timeIntervalSinceNow, 0, accuracy: 5,
+                           "falls back to the real time for \(env)")
+        }
+    }
+
+    func test_dailySameDayDealsTheSameSequence() {
+        var a = DailyChallenge.makeRandomizer(dayKey: "20261109")
+        var b = DailyChallenge.makeRandomizer(dayKey: "20261109")
+        XCTAssertEqual((0..<50).map { _ in a.next() }, (0..<50).map { _ in b.next() })
+    }
+
+    func test_dailyConsecutiveDaysDealDifferentFirstBags() {
+        let keys = days(from: "20261101", to: "20270131")
+        for (yesterday, today) in zip(keys, keys.dropFirst()) {
+            XCTAssertNotEqual(firstBag(yesterday), firstBag(today), "\(yesterday) and \(today)")
+        }
+    }
+
+    /// Seeded with the raw yyyyMMdd integer, every day's first bag ended in I.
+    func test_dailyFirstBagDoesNotAlwaysEndInI() {
+        let lastPieces = Set(days(from: "20261101", to: "20261130").map { firstBag($0)[6] })
+        XCTAssertGreaterThan(lastPieces.count, 1, "the 7th piece is \(lastPieces) every day")
+        XCTAssertNotEqual(DailyChallenge.seed(for: "20261109"), 20261109)
+    }
+
+    func test_dailyDealsTetrominoesOnlyInSevenBags() {
+        var r = DailyChallenge.makeRandomizer(dayKey: "20261109")
+        XCTAssertEqual(r.pentominoChance, 0)
+        for _ in 0..<100 {
+            XCTAssertEqual(Set((0..<7).map { _ in r.next() }), Set(PieceKind.tetrominoes))
+        }
+    }
 }

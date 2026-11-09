@@ -64,6 +64,7 @@ struct MenuView: View {
                     }
                     .accessibilityIdentifier("start-button")
                     modePicker
+                    dailyButton
                     Button(action: { engine.openSettings() }) {
                         HStack(spacing: 8) {
                             Image(systemName: "gearshape.fill")
@@ -83,6 +84,42 @@ struct MenuView: View {
             .frame(maxWidth: .infinity, minHeight: 0)
         }
         .scrollBounceBehavior(.basedOnSize)
+    }
+
+    /// Secondary style, like Settings. The caption reports today's result once
+    /// the daily has been played today, else says what the daily is.
+    private var dailyButton: some View {
+        let today = engine.todayKey
+        let played = hs.lastDailyDay == today
+        let best = hs.dailyBest(for: today)
+        let streak = s.dailyStreak(hs.currentStreak(today: today))
+        // The best is grouped like the Game Over and Stats numbers ("4.000" in
+        // Turkish); the streak's spaces don't break, so "Seri: 12 gün" stays on one line.
+        let caption = played
+            ? s.dailyBest(best.formatted()) + " · " + streak.replacingOccurrences(of: " ", with: "\u{00A0}")
+            : s.dailySubtitle
+        return Button(action: { engine.startDailyChallenge() }) {
+            VStack(spacing: 2) {
+                HStack(spacing: 8) {
+                    Image(systemName: "calendar")
+                    Text(s.dailyButton)
+                }
+                .font(.system(.title3, design: .rounded).weight(.medium))
+                Text(caption)
+                    .font(.system(.caption, design: .rounded).weight(.medium))
+                    .opacity(0.85)
+                    .multilineTextAlignment(.center)
+            }
+            .foregroundStyle(ink)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .frame(maxWidth: .infinity, minHeight: 56)
+            .background(card)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .accessibilityLabel(s.dailyTitle)
+        .accessibilityValue(played ? s.dailyBest(String(best)) + ", " + streak : s.dailySubtitle)
+        .accessibilityIdentifier("daily-button")
     }
 
     private var scoringHint: some View {

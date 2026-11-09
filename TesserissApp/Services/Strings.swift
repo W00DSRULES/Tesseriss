@@ -59,6 +59,37 @@ struct Strings {
     let announceRowsCleared: String
     let announceLevel: String
     let announceGameOver: String
+    // Onboarding
+    let howToPlay: String
+    let onboardingSkip: String
+    let onboardingNext: String
+    let onboardingDone: String
+    let onboardingStepFormat: String
+    let onboardingStepAccessibilityFormat: String
+    let onboardingMoveTitle: String
+    let onboardingMoveBody: String
+    let onboardingTearTitle: String
+    let onboardingTearBody: String
+    let onboardingModesTitle: String
+    let onboardingModesBody: String
+    // Daily challenge
+    let dailyButton: String
+    let dailyTitle: String
+    let dailySubtitle: String
+    let dailyBestLabel: String
+    let dailyBestFormat: String
+    let streakLabel: String
+    let streakOneDay: String
+    let streakDaysFormat: String
+    let dailyResets: String
+    // Stats
+    let statsTitle: String
+    let statsGamesPlayed: String
+    let statsRowsCleared: String
+    let statsFourRowClears: String
+    let statsBestScores: String
+    let statsCurrentStreak: String
+    let statsLongestStreak: String
 
     func modeName(_ mode: GameMode) -> String {
         switch mode {
@@ -87,6 +118,31 @@ struct Strings {
     func gameOverAnnouncement(score: Int, isNewBest: Bool) -> String {
         let message = String(format: announceGameOver, score)
         return isNewBest ? message + " " + newBest : message
+    }
+
+    /// Visible step indicator, e.g. "1 of 3".
+    func onboardingStep(_ step: Int, of total: Int) -> String {
+        String(format: onboardingStepFormat, step, total)
+    }
+
+    /// VoiceOver text for the step indicator, e.g. "Step 1 of 3".
+    func onboardingStepAccessibility(_ step: Int, of total: Int) -> String {
+        String(format: onboardingStepAccessibilityFormat, step, total)
+    }
+
+    /// "Today's best: 4000". The caller formats the number: grouped on screen, plain for VoiceOver.
+    func dailyBest(_ score: String) -> String {
+        String(format: dailyBestFormat, score)
+    }
+
+    /// "1 day", "5 days": a streak length alone, e.g. as an accessibility value.
+    func streakDays(_ days: Int) -> String {
+        days == 1 ? streakOneDay : String(format: streakDaysFormat, days)
+    }
+
+    /// "Streak: 5 days".
+    func dailyStreak(_ days: Int) -> String {
+        streakLabel + ": " + streakDays(days)
     }
 
     static let tr = Strings(
@@ -147,7 +203,35 @@ struct Strings {
         announceOneRowCleared: "1 sıra temizlendi",
         announceRowsCleared: "%d sıra temizlendi",
         announceLevel: "Seviye %d",
-        announceGameOver: "Oyun bitti. Skor %d."
+        announceGameOver: "Oyun bitti. Skor %d.",
+        howToPlay: "Nasıl oynanır",
+        onboardingSkip: "ATLA",
+        onboardingNext: "İLERİ",
+        onboardingDone: "TAMAM",
+        onboardingStepFormat: "%d / %d",
+        onboardingStepAccessibilityFormat: "Adım %d, toplam %d",
+        onboardingMoveTitle: "Kaydır ve döndür",
+        onboardingMoveBody: "Parçayı sol ve sağ oklarla kaydır, kıvrık oklarla döndür. Aşağı indirmek için aşağı oka basılı tut. Çift ok parçayı en alta düşürür.",
+        onboardingTearTitle: "Sıraları yırt",
+        onboardingTearBody: "Bir sırayı uçtan uca doldurursan sıra yırtılır. Dört sırayı birden yırtmak 4000 puan kazandırır.",
+        onboardingModesTitle: "Üç mod ve günlük meydan okuma",
+        onboardingModesBody: "Çatlak küçük bir tahtada hızlı oynanır. Yırtık klasiktir. Parçalanma beş kareli parçalar da ekler. Günlük meydan okumada herkes o gün aynı parçaları alır.",
+        dailyButton: "GÜNLÜK",
+        dailyTitle: "Günlük meydan okuma",
+        dailySubtitle: "Bugün herkese aynı parçalar.",
+        dailyBestLabel: "BUGÜNÜN REKORU",
+        dailyBestFormat: "Bugünün rekoru: %@",
+        streakLabel: "Seri",
+        streakOneDay: "1 gün",
+        streakDaysFormat: "%d gün",
+        dailyResets: "00:00 UTC'de sıfırlanır",
+        statsTitle: "İstatistikler",
+        statsGamesPlayed: "Oynanan oyun",
+        statsRowsCleared: "Temizlenen sıra",
+        statsFourRowClears: "Dörtlü yırtma",
+        statsBestScores: "Rekorlar",
+        statsCurrentStreak: "Güncel seri",
+        statsLongestStreak: "En uzun seri"
     )
 
     static let en = Strings(
@@ -208,7 +292,35 @@ struct Strings {
         announceOneRowCleared: "1 row cleared",
         announceRowsCleared: "%d rows cleared",
         announceLevel: "Level %d",
-        announceGameOver: "Game over. Score %d."
+        announceGameOver: "Game over. Score %d.",
+        howToPlay: "How to play",
+        onboardingSkip: "SKIP",
+        onboardingNext: "NEXT",
+        onboardingDone: "DONE",
+        onboardingStepFormat: "%d of %d",
+        onboardingStepAccessibilityFormat: "Step %d of %d",
+        onboardingMoveTitle: "Move and rotate",
+        onboardingMoveBody: "Move the piece with the left and right arrows, and rotate it with the curved arrows. Hold the down arrow to move it down. The double arrow drops it to the bottom.",
+        onboardingTearTitle: "Tear the rows",
+        onboardingTearBody: "Fill a row from edge to edge to tear it. Four rows at once score 4000.",
+        onboardingModesTitle: "Three modes and a daily challenge",
+        onboardingModesBody: "Crack is fast, on a small board. Tear is classic. Shatter adds five-square pieces. In the daily challenge, everyone gets the same pieces that day.",
+        dailyButton: "DAILY",
+        dailyTitle: "Daily challenge",
+        dailySubtitle: "Same pieces for everyone today.",
+        dailyBestLabel: "TODAY'S BEST",
+        dailyBestFormat: "Today's best: %@",
+        streakLabel: "Streak",
+        streakOneDay: "1 day",
+        streakDaysFormat: "%d days",
+        dailyResets: "Resets 00:00 UTC",
+        statsTitle: "Stats",
+        statsGamesPlayed: "Games played",
+        statsRowsCleared: "Rows cleared",
+        statsFourRowClears: "Four-row clears",
+        statsBestScores: "Best scores",
+        statsCurrentStreak: "Current streak",
+        statsLongestStreak: "Longest streak"
     )
 
     static func current(for lang: Language) -> Strings {

@@ -32,6 +32,7 @@ final class SettingsStore: ObservableObject {
     private let playlistKey = "tesseriss.settings.playlist"
     private let selectedModeKey = "tesseriss.settings.selectedMode"
     private let themeKindKey = "tesseriss.settings.themeKind"
+    private let onboardingSeenKey = "tesseriss.onboarding.seen"
 
     @Published var musicEnabled: Bool {
         didSet { defaults.set(musicEnabled, forKey: musicKey) }
@@ -77,6 +78,10 @@ final class SettingsStore: ObservableObject {
         didSet { defaults.set(themeKind.rawValue, forKey: themeKindKey) }
     }
 
+    @Published var hasSeenOnboarding: Bool {
+        didSet { defaults.set(hasSeenOnboarding, forKey: onboardingSeenKey) }
+    }
+
     var activePlaylist: MusicPlaylist { MusicPlaylist.playlist(forID: playlistID) }
 
     var activeTheme: Theme {
@@ -92,6 +97,12 @@ final class SettingsStore: ObservableObject {
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
+        // Every version writes the music key on first launch, so its presence
+        // means the app ran before: players updating from 1.x skip the onboarding.
+        let launchedBefore = defaults.object(forKey: musicKey) != nil
+        if defaults.object(forKey: onboardingSeenKey) == nil && launchedBefore {
+            defaults.set(true, forKey: onboardingSeenKey)
+        }
         if defaults.object(forKey: musicKey) == nil { defaults.set(true, forKey: musicKey) }
         if defaults.object(forKey: sfxKey) == nil { defaults.set(true, forKey: sfxKey) }
         if defaults.object(forKey: musicVolumeKey) == nil { defaults.set(Float(0.5), forKey: musicVolumeKey) }
@@ -119,5 +130,6 @@ final class SettingsStore: ObservableObject {
         self.selectedMode = GameMode(rawValue: modeRaw) ?? .og
         let themeRaw = defaults.string(forKey: themeKindKey) ?? ThemeKind.classic.rawValue
         self.themeKind = ThemeKind(rawValue: themeRaw) ?? .classic
+        self.hasSeenOnboarding = defaults.bool(forKey: onboardingSeenKey)
     }
 }

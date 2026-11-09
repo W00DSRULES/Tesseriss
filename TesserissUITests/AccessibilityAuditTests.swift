@@ -3,7 +3,8 @@ import XCTest
 /// Accessibility audits (`performAccessibilityAudit`) of every screen:
 /// Settings, Menu, the game, the pause card and Game Over. Each test launches
 /// fresh with `--ui-test`, sets one language / theme / appearance, then walks
-/// the screens in that order and audits each one.
+/// the screens in that order and audits each one. The onboarding tests at the
+/// end audit its steps instead.
 ///
 /// Every audit category runs, except `.dynamicType` on the game and pause
 /// screens (the reason is at those calls). To accept one known issue, pass an
@@ -50,7 +51,58 @@ final class AccessibilityAuditTests: XCTestCase {
         try auditEveryScreen(launchedApp(extraArgs: largestText(language: "tr")))
     }
 
+    // MARK: - Onboarding
+
+    func test_audit_onboarding_classic_day_english() throws {
+        let app = launchedApp(extraArgs: ["--show-onboarding", "-AppleLanguages", "(en)"])
+        try auditOnboarding(app, steps: 3, over: app.buttons["start-button"])
+        XCTAssertEqual(app.staticTexts["onboarding-progress"].label, "Step 3 of 3")
+        // Done reveals the menu; it doesn't start a game.
+        app.buttons["onboarding-done"].tap()
+        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3))
+        XCTAssertFalse(app.buttons["hard-drop-button"].exists)
+    }
+
+    // Opened from Settings ("How to play") after the picks, so it also covers
+    // the onboarding over Settings.
+    func test_audit_onboarding_hokusai_night_turkish() throws {
+        let app = launchedApp()
+        app.buttons["settings-button"].tap()
+        let back = app.buttons["back-button"]
+        XCTAssertTrue(back.waitForExistence(timeout: 3))
+        for label in ["Türkçe", "Hokusai", "Gece"] {
+            let segment = app.buttons[label]
+            XCTAssertTrue(segment.waitForExistence(timeout: 3), label)
+            segment.tap()
+        }
+        app.buttons["how-to-play-button"].tap()
+        try auditOnboarding(app, steps: 1, over: back)
+        app.buttons["onboarding-skip"].tap()
+        XCTAssertTrue(back.waitForExistence(timeout: 3))
+    }
+
     // MARK: - Helpers
+
+    /// Audits the onboarding's first `steps` steps, moving on with Next.
+    /// `underneath` is an element of the screen the onboarding opened over,
+    /// which must be out of the accessibility tree while it shows.
+    private func auditOnboarding(_ app: XCUIApplication, steps: Int, over underneath: XCUIElement) throws {
+        XCTAssertTrue(app.otherElements["onboarding"].waitForExistence(timeout: 5))
+        waitUntilGone(underneath)
+        for step in 1...steps {
+            let title = app.staticTexts["onboarding-step-\(step)"]
+            XCTAssertTrue(title.waitForExistence(timeout: 3), "step \(step)")
+            try auditEveryPage(app, "onboarding, step \(step)")
+            let ids = step < 3 ? ["onboarding-skip", "onboarding-next"] : ["onboarding-done"]
+            for id in ids {
+                XCTAssertGreaterThanOrEqual(app.buttons[id].frame.height, 44, "\(id) touch target")
+            }
+            if step < steps {
+                app.buttons["onboarding-next"].tap()
+                waitUntilGone(title)
+            }
+        }
+    }
 
     /// TESSERISS_TETRIS_SETUP prefills a four-row well and deals an I piece
     /// first, so one drop scores and Game Over shows the NEW BEST badge in the
@@ -185,12 +237,14 @@ final class AccessibilityAuditTests: XCTestCase {
                 from.press(forDuration: 0.05, thenDragTo: to, withVelocity: .slow, thenHoldForDuration: 0.3)
             }
             // Text cut by the top or bottom edge is faded by the system's scroll
-            // edge effect, which fails contrast. Pages overlap by half a screen,
-            // so that text is audited whole on the page before or after.
+            // edge effect, which fails contrast. On iOS 26 the fade reaches a few
+            // points inside the bounds, so text within 32pt of an edge counts as
+            // cut too. Pages overlap by half a screen, so that text is audited
+            // whole on the page before or after.
             try audit(app, "\(screen), page \(page)", excluding: resizing) { issue in
                 if known(issue) { return true }
                 guard issue.auditType == .contrast, let frame = issue.element?.frame else { return false }
-                return frame.minY < scrollView.frame.minY || frame.maxY > scrollView.frame.maxY
+                return frame.minY < scrollView.frame.minY + 32 || frame.maxY > scrollView.frame.maxY - 32
             }
             let lastPage = bottom.frame.maxY <= scrollView.frame.maxY + 1
             try audit(app, "\(screen), page \(page), text size",

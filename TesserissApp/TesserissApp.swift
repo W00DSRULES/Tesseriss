@@ -14,6 +14,9 @@ struct TesserissApp: App {
         // UI-test mode: wipe persisted state so each test starts from a known baseline.
         if args.contains("--ui-test"), let bundleID = Bundle.main.bundleIdentifier {
             UserDefaults.standard.removePersistentDomain(forName: bundleID)
+            // Tests start at the menu unless they ask for the onboarding. Saved,
+            // not just set, because a relaunch without --ui-test reads it back.
+            SettingsStore.shared.hasSeenOnboarding = !args.contains("--show-onboarding")
         }
         // Seeded RNG (UI tests): same seed -> same piece sequence every game.
         let factory: (Double) -> PieceRandomizer
@@ -37,8 +40,10 @@ struct TesserissApp: App {
                 .environmentObject(highscore)
                 .preferredColorScheme(appearance.colorScheme)
         }
-        .onChange(of: scenePhase) { _, phase in
-            if phase != .active {
+        .onChange(of: scenePhase, initial: true) { _, phase in
+            if phase == .active {
+                engine.refreshToday()
+            } else {
                 engine.autoPauseFromScenePhase()
             }
         }
@@ -55,20 +60,33 @@ struct RootView: View {
             settings.activeTheme
                 .backgroundView(appearance: settings.appearance)
                 .ignoresSafeArea()
-            // Cross-fade instead of a hard cut, which read as a glitch.
-            ZStack {
-                switch engine.screen {
-                case .menu:
-                    MenuView().transition(.opacity)
-                case .game:
-                    GameView().transition(.opacity)
-                case .gameOver:
-                    GameOverView().transition(.opacity)
-                case .settings:
-                    SettingsView().transition(.opacity)
-                }
+            // The onboarding replaces the screen rather than covering it: a
+            // screen left on display stays in the accessibility tree (see the
+            // comment on GameView's hud). engine.screen doesn't change, so Skip
+            // or Done brings back the same screen.
+            if settings.hasSeenOnboarding {
+                screen.transition(.opacity)
+            } else {
+                OnboardingView().transition(.opacity)
             }
-            .animation(reduceMotion ? nil : .easeInOut(duration: 0.22), value: engine.screen)
         }
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.22), value: settings.hasSeenOnboarding)
+    }
+
+    private var screen: some View {
+        // Cross-fade instead of a hard cut, which read as a glitch.
+        ZStack {
+            switch engine.screen {
+            case .menu:
+                MenuView().transition(.opacity)
+            case .game:
+                GameView().transition(.opacity)
+            case .gameOver:
+                GameOverView().transition(.opacity)
+            case .settings:
+                SettingsView().transition(.opacity)
+            }
+        }
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.22), value: engine.screen)
     }
 }

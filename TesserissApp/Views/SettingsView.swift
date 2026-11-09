@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject var engine: GameEngine
     @EnvironmentObject var settings: SettingsStore
+    @ObservedObject private var hs = HighscoreStore.shared
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     private var s: Strings { settings.strings }
@@ -140,6 +141,24 @@ struct SettingsView: View {
                         .pickerStyle(.segmented)
                         .frame(maxWidth: stacked ? .infinity : 200)
                     }
+                    // The onboarding opens over Settings once the flag is cleared.
+                    // The emoji sits outside the button, which would expose it.
+                    withEmoji("📖") {
+                        Button(action: { settings.hasSeenOnboarding = false }) {
+                            HStack(spacing: 0) {
+                                Text(s.howToPlay)
+                                Spacer(minLength: 8)
+                                Image(systemName: "chevron.right")
+                                    .font(.system(.body, design: .rounded).weight(.semibold))
+                                    .opacity(0.6)
+                            }
+                            .frame(minHeight: 44)
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(s.howToPlay)
+                        .accessibilityIdentifier("how-to-play-button")
+                    }
                 }
                 .font(.system(.title3, design: .rounded))
                 .foregroundStyle(ink)
@@ -150,6 +169,10 @@ struct SettingsView: View {
                 // as wide as in Classic.
                 .legibilityPanel(theme.backgroundIsArtwork, stroke: stroke, fill: card)
                 .padding(.horizontal, theme.backgroundIsArtwork ? 16 : 32)
+
+                stats
+                    .legibilityPanel(theme.backgroundIsArtwork, stroke: stroke, fill: card)
+                    .padding(.horizontal, theme.backgroundIsArtwork ? 16 : 32)
 
                 Spacer(minLength: 16)
 
@@ -169,6 +192,60 @@ struct SettingsView: View {
             }
             .scrollBounceBehavior(.basedOnSize)
         }
+    }
+
+    private var stats: some View {
+        let today = engine.todayKey
+        return VStack(alignment: .leading, spacing: 12) {
+            Text(s.statsTitle)
+                .font(.system(.title2, design: .rounded).weight(.semibold))
+                .frame(maxWidth: .infinity)
+                .accessibilityAddTraits(.isHeader)
+            statRow(id: "games-played", label: s.statsGamesPlayed, count: hs.gamesPlayed)
+            statRow(id: "rows-cleared", label: s.statsRowsCleared, count: hs.rowsCleared)
+            statRow(id: "four-row-clears", label: s.statsFourRowClears, count: hs.fourRowClears)
+            Divider().overlay(stroke)
+            Text(s.statsBestScores)
+                .font(.system(.headline, design: .rounded))
+                .accessibilityAddTraits(.isHeader)
+            ForEach(GameMode.allCases) { mode in
+                statRow(id: "best-\(mode.rawValue)", label: s.modeName(mode),
+                        count: hs.highscore(for: mode))
+            }
+            Divider().overlay(stroke)
+            statRow(id: "current-streak", label: s.statsCurrentStreak,
+                    value: s.streakDays(hs.currentStreak(today: today)))
+            statRow(id: "longest-streak", label: s.statsLongestStreak,
+                    value: s.streakDays(hs.longestDailyStreak))
+        }
+        .font(.system(.body, design: .rounded))
+        .foregroundStyle(ink)
+    }
+
+    /// Counts are grouped like the menu highscore ("4.000" in Turkish).
+    private func statRow(id: String, label: String, count: Int) -> some View {
+        statRow(id: id, label: label, shown: Text("\(count)"), value: String(count))
+    }
+
+    private func statRow(id: String, label: String, value: String) -> some View {
+        statRow(id: id, label: label, shown: Text(value), value: value)
+    }
+
+    /// One element per stat, read as "Rows cleared, 120".
+    private func statRow(id: String, label: String, shown: Text, value: String) -> some View {
+        row {
+            Text(label)
+            if !stacked { Spacer() }
+            shown
+                .fontWeight(.semibold)
+                .monospacedDigit()
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .ignore)
+        .accessibilityAddTraits(.isStaticText)
+        .accessibilityLabel(label)
+        .accessibilityValue(value)
+        .accessibilityIdentifier("stat-\(id)")
     }
 
     /// The emoji is decoration, in its own hidden text beside the label or

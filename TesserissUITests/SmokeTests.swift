@@ -300,4 +300,242 @@ final class SmokeTests: XCTestCase {
         XCTAssertEqual(runA, runB,
                        "Same seed must yield same score after the same input sequence")
     }
+    // MARK: - Daily challenge and stats
+
+    /// TESSERISS_NOW fixes the UTC day; TESSERISS_TETRIS_SETUP prefills a
+    /// four-row well and deals an I piece first, so one drop scores 4000.
+    private let dailyEnv = ["TESSERISS_NOW": "2026-11-09T12:00:00Z", "TESSERISS_TETRIS_SETUP": "1"]
+
+    /// Drops the first I piece into the right-hand well for a four-row clear.
+    private func clearFourRows(_ app: XCUIApplication) {
+        app.buttons["rotate-button"].tap()
+        app.buttons["move-right-button"].press(forDuration: 1.5)
+        app.buttons["hard-drop-button"].tap()
+        let scored = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == '4000'"),
+                                               object: app.staticTexts["stat-score"])
+        XCTAssertEqual(XCTWaiter.wait(for: [scored], timeout: 3), .completed,
+                       "The four-row clear should score 4000")
+    }
+
+    /// Hard drops in the spawn column stack up until the board tops out.
+    /// Taps a fixed point, not the button: the button can leave mid-tap when
+    /// the game ends, which fails an element tap.
+    private func topOut(_ app: XCUIApplication) {
+        let playAgain = app.buttons["play-again-button"]
+        let frame = app.buttons["hard-drop-button"].frame
+        let hardDrop = app.coordinate(withNormalizedOffset: .zero)
+            .withOffset(CGVector(dx: frame.midX, dy: frame.midY))
+        var drops = 0
+        while !playAgain.waitForExistence(timeout: 0.3), drops < 60 {
+            hardDrop.tap()
+            drops += 1
+        }
+        XCTAssertTrue(playAgain.exists, "Hard drops should top out the board")
+    }
+
+    private func attachScreenshot(_ app: XCUIApplication, _ name: String) {
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = "review-\(name)"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
+    func test_daily_button_starts_daily_run_and_menu_shows_todays_best() {
+        let app = launchedApp(env: dailyEnv)
+        selectLanguage(app, "English")
+        let daily = app.buttons["daily-button"]
+        XCTAssertTrue(daily.exists)
+        XCTAssertEqual(daily.value as? String, "Same pieces for everyone today.")
+        XCTAssertGreaterThanOrEqual(daily.frame.height, 44, "daily-button touch target")
+        attachScreenshot(app, "menu-daily-unplayed")
+
+        daily.tap()
+        XCTAssertTrue(app.buttons["hard-drop-button"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["daily-marker"].exists, "The HUD marks the daily run")
+        clearFourRows(app)
+        attachScreenshot(app, "game-daily")
+
+        app.buttons["menu-button"].tap()
+        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3))
+        XCTAssertEqual(daily.value as? String, "Today's best: 4000, Streak: 1 day")
+        XCTAssertEqual(app.staticTexts["highscore-value"].value as? String, "0",
+                       "A daily score is not a Tear highscore")
+        attachScreenshot(app, "menu-daily-played")
+    }
+
+    func test_daily_game_over_shows_daily_variant() throws {
+        let app = launchedApp(env: dailyEnv)
+        selectLanguage(app, "English")
+        app.buttons["daily-button"].tap()
+        XCTAssertTrue(app.buttons["hard-drop-button"].waitForExistence(timeout: 3))
+        clearFourRows(app)
+        // The game screen is a fixed layout that caps text at xxxLarge, so
+        // AccessibilityAuditTests leaves out .dynamicType there too.
+        try app.performAccessibilityAudit(for: XCUIAccessibilityAuditType.all.subtracting(.dynamicType))
+        topOut(app)
+
+        XCTAssertEqual(app.staticTexts["gameover-daily-title"].label, "Daily challenge")
+        XCTAssertEqual(app.staticTexts["gameover-score"].value as? String, "4000")
+        XCTAssertTrue(app.staticTexts["new-best-badge"].exists, "First run of the day is a new best")
+        XCTAssertEqual(app.staticTexts["gameover-daily-best"].value as? String, "4000")
+        XCTAssertEqual(app.staticTexts["gameover-streak"].value as? String, "1 day")
+        XCTAssertEqual(app.staticTexts["daily-resets"].label, "Resets 00:00 UTC")
+        XCTAssertTrue(app.buttons["gameover-menu-button"].exists)
+        attachScreenshot(app, "gameover-daily-new-best")
+        // Let the cross-fade finish before measuring contrast.
+        Thread.sleep(forTimeInterval: 1)
+        try app.performAccessibilityAudit()
+
+        // PLAY AGAIN starts another daily attempt; scoring 0 doesn't beat 4000.
+        app.buttons["play-again-button"].tap()
+        XCTAssertTrue(app.buttons["hard-drop-button"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["daily-marker"].exists, "PLAY AGAIN stays on the daily")
+        topOut(app)
+        XCTAssertEqual(app.staticTexts["gameover-score"].value as? String, "0")
+        XCTAssertFalse(app.staticTexts["new-best-badge"].exists, "No NEW BEST below today's best")
+        XCTAssertEqual(app.staticTexts["gameover-daily-best"].value as? String, "4000")
+        XCTAssertEqual(app.staticTexts["gameover-streak"].value as? String, "1 day")
+        attachScreenshot(app, "gameover-daily-no-best")
+    }
+
+    /// The daily Game Over at the largest text size, page by page, for review.
+    func test_daily_game_over_largest_text_screenshots() {
+        let app = launchedApp(extraArgs: ["-AppleLanguages", "(tr)",
+                                          "-UIPreferredContentSizeCategoryName",
+                                          "UICTContentSizeCategoryAccessibilityXXXL"],
+                              env: dailyEnv)
+        let daily = app.buttons["daily-button"]
+        XCTAssertTrue(daily.waitForExistence(timeout: 5))
+        daily.tap()
+        XCTAssertTrue(app.buttons["hard-drop-button"].waitForExistence(timeout: 3))
+        clearFourRows(app)
+        topOut(app)
+        Thread.sleep(forTimeInterval: 1)
+        let menu = app.buttons["gameover-menu-button"]
+        var page = 1
+        attachScreenshot(app, "gameover-daily-largest-\(page)")
+        while !menu.isHittable, page < 6 {
+            app.scrollViews.firstMatch.swipeUp()
+            Thread.sleep(forTimeInterval: 1)
+            page += 1
+            attachScreenshot(app, "gameover-daily-largest-\(page)")
+        }
+        XCTAssertTrue(menu.isHittable, "MENU is reachable at the largest text size")
+    }
+
+    func test_settings_shows_stats_after_a_run() {
+        let app = launchedApp(env: ["TESSERISS_RNG_SEED": "1337", "TESSERISS_TETRIS_SETUP": "1"])
+        selectLanguage(app, "English")
+        app.buttons["start-button"].tap()
+        XCTAssertTrue(app.buttons["hard-drop-button"].waitForExistence(timeout: 3))
+        XCTAssertFalse(app.staticTexts["daily-marker"].exists, "No daily marker in a Tear run")
+        clearFourRows(app)
+        topOut(app)
+        XCTAssertFalse(app.staticTexts["gameover-daily-title"].exists, "Tear Game Over has no daily part")
+        XCTAssertFalse(app.staticTexts["gameover-streak"].exists)
+        app.buttons["gameover-menu-button"].tap()
+        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3))
+
+        app.buttons["settings-button"].tap()
+        XCTAssertTrue(app.buttons["back-button"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["how-to-play-button"].exists)
+        XCTAssertEqual(app.buttons["how-to-play-button"].label, "How to play")
+        let expected: [(id: String, label: String, value: String)] = [
+            ("stat-games-played", "Games played", "1"),
+            ("stat-rows-cleared", "Rows cleared", "4"),
+            ("stat-four-row-clears", "Four-row clears", "1"),
+            ("stat-best-fast", "Crack", "0"),
+            ("stat-best-og", "Tear", "4000"),
+            ("stat-best-hard", "Shatter", "0"),
+            ("stat-current-streak", "Current streak", "0 days"),
+            ("stat-longest-streak", "Longest streak", "0 days"),
+        ]
+        for stat in expected {
+            let element = app.staticTexts[stat.id]
+            XCTAssertTrue(element.exists, stat.id)
+            XCTAssertEqual(element.label, stat.label, stat.id)
+            XCTAssertEqual(element.value as? String, stat.value, stat.id)
+        }
+        let last = app.staticTexts["stat-longest-streak"]
+        var swipes = 0
+        while !last.isHittable, swipes < 5 {
+            app.scrollViews.firstMatch.swipeUp()
+            swipes += 1
+        }
+        attachScreenshot(app, "settings-stats")
+    }
+
+    // MARK: - Onboarding
+
+    private func waitUntilGone(_ element: XCUIElement, _ message: String) {
+        let gone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"),
+                                             object: element)
+        XCTAssertEqual(XCTWaiter.wait(for: [gone], timeout: 3), .completed, message)
+    }
+
+    /// Waits for step `n`'s title, lets the cross-fade finish, then attaches
+    /// a screenshot named "review-onboarding-<n>".
+    private func showsOnboardingStep(_ app: XCUIApplication, _ n: Int) {
+        XCTAssertTrue(app.staticTexts["onboarding-step-\(n)"].waitForExistence(timeout: 3), "step \(n)")
+        XCTAssertEqual(app.staticTexts["onboarding-progress"].label, "Step \(n) of 3")
+        Thread.sleep(forTimeInterval: 0.5)
+        attachScreenshot(app, "onboarding-\(n)")
+    }
+
+    func test_onboarding_shows_over_menu_and_skip_dismisses() {
+        let app = launchedApp(extraArgs: ["--show-onboarding", "-AppleLanguages", "(en)"])
+        XCTAssertTrue(app.otherElements["onboarding"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["start-button"].exists, "The menu is not shown under the onboarding")
+        XCTAssertTrue(app.staticTexts["onboarding-step-1"].exists)
+        XCTAssertEqual(app.buttons["onboarding-skip"].label, "SKIP")
+
+        app.buttons["onboarding-skip"].tap()
+        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3), "Skip returns to the menu")
+        waitUntilGone(app.otherElements["onboarding"], "Skip closes the onboarding")
+        XCTAssertFalse(app.buttons["hard-drop-button"].exists, "Skip doesn't start a game")
+    }
+
+    func test_onboarding_next_next_done_and_not_shown_on_relaunch() {
+        let app = launchedApp(extraArgs: ["--show-onboarding", "-AppleLanguages", "(en)"])
+        XCTAssertTrue(app.otherElements["onboarding"].waitForExistence(timeout: 5))
+        showsOnboardingStep(app, 1)
+        app.buttons["onboarding-next"].tap()
+        showsOnboardingStep(app, 2)
+        app.buttons["onboarding-next"].tap()
+        showsOnboardingStep(app, 3)
+        XCTAssertFalse(app.buttons["onboarding-skip"].exists, "The last step has Done only")
+        XCTAssertFalse(app.buttons["onboarding-next"].exists)
+
+        app.buttons["onboarding-done"].tap()
+        XCTAssertTrue(app.buttons["start-button"].waitForExistence(timeout: 3), "Done returns to the menu")
+        XCTAssertFalse(app.otherElements["onboarding"].exists)
+        XCTAssertFalse(app.buttons["hard-drop-button"].exists, "Done doesn't start a game")
+        app.terminate()
+
+        // Without --ui-test the saved flag survives, so the menu comes first.
+        let app2 = XCUIApplication()
+        app2.launchArguments = []
+        app2.launch()
+        XCTAssertTrue(app2.buttons["start-button"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app2.otherElements["onboarding"].exists, "The onboarding shows once")
+    }
+
+    func test_how_to_play_reopens_onboarding_over_settings() {
+        let app = launchedApp()
+        app.buttons["settings-button"].tap()
+        let back = app.buttons["back-button"]
+        XCTAssertTrue(back.waitForExistence(timeout: 3))
+        app.buttons["how-to-play-button"].tap()
+        XCTAssertTrue(app.otherElements["onboarding"].waitForExistence(timeout: 3))
+        waitUntilGone(back, "Settings is not shown under the onboarding")
+        XCTAssertTrue(app.staticTexts["onboarding-step-1"].exists, "It reopens at step 1")
+
+        app.buttons["onboarding-next"].tap()
+        XCTAssertTrue(app.staticTexts["onboarding-step-2"].waitForExistence(timeout: 3))
+        app.buttons["onboarding-next"].tap()
+        XCTAssertTrue(app.staticTexts["onboarding-step-3"].waitForExistence(timeout: 3))
+        app.buttons["onboarding-done"].tap()
+        XCTAssertTrue(back.waitForExistence(timeout: 3), "Done returns to Settings")
+        XCTAssertFalse(app.otherElements["onboarding"].exists)
+    }
 }
